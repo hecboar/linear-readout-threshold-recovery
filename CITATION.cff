@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the companion paper."
+title: "Synthetic numerical illustrations for linear-readout floors and threshold recovery"
+authors:
+  - family-names: Borobia
+    given-names: Hector
+  - family-names: Segui-Mas
+    given-names: Elies
+  - family-names: Tormo-Carbo
+    given-names: Guillermina
+year: 2026
+license: MIT
+repository-code: "https://github.com/hectorborobia/linear-readout-threshold-recovery"
+preferred-citation:
+  type: article
+  title: "Interface Limits for Overcomplete Neural Representations: Linear Readout, Threshold Recovery, and Computation in Superposition"
+  authors:
+    - family-names: Borobia
+      given-names: Hector
+    - family-names: Segui-Mas
+      given-names: Elies
+    - family-names: Tormo-Carbo
+      given-names: Guillermina
+  year: 2026
