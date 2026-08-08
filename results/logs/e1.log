@@ -1,0 +1,18 @@
+  d=  16 F=   32  tied ratio=1.8990  gaussian ratio=23755.1964
+  d=  16 F=   64  tied ratio=1.2976  gaussian ratio=4001.5123
+  d=  16 F=  128  tied ratio=1.1300  gaussian ratio=102406.3502
+  d=  16 F=  256  tied ratio=1.0625  gaussian ratio=48477.5026
+  d=  32 F=   64  tied ratio=1.9658  gaussian ratio=86260.7389
+  d=  32 F=  128  tied ratio=1.3268  gaussian ratio=124006.5473
+  d=  32 F=  256  tied ratio=1.1410  gaussian ratio=143391.4358
+  d=  32 F=  512  tied ratio=1.0648  gaussian ratio=636672.2218
+  d=  64 F=  128  tied ratio=1.9721  gaussian ratio=23014466.9652
+  d=  64 F=  256  tied ratio=1.3289  gaussian ratio=625424.6962
+  d=  64 F=  512  tied ratio=1.1410  gaussian ratio=284888.2737
+  d=  64 F= 1024  tied ratio=1.0659  gaussian ratio=569986.2489
+  d= 128 F=  256  tied ratio=1.9992  gaussian ratio=856264.6488
+  d= 128 F=  512  tied ratio=1.3322  gaussian ratio=2677594.5890
+  d= 128 F= 1024  tied ratio=1.1415  gaussian ratio=2875171.5449
+  d= 128 F= 2048  tied ratio=1.0662  gaussian ratio=1375193.7408
+E1: 720 calibrated interfaces, 0 floor violations
+E1_EXIT=0

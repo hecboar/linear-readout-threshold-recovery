@@ -1,0 +1,571 @@
+{
+  "d": 128,
+  "F": 16384,
+  "s_max": 5,
+  "theta": 0.5,
+  "master_seed": 46000266,
+  "block": 65536,
+  "elapsed_seconds": 24.0,
+  "trials": [
+    {
+      "trial": 0,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.00781266715897053,
+        0.015625320209596186,
+        0.023437959151876964,
+        0.03125058398581287,
+        0.03906319471140389
+      ],
+      "frob_sq_A": 2097196.8713944787
+    },
+    {
+      "trial": 1,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 2,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 3,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 4,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 5,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007810778819464039,
+        0.015621644695203916,
+        0.023432597627219633,
+        0.03124363761551118,
+        0.039054764660078574
+      ],
+      "frob_sq_A": 2096689.974117971
+    },
+    {
+      "trial": 6,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 7,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 8,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 9,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 10,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812330618901235,
+        0.01562483895091689,
+        0.02343752499604697,
+        0.03125038875429147,
+        0.039063430225650383
+      ],
+      "frob_sq_A": 2097106.5321075153
+    },
+    {
+      "trial": 11,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 12,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 13,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 14,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 15,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811558059923132,
+        0.015623238779298212,
+        0.023435042158125242,
+        0.03124696819640422,
+        0.03905901689413514
+      ],
+      "frob_sq_A": 2096899.1498859413
+    },
+    {
+      "trial": 16,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 17,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 18,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 19,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 20,
+      "ok": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "energy": [
+        0.007810712027245871,
+        0.015621374536803005,
+        0.023431987528671403,
+        0.031242551002851063,
+        0.03905306495934199
+      ],
+      "frob_sq_A": 2096672.04471843
+    },
+    {
+      "trial": 21,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 22,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 23,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 24,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 25,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812122605332749,
+        0.015624136814373309,
+        0.023436042627121678,
+        0.031247840043577862,
+        0.03905952906374186
+      ],
+      "frob_sq_A": 2097050.6938904044
+    },
+    {
+      "trial": 26,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 27,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 28,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 29,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 30,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811458701644408,
+        0.015623163578295437,
+        0.023435114629953086,
+        0.03124731185661736,
+        0.039059755258288247
+      ],
+      "frob_sq_A": 2096872.4786010846
+    },
+    {
+      "trial": 31,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 32,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 33,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 34,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 35,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007810409019429903,
+        0.01562073187332367,
+        0.023430968561681302,
+        0.031241119084502795,
+        0.03905118344178816
+      ],
+      "frob_sq_A": 2096590.7066771789
+    },
+    {
+      "trial": 36,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 37,
+      "ok": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 38,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 39,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 40,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811675912360674,
+        0.015623241793730378,
+        0.02343469764410911,
+        0.031246043463496874,
+        0.03905727925189366
+      ],
+      "frob_sq_A": 2096930.7856587535
+    },
+    {
+      "trial": 41,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 42,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 43,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 44,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 45,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811904722501005,
+        0.015624002126289744,
+        0.023436292211366217,
+        0.031248774977730428,
+        0.03906145042538237
+      ],
+      "frob_sq_A": 2096992.2064131107
+    },
+    {
+      "trial": 46,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 47,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    }
+  ]
+}

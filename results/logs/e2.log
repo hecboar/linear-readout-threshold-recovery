@@ -1,0 +1,10 @@
+  d=  64 F=   4096 theta=0.4  s95=0  no sparsity reached p_rec >= 0.95
+  d=  64 F=   4096 theta=0.5  s95=1  linear RMS at s95=0.1250 (1.00 x d^-1/2)
+  d=  64 F=   4096 theta=0.6  s95=1  linear RMS at s95=0.1250 (1.00 x d^-1/2)
+  d= 128 F=  16384 theta=0.4  s95=1  linear RMS at s95=0.0884 (1.00 x d^-1/2)
+  d= 128 F=  16384 theta=0.5  s95=1  linear RMS at s95=0.0884 (1.00 x d^-1/2)
+  d= 128 F=  16384 theta=0.6  s95=2  linear RMS at s95=0.1250 (1.41 x d^-1/2)
+  d= 256 F=  65536 theta=0.4  s95=1  linear RMS at s95=0.0625 (1.00 x d^-1/2)
+  d= 256 F=  65536 theta=0.5  s95=2  linear RMS at s95=0.0884 (1.41 x d^-1/2)
+  d= 256 F=  65536 theta=0.6  s95=4  linear RMS at s95=0.1250 (2.00 x d^-1/2)
+E2_EXIT=0

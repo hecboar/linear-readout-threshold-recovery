@@ -1,0 +1,6 @@
+E4: 168 optimisation runs on 12 worker processes
+  free         : n= 60 ratio to floor mean=1.0006 max=1.0176 below-floor=0
+  tied         : n= 36 ratio to floor mean=1.0000 max=1.0000 below-floor=0
+  softmax      : n= 36 ratio to floor mean=1.5050 max=3.5230 below-floor=0
+  uncalibrated : n= 36 ratio to floor mean=142041.0549 max=1182322.9619 below-floor=0
+E4_EXIT=0

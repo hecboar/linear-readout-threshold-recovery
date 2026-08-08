@@ -1,0 +1,56 @@
+{
+  "experiment": "e3_linear_energy",
+  "smoke": false,
+  "command": "e3_linear_energy.py --threads 2",
+  "argv": [
+    "e3_linear_energy.py",
+    "--threads",
+    "2"
+  ],
+  "started_utc": "2026-08-07T02:27:05Z",
+  "config": {
+    "ds": [
+      32,
+      64,
+      128
+    ],
+    "ratio": 8,
+    "sparsities": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      128
+    ],
+    "trials": 10,
+    "mc_trials": 20000,
+    "seed": 44,
+    "threads": 2
+  },
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 170 Stepping 4, GenuineIntel",
+    "cpu_count": 14,
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "git_commit": "33016a6089f8b1f509a02d2d35ae11f6b29d1b65",
+    "env_omp_num_threads": "2",
+    "matplotlib": "3.11.0",
+    "torch": "2.13.0+cpu",
+    "torch_cuda_available": false,
+    "torch_num_threads": 2
+  },
+  "summary": {
+    "n_configurations": 24,
+    "floor_violations": 0,
+    "ratio_uniform_to_s_over_d_min": 0.9735179081600848,
+    "ratio_uniform_to_s_over_d_max": 1.008849530026565
+  },
+  "duration_seconds": 9.225,
+  "finished_utc": "2026-08-07T02:27:14Z",
+  "exit_status": "ok"
+}

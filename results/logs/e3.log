@@ -1,0 +1,5 @@
+  d=  32 F=  256: 8 sparsities
+  d=  64 F=  512: 8 sparsities
+  d= 128 F= 1024: 8 sparsities
+E3: 24 configurations, 0 floor violations, E/(s/d) in [0.9735, 1.0088]
+E3_EXIT=0

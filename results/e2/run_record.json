@@ -1,0 +1,49 @@
+{
+  "experiment": "e2_threshold_recovery",
+  "smoke": false,
+  "command": "e2_threshold_recovery.py --threads 2",
+  "argv": [
+    "e2_threshold_recovery.py",
+    "--threads",
+    "2"
+  ],
+  "started_utc": "2026-08-07T02:34:38Z",
+  "config": {
+    "ds": [
+      64,
+      128,
+      256
+    ],
+    "s_max": {
+      "64": 4,
+      "128": 5,
+      "256": 7
+    },
+    "trials": 200,
+    "thetas": [
+      0.4,
+      0.5,
+      0.6
+    ],
+    "seed": 43,
+    "threads": 2
+  },
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 170 Stepping 4, GenuineIntel",
+    "cpu_count": 14,
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "git_commit": "33016a6089f8b1f509a02d2d35ae11f6b29d1b65",
+    "env_omp_num_threads": "2",
+    "matplotlib": "3.11.0",
+    "torch": "2.13.0+cpu",
+    "torch_cuda_available": false,
+    "torch_num_threads": 2
+  },
+  "n_profiles": 9,
+  "duration_seconds": 4050.897,
+  "finished_utc": "2026-08-07T03:42:09Z",
+  "exit_status": "ok"
+}

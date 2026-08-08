@@ -1,0 +1,12 @@
+  d=128: 200 trials already present, skipping
+  d=  128 F=   16384: s95=1  (union-bound reference 1.65)  0.0s
+  d=256: 200 trials already present, skipping
+  d=  256 F=   65536: s95=2  (union-bound reference 2.89)  0.0s
+  d=512: 100 trials already present, skipping
+  d=  512 F=  262144: s95=5  (union-bound reference 5.13)  0.0s
+  d=1024: 36/50 trials (769.1s elapsed)
+  d=1024: 48/50 trials (1210.7s elapsed)
+  d=1024: 50/50 trials (1275.9s elapsed)
+  d= 1024 F= 1048576: s95=8  (union-bound reference 9.23)  1275.9s
+E6: s95 ~ c d/ln d with c = 0.0545, R^2 = 0.9754
+E6_EXIT=0

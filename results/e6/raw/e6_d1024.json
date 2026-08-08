@@ -1,0 +1,1132 @@
+{
+  "d": 1024,
+  "F": 1048576,
+  "s_max": 14,
+  "theta": 0.5,
+  "master_seed": 46001162,
+  "block": 65536,
+  "trials": [
+    {
+      "trial": 0,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.0009765617571827153,
+        0.0019531234528123572,
+        0.0029296850868889253,
+        0.0039062466594124204,
+        0.004882808170382841,
+        0.005859369619800189,
+        0.006835931007664464,
+        0.007812492333975665,
+        0.008789053598733792,
+        0.009765614801938846,
+        0.010742175943590825,
+        0.011718737023689734,
+        0.012695298042235566,
+        0.013671858999228327
+      ],
+      "frob_sq_A": 1073741007.2637582
+    },
+    {
+      "trial": 1,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 2,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 3,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 4,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 5,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.0009765577128642853,
+        0.0019531153846542703,
+        0.002929673015369955,
+        0.00390623060501134,
+        0.004882788153578425,
+        0.005859345661071209,
+        0.006835903127489694,
+        0.007812460552833879,
+        0.008789017937103762,
+        0.009765575280299347,
+        0.01074213258242063,
+        0.011718689843467614,
+        0.012695247063440298,
+        0.013671804242338681
+      ],
+      "frob_sq_A": 1073736560.4886179
+    },
+    {
+      "trial": 6,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 7,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 8,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 9,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 10,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.0009765624043783674,
+        0.0019531247449443242,
+        0.0029296870216978703,
+        0.0039062492346390054,
+        0.00488281138376773,
+        0.005859373469084044,
+        0.0068359354905879475,
+        0.00781249744827944,
+        0.008789059342158522,
+        0.009765621172225193,
+        0.010742182938479453,
+        0.011718744640921304,
+        0.012695306279550742,
+        0.01367186785436777
+      ],
+      "frob_sq_A": 1073741718.8629031
+    },
+    {
+      "trial": 11,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 12,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 13,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 14,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 15,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false
+      ],
+      "energy": [
+        0.0009765634074450022,
+        0.0019531269272755787,
+        0.0029296905594917294,
+        0.003906254304093454,
+        0.004882818161080753,
+        0.005859382130453626,
+        0.006835946212212073,
+        0.007812510406356096,
+        0.008789074712885692,
+        0.009765639131800861,
+        0.010742203663101607,
+        0.011718768306787924,
+        0.012695333062859818,
+        0.013671897931317284
+      ],
+      "frob_sq_A": 1073742821.7463315
+    },
+    {
+      "trial": 16,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 17,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 18,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 19,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 20,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "energy": [
+        0.0009765645973054448,
+        0.001953129283913042,
+        0.0029296940598227913,
+        0.003906258925034693,
+        0.004882823879548748,
+        0.005859388923364954,
+        0.006835954056483312,
+        0.007812519278903824,
+        0.008789084590626486,
+        0.009765649991651302,
+        0.010742215481978271,
+        0.01171878106160739,
+        0.012695346730538662,
+        0.01367191248877209
+      ],
+      "frob_sq_A": 1073744130.0117235
+    },
+    {
+      "trial": 21,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 22,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 23,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 24,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 25,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.0009765628677948861,
+        0.001953125743525465,
+        0.0029296886271917375,
+        0.003906251518793703,
+        0.004882814418331362,
+        0.005859377325804713,
+        0.006835940241213758,
+        0.007812503164558495,
+        0.008789066095838927,
+        0.00976562903505505,
+        0.010742191982206868,
+        0.011718754937294377,
+        0.01269531790031758,
+        0.013671880871276477
+      ],
+      "frob_sq_A": 1073742228.394754
+    },
+    {
+      "trial": 26,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false
+      ]
+    },
+    {
+      "trial": 27,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 28,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 29,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 30,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.0009765627823078347,
+        0.0019531255847082415,
+        0.0029296884072012195,
+        0.00390625124978677,
+        0.0048828141124648925,
+        0.005859376995235587,
+        0.006835939898098853,
+        0.007812502821054692,
+        0.0087890657641031,
+        0.009765628727244083,
+        0.010742191710477637,
+        0.011718754713803764,
+        0.012695317737222461,
+        0.013671880780733732
+      ],
+      "frob_sq_A": 1073742134.4007468
+    },
+    {
+      "trial": 31,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 32,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 33,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 34,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 35,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "energy": [
+        0.0009765624107325008,
+        0.0019531247349877324,
+        0.0029296869727656947,
+        0.0039062491240663883,
+        0.004882811188889813,
+        0.0058593731672359674,
+        0.0068359350591048525,
+        0.007812496864496469,
+        0.008789058583410817,
+        0.009765620215847894,
+        0.010742181761807704,
+        0.011718743221290243,
+        0.012695304594295515,
+        0.013671865880823515
+      ],
+      "frob_sq_A": 1073741725.8493466
+    },
+    {
+      "trial": 36,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 37,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 38,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 39,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 40,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.0009765615249782257,
+        0.0019531231143780842,
+        0.0029296847681995757,
+        0.0039062464864427,
+        0.004882808269107457,
+        0.005859370116193846,
+        0.006835932027701869,
+        0.0078124940036315245,
+        0.008789056043982812,
+        0.009765618148755734,
+        0.010742180317950286,
+        0.011718742551566474,
+        0.012695304849604292,
+        0.013671867212063744
+      ],
+      "frob_sq_A": 1073740751.9522219
+    },
+    {
+      "trial": 41,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 42,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 43,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 44,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 45,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.0009765640379043143,
+        0.0019531282060561714,
+        0.002929692504455572,
+        0.003906256933102516,
+        0.004882821491997002,
+        0.005859386181139032,
+        0.006835951000528605,
+        0.007812515950165721,
+        0.00878908103005038,
+        0.00976564624018258,
+        0.010742211580562325,
+        0.011718777051189615,
+        0.012695342652064444,
+        0.013671908383186819
+      ],
+      "frob_sq_A": 1073743514.943676
+    },
+    {
+      "trial": 46,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 47,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 48,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 49,
+      "ok": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        false
+      ]
+    }
+  ],
+  "elapsed_seconds": 1275.9,
+  "elapsed_seconds_provenance": "measured during the resumed run of this width; recovered from results/logs/e6_resume.log. Covers trials 24-49 plus the completion of the campaign; trials 0-23 were computed in the earlier interrupted run, so the true total is higher. Trial data is unchanged."
+}

@@ -1,0 +1,92 @@
+{
+  "experiment": "e4_optimized_codes",
+  "smoke": false,
+  "command": "e4_optimized_codes.py",
+  "argv": [
+    "e4_optimized_codes.py"
+  ],
+  "started_utc": "2026-08-07T00:50:23Z",
+  "config": {
+    "ds": [
+      16,
+      32,
+      64
+    ],
+    "ratios": [
+      2,
+      4,
+      8,
+      16
+    ],
+    "steps": 20000,
+    "lr": 0.01,
+    "record_every": 200,
+    "seeds_by_variant": {
+      "free": 5,
+      "tied": 3,
+      "softmax": 3,
+      "uncalibrated": 3
+    },
+    "workers": 12,
+    "threads": 12,
+    "n_jobs": 168
+  },
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 170 Stepping 4, GenuineIntel",
+    "cpu_count": 14,
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "git_commit": "33016a6089f8b1f509a02d2d35ae11f6b29d1b65",
+    "env_omp_num_threads": "12",
+    "matplotlib": "3.11.0",
+    "torch": "2.13.0+cpu",
+    "torch_cuda_available": false,
+    "torch_num_threads": 12
+  },
+  "summary": {
+    "free": {
+      "n_runs": 60,
+      "ratio_mean_sq_mean": 1.000639529407544,
+      "ratio_mean_sq_max": 1.0175926543058862,
+      "ratio_mean_sq_min": 1.0000001504553535,
+      "n_degenerate": 0,
+      "n_below_floor": 0
+    },
+    "tied": {
+      "n_runs": 36,
+      "ratio_mean_sq_mean": 1.0000023783930476,
+      "ratio_mean_sq_max": 1.0000048285055447,
+      "ratio_mean_sq_min": 1.000000674981295,
+      "n_degenerate": 0,
+      "n_below_floor": 0,
+      "tight_frame_residual_mean": 0.001269365463586938,
+      "tight_frame_residual_max": 0.0015584571519866586
+    },
+    "softmax": {
+      "n_runs": 36,
+      "ratio_mean_sq_mean": 1.505034389616529,
+      "ratio_mean_sq_max": 3.5230147890136925,
+      "ratio_mean_sq_min": 1.0310292959389096,
+      "n_degenerate": 0,
+      "n_below_floor": 0,
+      "ratio_max_mean": 3.124715488885956,
+      "ratio_max_max": 8.417350388288344
+    },
+    "uncalibrated": {
+      "n_runs": 36,
+      "ratio_mean_sq_mean": 142041.05486286155,
+      "ratio_mean_sq_max": 1182322.9619250023,
+      "ratio_mean_sq_min": 2439.8871599611302,
+      "n_degenerate": 25,
+      "n_below_floor": 0,
+      "ratio_mean_sq_raw_mean": 6.611573504169187e-09,
+      "ratio_mean_sq_raw_min": 1.4802973661668753e-16,
+      "diag_gain_min_abs_min": 0.0
+    }
+  },
+  "duration_seconds": 10175.666,
+  "finished_utc": "2026-08-07T03:39:59Z",
+  "exit_status": "ok"
+}

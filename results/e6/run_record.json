@@ -1,0 +1,76 @@
+{
+  "experiment": "e6_threshold_scaling",
+  "smoke": false,
+  "command": "e6_threshold_scaling.py",
+  "argv": [
+    "e6_threshold_scaling.py"
+  ],
+  "started_utc": "2026-08-07T14:17:14Z",
+  "config": {
+    "ds": [
+      128,
+      256,
+      512,
+      1024
+    ],
+    "s_max": {
+      "128": 5,
+      "256": 7,
+      "512": 9,
+      "1024": 14
+    },
+    "trials": {
+      "128": 200,
+      "256": 200,
+      "512": 100,
+      "1024": 50
+    },
+    "theta": 0.5,
+    "block": 65536,
+    "seed": 46,
+    "chunk": 12,
+    "energy_every": 5,
+    "workers": 4,
+    "threads": 12
+  },
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 170 Stepping 4, GenuineIntel",
+    "cpu_count": 14,
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "git_commit": "33016a6089f8b1f509a02d2d35ae11f6b29d1b65",
+    "env_omp_num_threads": "12",
+    "matplotlib": "3.11.0",
+    "torch": "2.13.0+cpu",
+    "torch_cuda_available": false,
+    "torch_num_threads": 12
+  },
+  "timings_seconds": {
+    "128": 91.4,
+    "256": 130.6,
+    "512": 293.5,
+    "1024": 1275.9
+  },
+  "s95_by_d": {
+    "128": 1,
+    "256": 2,
+    "512": 5,
+    "1024": 8
+  },
+  "fit": {
+    "c": 0.05450917517310258,
+    "r2": 0.9753895362245251,
+    "n_points": 4,
+    "predicted": [
+      1.4379907054662018,
+      2.5164837345658526,
+      4.473748861450405,
+      8.052747950610728
+    ]
+  },
+  "duration_seconds": 0.325,
+  "finished_utc": "2026-08-07T14:17:14Z",
+  "exit_status": "ok"
+}

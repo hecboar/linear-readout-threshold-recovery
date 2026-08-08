@@ -1,0 +1,2332 @@
+{
+  "d": 128,
+  "F": 16384,
+  "s_max": 5,
+  "theta": 0.5,
+  "master_seed": 46000266,
+  "block": 65536,
+  "trials": [
+    {
+      "trial": 0,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.00781266715897053,
+        0.015625320209596186,
+        0.023437959151876964,
+        0.03125058398581287,
+        0.03906319471140389
+      ],
+      "frob_sq_A": 2097196.8713944787
+    },
+    {
+      "trial": 1,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 2,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 3,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 4,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 5,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007810778819464039,
+        0.015621644695203916,
+        0.023432597627219633,
+        0.03124363761551118,
+        0.039054764660078574
+      ],
+      "frob_sq_A": 2096689.974117971
+    },
+    {
+      "trial": 6,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 7,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 8,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 9,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 10,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812330618901235,
+        0.01562483895091689,
+        0.02343752499604697,
+        0.03125038875429147,
+        0.039063430225650383
+      ],
+      "frob_sq_A": 2097106.5321075153
+    },
+    {
+      "trial": 11,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 12,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 13,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 14,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 15,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811558059923132,
+        0.015623238779298212,
+        0.023435042158125242,
+        0.03124696819640422,
+        0.03905901689413514
+      ],
+      "frob_sq_A": 2096899.1498859413
+    },
+    {
+      "trial": 16,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 17,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 18,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 19,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 20,
+      "ok": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "energy": [
+        0.007810712027245871,
+        0.015621374536803005,
+        0.023431987528671403,
+        0.031242551002851063,
+        0.03905306495934199
+      ],
+      "frob_sq_A": 2096672.04471843
+    },
+    {
+      "trial": 21,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 22,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 23,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 24,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 25,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812122605332749,
+        0.015624136814373309,
+        0.023436042627121678,
+        0.031247840043577862,
+        0.03905952906374186
+      ],
+      "frob_sq_A": 2097050.6938904044
+    },
+    {
+      "trial": 26,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 27,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 28,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 29,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 30,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811458701644408,
+        0.015623163578295437,
+        0.023435114629953086,
+        0.03124731185661736,
+        0.039059755258288247
+      ],
+      "frob_sq_A": 2096872.4786010846
+    },
+    {
+      "trial": 31,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 32,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 33,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 34,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 35,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007810409019429903,
+        0.01562073187332367,
+        0.023430968561681302,
+        0.031241119084502795,
+        0.03905118344178816
+      ],
+      "frob_sq_A": 2096590.7066771789
+    },
+    {
+      "trial": 36,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 37,
+      "ok": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 38,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 39,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 40,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811675912360674,
+        0.015623241793730378,
+        0.02343469764410911,
+        0.031246043463496874,
+        0.03905727925189366
+      ],
+      "frob_sq_A": 2096930.7856587535
+    },
+    {
+      "trial": 41,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 42,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 43,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 44,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 45,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811904722501005,
+        0.015624002126289744,
+        0.023436292211366217,
+        0.031248774977730428,
+        0.03906145042538237
+      ],
+      "frob_sq_A": 2096992.2064131107
+    },
+    {
+      "trial": 46,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 47,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 48,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 49,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 50,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812323334909358,
+        0.015624665451108273,
+        0.02343702634859675,
+        0.031249406027374776,
+        0.03906180448744236
+      ],
+      "frob_sq_A": 2097104.5768258343
+    },
+    {
+      "trial": 51,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 52,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 53,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 54,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 55,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811275751412813,
+        0.015622285351332853,
+        0.023433028799760117,
+        0.03124350609669461,
+        0.03905371724213633
+      ],
+      "frob_sq_A": 2096823.3682722412
+    },
+    {
+      "trial": 56,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 57,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 58,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 59,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 60,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812267925187105,
+        0.015624202284342237,
+        0.023435803077465397,
+        0.03124707030455658,
+        0.03905800396561579
+      ],
+      "frob_sq_A": 2097089.7028917745
+    },
+    {
+      "trial": 61,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 62,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 63,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 64,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 65,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812415583058608,
+        0.015625085955533944,
+        0.023438011117426,
+        0.031251191068734786,
+        0.039064625809460296
+      ],
+      "frob_sq_A": 2097129.3394998433
+    },
+    {
+      "trial": 66,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 67,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 68,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 69,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 70,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.00781390270106562,
+        0.015627792877579916,
+        0.023441670529542897,
+        0.031255535656954554,
+        0.039069388259814895
+      ],
+      "frob_sq_A": 2097528.5347001813
+    },
+    {
+      "trial": 71,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 72,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 73,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 74,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 75,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007813103824531807,
+        0.01562606994985949,
+        0.023438898375983046,
+        0.031251589102902474,
+        0.03906414213061778
+      ],
+      "frob_sq_A": 2097314.0879135397
+    },
+    {
+      "trial": 76,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 77,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 78,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 79,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 80,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812107304805926,
+        0.015624415160244438,
+        0.023436923566315545,
+        0.03124963252301923,
+        0.03906254203035551
+      ],
+      "frob_sq_A": 2097046.5866865097
+    },
+    {
+      "trial": 81,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 82,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 83,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 84,
+      "ok": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 85,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.0078115467340348875,
+        0.01562303416821957,
+        0.023434462302554044,
+        0.031245831137038316,
+        0.03905714067167238
+      ],
+      "frob_sq_A": 2096896.1096159657
+    },
+    {
+      "trial": 86,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 87,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 88,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 89,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 90,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.00781106153422235,
+        0.01562221720067854,
+        0.023433466999368574,
+        0.031244810930292445,
+        0.03905624899345016
+      ],
+      "frob_sq_A": 2096765.864783036
+    },
+    {
+      "trial": 91,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 92,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 93,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 94,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 95,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812704015432248,
+        0.015625400757082793,
+        0.02343809022495164,
+        0.031250772419038786,
+        0.03906344733934423
+      ],
+      "frob_sq_A": 2097206.7649755864
+    },
+    {
+      "trial": 96,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 97,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 98,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 99,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 100,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811954701702184,
+        0.015623889965262875,
+        0.02343580579068207,
+        0.031247702177959774,
+        0.039059579127095984
+      ],
+      "frob_sq_A": 2097005.6226027696
+    },
+    {
+      "trial": 101,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 102,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 103,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 104,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 105,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812459963725083,
+        0.015624996667857978,
+        0.023437610112398685,
+        0.031250300297347204,
+        0.03906306722270353
+      ],
+      "frob_sq_A": 2097141.2528442862
+    },
+    {
+      "trial": 106,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 107,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 108,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 109,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 110,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812767791102085,
+        0.015625684532125445,
+        0.023438750223070078,
+        0.031251964863935985,
+        0.03906532845472317
+      ],
+      "frob_sq_A": 2097223.884626601
+    },
+    {
+      "trial": 111,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 112,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 113,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 114,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 115,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812597703561658,
+        0.01562500725745809,
+        0.023437228661689295,
+        0.03124926191625527,
+        0.039061107021156026
+      ],
+      "frob_sq_A": 2097178.2271001264
+    },
+    {
+      "trial": 116,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 117,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 118,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 119,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 120,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812249829888674,
+        0.01562452083606814,
+        0.0234368130185384,
+        0.03124912637729945,
+        0.0390614609123513
+      ],
+      "frob_sq_A": 2097084.8454720885
+    },
+    {
+      "trial": 121,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 122,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 123,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 124,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 125,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812935017487824,
+        0.015625613489629795,
+        0.02343803541642591,
+        0.031250200797876174,
+        0.03906210963398059
+      ],
+      "frob_sq_A": 2097268.774117712
+    },
+    {
+      "trial": 126,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 127,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 128,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 129,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 130,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.00781135523067189,
+        0.015622831744377601,
+        0.023434429541117137,
+        0.031246148620890486,
+        0.03905798898369767
+      ],
+      "frob_sq_A": 2096844.703323394
+    },
+    {
+      "trial": 131,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 132,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 133,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 134,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 135,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811365902519216,
+        0.015622813280109407,
+        0.023434342132770573,
+        0.031245952460502713,
+        0.039057644263305824
+      ],
+      "frob_sq_A": 2096847.5680255974
+    },
+    {
+      "trial": 136,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 137,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 138,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 139,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 140,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811029511910379,
+        0.015622153026702015,
+        0.023433370544374908,
+        0.031244682064929065,
+        0.03905608758836447
+      ],
+      "frob_sq_A": 2096757.26885912
+    },
+    {
+      "trial": 141,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 142,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 143,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 144,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 145,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.00781292553346535,
+        0.015625725586744976,
+        0.02343840015983888,
+        0.03125094925274706,
+        0.039063372865469514
+      ],
+      "frob_sq_A": 2097266.2282698145
+    },
+    {
+      "trial": 146,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 147,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 148,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 149,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 150,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.00781281173728722,
+        0.015625629988351354,
+        0.023438454753192402,
+        0.03125128603181036,
+        0.03906412382420524
+      ],
+      "frob_sq_A": 2097235.681340847
+    },
+    {
+      "trial": 151,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 152,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 153,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 154,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 155,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811166464087296,
+        0.015622216668775703,
+        0.023433150614065222,
+        0.031243968299955852,
+        0.03905466972644759
+      ],
+      "frob_sq_A": 2096794.031679181
+    },
+    {
+      "trial": 156,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 157,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 158,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 159,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 160,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812775484954312,
+        0.015625615406361096,
+        0.02343851976422035,
+        0.03125148855853208,
+        0.039064521789296286
+      ],
+      "frob_sq_A": 2097225.949929332
+    },
+    {
+      "trial": 161,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 162,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 163,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 164,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 165,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007813009804913451,
+        0.01562611259548582,
+        0.02343930837171711,
+        0.03125259713360732,
+        0.03906597888115645
+      ],
+      "frob_sq_A": 2097288.8497144133
+    },
+    {
+      "trial": 166,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 167,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 168,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 169,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 170,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812664923951981,
+        0.015625425289320958,
+        0.023438281096106933,
+        0.031251232344309904,
+        0.03906427903392987
+      ],
+      "frob_sq_A": 2097196.2714362554
+    },
+    {
+      "trial": 171,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 172,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 173,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 174,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 175,
+      "ok": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "energy": [
+        0.00781324719350918,
+        0.01562662885153279,
+        0.023440144974070824,
+        0.03125379556112328,
+        0.039067580612690174
+      ],
+      "frob_sq_A": 2097352.573230357
+    },
+    {
+      "trial": 176,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 177,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 178,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 179,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 180,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811625125839864,
+        0.015623223247029997,
+        0.023434794363570398,
+        0.03124633847546107,
+        0.039057855582702014
+      ],
+      "frob_sq_A": 2096917.1527558812
+    },
+    {
+      "trial": 181,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 182,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 183,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 184,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 185,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007811838462781552,
+        0.01562362174469106,
+        0.02343534984572852,
+        0.031247022765893934,
+        0.0390586405051873
+      ],
+      "frob_sq_A": 2096974.419955105
+    },
+    {
+      "trial": 186,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 187,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 188,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 189,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 190,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007810504513973677,
+        0.015621004052141774,
+        0.02343149861450429,
+        0.031241988201061225,
+        0.03905247281181258
+      ],
+      "frob_sq_A": 2096616.3407985824
+    },
+    {
+      "trial": 191,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 192,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 193,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 194,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 195,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "energy": [
+        0.007812339512740331,
+        0.0156245623341309,
+        0.02343666846417171,
+        0.03124865790286276,
+        0.039060530650204046
+      ],
+      "frob_sq_A": 2097108.9195292685
+    },
+    {
+      "trial": 196,
+      "ok": [
+        true,
+        false,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 197,
+      "ok": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 198,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "trial": 199,
+      "ok": [
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    }
+  ],
+  "elapsed_seconds": 91.4,
+  "elapsed_seconds_provenance": "measured during the original run of this width; recovered from results/logs/e6.log after the resumed run reported 0.0s (the elapsed-time persistence fix postdates that run). Trial data is unchanged."
+}
