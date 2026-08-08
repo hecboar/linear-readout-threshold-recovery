@@ -1,0 +1,12 @@
+{
+  "ds": [16, 32, 64],
+  "ratios": [2, 4, 8, 16],
+  "steps": 20000,
+  "lr": 0.01,
+  "record_every": 200,
+  "seeds_by_variant": {"free": 5, "tied": 3, "softmax": 3, "uncalibrated": 3},
+  "workers": 12,
+  "smoke": {"ds": [16], "ratios": [2, 4], "steps": 300, "record_every": 100,
+            "seeds_by_variant": {"free": 1, "tied": 1, "softmax": 1, "uncalibrated": 1},
+            "workers": 4}
+}

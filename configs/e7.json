@@ -1,0 +1,33 @@
+{
+  "widths": [50, 100, 200, 400],
+  "overcompleteness": 2,
+  "tasks": ["relu"],
+  "losses": ["L2", "L4"],
+  "train_sparsities": [0.01, 0.02],
+  "n_seeds": 20,
+  "steps": 50000,
+  "batch": 2048,
+  "lr": 0.001,
+  "theta": 0.5,
+  "eval_s_max": {"50": 10, "100": 14, "200": 20, "400": 28},
+  "n_fit": 8192,
+  "probe_n_train": 8192,
+  "probe_n_test": 4096,
+  "native_n_train": 8192,
+  "native_n_test": 4096,
+  "smoke": {
+    "widths": [16, 24],
+    "tasks": ["relu"],
+    "losses": ["L2"],
+    "train_sparsities": [0.05],
+    "n_seeds": 2,
+    "steps": 200,
+    "batch": 128,
+    "eval_s_max": {"16": 2, "24": 3},
+    "n_fit": 256,
+    "probe_n_train": 512,
+    "probe_n_test": 256,
+    "native_n_train": 512,
+    "native_n_test": 256
+  }
+}

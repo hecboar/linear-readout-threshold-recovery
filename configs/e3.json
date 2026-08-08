@@ -1,0 +1,9 @@
+{
+  "ds": [32, 64, 128],
+  "ratio": 8,
+  "sparsities": [1, 2, 4, 8, 16, 32, 64, 128],
+  "trials": 10,
+  "mc_trials": 20000,
+  "seed": 44,
+  "smoke": {"ds": [32], "sparsities": [1, 2, 4], "trials": 2, "mc_trials": 2000}
+}
