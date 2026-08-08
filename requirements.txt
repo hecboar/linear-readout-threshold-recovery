@@ -1,2 +1,19 @@
-numpy>=1.24
-matplotlib>=3.7
+# Exact versions used for the results reported in the Neurocomputing manuscript.
+# Everything runs on CPU; no CUDA build is required.
+numpy==2.4.4
+scipy==1.17.1
+matplotlib==3.11.0
+torch==2.13.0
+pytest==8.3.5
+
+# Lower bounds that are also known to work, if exact pinning is inconvenient:
+#   numpy>=1.26  scipy>=1.11  matplotlib>=3.8  torch>=2.2  pytest>=7.4
+# Install the CPU build of PyTorch with:
+#   python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+#
+# E7 (the accelerator campaign, see SPARK_CAMPAIGN.md) is the one exception and needs a CUDA
+# build of PyTorch matching the host: on DGX Spark that is aarch64 + GB10 (sm_121), for which
+# the default PyPI wheel is wrong in both respects. Install the vendor build for that platform
+# and then run `python scripts/check_env_gpu.py`, which verifies the architecture is covered
+# and that GPU training reproduces the CPU reference in float64 before anything is launched.
+# Nothing reported in the manuscript depends on this; E1-E6 are CPU-only.

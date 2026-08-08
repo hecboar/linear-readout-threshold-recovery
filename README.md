@@ -1,77 +1,257 @@
-# Linear Readout and Threshold Recovery in Overcomplete Neural Representations
+# Linear-Readout Reconstruction Floors and Support Recovery in Computation in Superposition
 
-Companion code for the manuscript:
+Reference implementation, experimental campaigns and manuscript sources for:
 
-> **Interface Limits for Overcomplete Neural Representations: Linear Readout, Threshold Recovery, and Computation in Superposition**  
-> H. Borobia, E. Segu\'i-Mas, G. Tormo-Carb\'o.
+> **Linear-Readout Reconstruction Floors and Support Recovery in Computation in Superposition**
+> H. Borobia, E. Seguí-Mas, G. Tormo-Carbó.
+> Preprint: [arXiv:2605.01192](https://arxiv.org/abs/2605.01192).
 
-This repository reproduces the **synthetic numerical illustrations** used in the manuscript.
-The experiments illustrate three phenomena studied theoretically in the paper:
+The repository contains the **Interface Diagnostic**, a computable procedure that takes an
+overcomplete code — hand-built, gradient-optimised, or read off a trained network — and
+returns how close its gain-normalised linear readout sits to a Welch-type floor, the sparsity
+range over which a threshold decoder recovers Boolean states exactly, and a witness separating
+*analog reconstruction* from *support recovery*.
 
-1. The Welch-type floor for unit-diagonal linear readouts.
-2. Threshold recovery at quadratic feature load \(F=d^2\).
-3. The linear-readout energy floor \(\Omega(s/d)\) on Bernoulli sparse states.
+**Everything in the manuscript runs on CPU.** Campaigns E1-E6, which are what the paper
+reports, need no accelerator and hide any that is present. E7 is the one exception and is
+opt-in: it is the scaled trained-network campaign described in `SPARK_CAMPAIGN.md`.
 
-These experiments are sanity checks for the mathematical toy model. They are **not** empirical validation on trained neural networks, do **not** construct a recursive reset module, and do **not** estimate sharp finite-dimensional constants.
+---
 
 ## Quickstart
 
 ```bash
-git clone https://github.com/hectorborobia/linear-readout-threshold-recovery.git
+git clone https://github.com/hecboar/linear-readout-threshold-recovery.git
 cd linear-readout-threshold-recovery
+
+python -m venv .venv
+source .venv/bin/activate           # Windows: .venv\Scripts\activate
 python -m pip install -r requirements.txt
-python synthetic_illustrations.py --out_dir figures --data_out data/synthetic_illustrations_data.npz
+
+python -m pytest -q tests/          # 104 tests, ~15 s
 ```
 
-The command regenerates:
+Run one campaign end to end in seconds to check the installation:
 
-```text
-figures/exp1_welch_floor.png
-figures/exp2_threshold_recovery.png
-figures/exp3_linear_energy.png
-figures/combined_capacity_diagram.png
-data/synthetic_illustrations_data.npz
+```bash
+python experiments/e2_threshold_recovery.py --smoke
 ```
+
+Reproduce everything — experiments, figures, tables, generated numbers and the PDF:
+
+```bash
+bash scripts/run_all.sh             # Windows: powershell -File scripts\run_all.ps1
+```
+
+---
+
+## The method in three lines
+
+```python
+import sys; sys.path.insert(0, "src")
+import numpy as np
+from lrtr.codes import random_unit_code
+from lrtr.diagnostic import (fixed_code_separation_profile, interface_floor_diagnostic,
+                             random_code_scaling_experiment)
+
+Phi = random_unit_code(d=128, F=2048, rng=np.random.default_rng(0))
+
+# Algorithm 1. `statistics="mean_sq"` runs in O(F d^2) without forming the F x F interface;
+# the default "full" also returns the maximum statistic, which costs O(F^2 d).
+print(interface_floor_diagnostic(Phi, statistics="mean_sq")["ratio_mean_sq"])  # >= 1, Thm 4.1
+
+# Algorithm 2 -- the diagnostic: this code, held fixed, with random supports.
+print(fixed_code_separation_profile(Phi, sparsities=[1, 2, 3], trials=200,
+                                    seed=0)["separation_witness"])
+
+# Algorithm 3 -- NOT a diagnosis of any code: a fresh random code per trial, for scaling.
+print(random_code_scaling_experiment(d=128, F=128**2, sparsities=[1, 2, 3],
+                                     trials=50, master_seed=0)["s95"])
+```
+
+The distinction between the last two matters. `fixed_code_separation_profile` is what you run on
+a code you have — a designed one, or the effective code of a trained network — and it is the
+only one that says anything about that code. `random_code_scaling_experiment` redraws the code
+every trial, so it characterises the `(d, F)` ensemble; it is what E2 and E6 use to study how
+the separation scales with width, and it streams the code block by block so it reaches
+`F = 2^20`. Table 3 of the manuscript maps every equation to the function that implements it.
+
+---
+
+## Reproducing each experiment
+
+Each command writes `results/<id>/run_record.json` with the exact command, configuration,
+seeds, environment, wall-clock duration and exit status, plus raw results under
+`results/<id>/raw/`. Append `--smoke` to any of them for a fast reduced run.
+
+| Campaign | Question | Command | Measured wall clock |
+|---|---|---|---|
+| E1 | Do calibrated interfaces respect the floor, and how close do random codes get? | `python experiments/e1_welch_floor.py` | see `results/e1/run_record.json` |
+| E2 | Threshold recovery and the separation at `F = d²` | `python experiments/e2_threshold_recovery.py` | see `results/e2/run_record.json` |
+| E3 | Average linear-readout energy under both sparse-state models | `python experiments/e3_linear_energy.py` | see `results/e3/run_record.json` |
+| E4 | Do *learned* codes attain the floor? | `python experiments/e4_optimized_codes.py` | see `results/e4/run_record.json` |
+| E5 | Does the separation appear inside a *trained* network? | `python experiments/e5_trained_toy.py` | see `results/e5/run_record.json` |
+| E6 | How does the recovery threshold scale, up to `d = 1024`? | `python experiments/e6_threshold_scaling.py` | see `results/e6/run_record.json` |
+| E7 | The same question as E5, across widths, tasks, seeds and distributions | `bash scripts/run_spark.sh` | accelerator campaign, see `SPARK_CAMPAIGN.md` |
+
+Measured durations are reported in Table 8 of the manuscript and are read from the run records
+— they are not estimates. E4 is by far the most expensive campaign (168 optimisation runs of
+20 000 Adam steps each); E6 is the most memory-sensitive.
+
+Useful flags, common to every campaign:
+
+```
+--config PATH     alternative JSON configuration (defaults to configs/<id>.json)
+--out-dir PATH    alternative output directory
+--threads N       BLAS/torch threads (default: cpu_count - 2)
+--workers N       worker processes for trial-level parallelism
+--smoke           reduced configuration, runs end to end in seconds
+--device DEV      torch device for campaigns that train (`cpu` default, `cuda` for E7)
+--resume          reuse per-cell checkpoints already in the output directory
+```
+
+E1-E6 are CPU-only by construction: they hide the GPU from the process so that a stray
+accelerator cannot make a published run irreproducible on a CPU-only machine. Passing
+`--device cuda` opts back in, and only E7 does.
+
+### E7 and the accelerator
+
+E1-E6 run on a laptop. E7 does not: it trains 720 networks across four widths, two tasks, two
+losses and two training sparsities, and it exists because the single-width, five-seed evidence
+of E5 is single-width and five-seed. Seeds within a cell are trained as one
+batched computation -- at these widths a single model leaves an accelerator idle -- and
+`tests/test_batched_training.py` asserts in float64 that this reproduces individually-trained
+models exactly, so batching is a scheduling decision and not a modelling one.
+
+Read `SPARK_CAMPAIGN.md` before starting. Run `python scripts/check_env_gpu.py` first: it
+verifies that the torch build matches the card's architecture and then retrains the same model
+on CPU and GPU in float64 and compares the weights, because an accelerator that runs but
+returns different numbers is the failure mode that would otherwise go unnoticed.
+
+E7 persists every trained model to `results/e7/weights/*.npz`, so any of its numbers can be
+recomputed without retraining. E5 now does the same for future runs; the `results/e5/` already
+in the repository predates that and has no weights, and re-running it elsewhere is not advised
+— see the determinism warning below.
+
+### Long runs and resuming
+
+E6 writes its results per width and per chunk of trials. Re-running the command after an
+interruption skips the trials already present and continues; completed results are never
+overwritten. E7 checkpoints per cell and continues with `--resume`; because each seed keeps its
+own generator, raising the seed count later leaves the already-trained seeds bit-identical. The
+other campaigns are short enough to simply re-run.
+
+### Tables, figures and the numbers in the paper
+
+```bash
+python scripts/make_figures.py            # -> paper/figures/*.pdf
+python scripts/make_tables.py             # -> paper/tables/*.tex
+python scripts/make_numbers.py            # -> paper/generated/numbers.tex
+python scripts/check_manuscript_numbers.py
+```
+
+No number in the manuscript is typed by hand. Every measured quantity is a LaTeX macro emitted
+from the raw result files; `check_manuscript_numbers.py` regenerates them, compares against
+what is on disk, checks that the manuscript uses only defined macros and that no macro is left
+unused, and exits non-zero on any mismatch.
+
+### Building the manuscript
+
+```bash
+cd paper
+latexmk -pdf main.tex
+```
+
+Requires a LaTeX distribution with the Elsevier `elsarticle` class (TeX Live, MiKTeX).
+
+---
 
 ## Repository layout
 
 ```text
-linear-readout-threshold-recovery/
-├── README.md
-├── LICENSE
-├── CITATION.cff
-├── requirements.txt
-├── synthetic_illustrations.py
-├── figures/
-│   ├── exp1_welch_floor.png
-│   ├── exp2_threshold_recovery.png
-│   ├── exp3_linear_energy.png
-│   └── combined_capacity_diagram.png
-└── data/
-    └── synthetic_illustrations_data.npz
+src/lrtr/               the method
+  codes.py              codes, Welch floors, harmonic tight frames, coherence
+  interface.py          calibration, cross-talk statistics, closed-form linear energies
+  threshold.py          threshold decoder; dense, streaming and fixed-code recovery trials
+  diagnostic.py         Algorithms 1-3 (fixed-code diagnostic vs random-code ensemble)
+  optimize.py           E4: gradient-optimised codes
+  toymodel.py           E5/E7: compressed-computation toy model, batched training, diagnosis
+  probes.py             E7: cross-validated affine probes and native-distribution evaluation
+  stats.py              Wilson intervals, Mann-Whitney, Cliff's delta, scaling fit
+  runlog.py             run records and environment capture
+experiments/            one script per campaign (E1-E6 CPU-only; E7 opt-in accelerator)
+configs/                one JSON per campaign, with a `smoke` override block
+results/                raw results, run records and logs (committed)
+scripts/                figures, tables, generated numbers, verification, run_all
+tests/                  104 tests, including numerical verification of the theorems
+paper/   manuscript sources, figures, tables, cover letter, highlights
+superseded-submission/
+                        the earlier, rejected submission, kept unmodified as a record
+synthetic_illustrations.py, figures/, data/
+                        the illustration script and outputs of that earlier submission
 ```
+
+---
 
 ## Reproducibility
 
-All experiments use `numpy.random.default_rng` with fixed seeds.
-The figures should be numerically reproducible. The script uses a light Monte Carlo configuration intended for fast reproducibility checks; increasing the trial counts gives smoother curves. Minor byte-level differences in PNG files can occur across Matplotlib versions, fonts, or rendering backends.
+**Versions.** Pinned in `requirements.txt`; the exact versions used for the reported results
+are Python 3.12.10, NumPy 2.4.4, SciPy 1.17.1, Matplotlib 3.11.0, PyTorch 2.13.0 (CPU build).
+Each run record stores the versions actually used.
 
-| Experiment | Seed | Description |
-|---|---:|---|
-| 1 | 42 | Welch floor for random unit-norm codes |
-| 2 | 43 | Threshold recovery at \(F=d^2\) |
-| 3 | 44 | Average linear-readout energy |
+**Seeds.** Every campaign takes a master seed from its configuration file and derives
+per-configuration and per-trial seeds deterministically (`numpy.random.SeedSequence` with
+`spawn_key`, and `torch.manual_seed` for the optimisation and training campaigns). E6's
+streaming code generator is a pure function of `(master, trial, block)`, so any single trial
+can be reproduced without replaying the others.
 
-## Notes on the experiments
+| Campaign | Master seed |
+|---|---|
+| E1 | 42 |
+| E2 | 43 |
+| E3 | 44 |
+| E4 | per-variant seeds `0 … n-1` |
+| E5 | per-seed `0 … 4`, evaluation seeds offset by 10000 |
+| E6 | 46 |
 
-- **Experiment 1** samples random unit-norm codes and compares the empirical average squared off-diagonal cross-talk with the Welch floor \((F-d)/(d(F-1))\).
-- **Experiment 2** estimates exact threshold-recovery probability for random supports at quadratic load \(F=d^2\). The dotted vertical lines show the heuristic reference scale \(d/(16\log d)\).
-- **Experiment 3** computes the average per-coordinate squared error for Bernoulli sparse states and compares it with the reference scale \(E=s/d\).
+**Data.** None required. All data are synthetic and generated from the recorded seeds.
+
+**Compute.** CPU only. Thread limits are exported before NumPy is imported (setting them
+afterwards is silently ignored by the BLAS runtime), and worker processes inherit an explicit
+per-worker limit. By default two cores are reserved for the system.
+
+**Numerical precision.** `float64` for the tests and for E1–E3; `float32` for E4, E5 and the
+streaming code generation in E6, where the matrices are large and the reported ratios are
+resolved well above the rounding error. Cross-checks between the two are in
+`tests/test_threshold.py`.
+
+**Determinism caveat.** Results are reproducible up to BLAS reduction order, which can differ
+across machines and thread counts. The tests use tolerances rather than bit equality, and
+figures may differ in the last displayed digit on a different platform.
+
+---
+
+## Relationship to the earlier submission
+
+An earlier version of this work has been superseded. That
+submission is preserved unmodified in `superseded-submission/`, together with
+the illustration script (`synthetic_illustrations.py`) and figures it shipped.
+
+The present version is not an edit of it. The theory is unchanged and correct, but the
+contribution is now stated as a method, the experiments were rewritten from scratch, and every
+number in the manuscript is generated from saved results. The audit that motivated the rewrite
+— including the specific numerical claims in the earlier appendix that its own published code
+does not reproduce — is documented in `PROJECT_REVISION_REPORT.md`.
+
+Working documents: `PROJECT_PLAN.md`, `PROJECT_PROGRESS.md`,
+`PROJECT_DECISIONS.md`, `CHANGELOG_PROJECT.md`.
+
+---
 
 ## Citation
 
-If you use this code, please cite the companion paper. A machine-readable citation template is provided in `CITATION.cff`.
+See `CITATION.cff`. Please cite the paper rather than the repository alone.
 
 ## License
 
-Code is released under the MIT License. See `LICENSE`.
+MIT. See `LICENSE`.

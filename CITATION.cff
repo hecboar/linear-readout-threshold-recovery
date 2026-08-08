@@ -1,19 +1,35 @@
 cff-version: 1.2.0
 message: "If you use this code, please cite the companion paper."
-title: "Synthetic numerical illustrations for linear-readout floors and threshold recovery"
+title: "Interface Diagnostic: reference implementation for linear-readout floors and threshold recovery"
+abstract: >-
+  Reference implementation of the Interface Diagnostic and of the six CPU-only experimental
+  campaigns reported in the companion paper, together with the manuscript sources, raw
+  results and run records.
+type: software
 authors:
   - family-names: Borobia
     given-names: Hector
+    affiliation: "VRAIN, Universitat Politecnica de Valencia"
   - family-names: Segui-Mas
     given-names: Elies
+    affiliation: "Universitat Politecnica de Valencia"
   - family-names: Tormo-Carbo
     given-names: Guillermina
+    affiliation: "Universitat Politecnica de Valencia"
+version: "1.0.0"
 year: 2026
 license: MIT
-repository-code: "https://github.com/hectorborobia/linear-readout-threshold-recovery"
+repository-code: "https://github.com/hecboar/linear-readout-threshold-recovery"
+keywords:
+  - overcomplete representations
+  - computation in superposition
+  - linear readout
+  - Welch bound
+  - sparse recovery
+  - neural network capacity
 preferred-citation:
   type: article
-  title: "Interface Limits for Overcomplete Neural Representations: Linear Readout, Threshold Recovery, and Computation in Superposition"
+  title: "Linear-Readout Reconstruction Floors and Support Recovery in Computation in Superposition"
   authors:
     - family-names: Borobia
       given-names: Hector
@@ -22,3 +38,5 @@ preferred-citation:
     - family-names: Tormo-Carbo
       given-names: Guillermina
   year: 2026
+  url: "https://arxiv.org/abs/2605.01192"
+  notes: "Preprint arXiv:2605.01192; under review."
