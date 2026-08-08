@@ -1,0 +1,50 @@
+# Baseline environment for the Phase-0 reproducibility gate.
+#
+# This records the interpreter that produced the E1-E6 results currently reported in the
+# manuscript. It is a description of what was used, not a specification of what is required:
+# the lower bounds that are also known to work are in requirements.txt, and the accelerator
+# campaign (E7) deliberately needs a different torch build (see SPARK_CAMPAIGN.md).
+
+name: lrtr-baseline
+description: CPU-only environment for campaigns E1-E6.
+
+interpreter:
+  python: "3.12.10"
+  implementation: "CPython"
+
+platform:
+  system: "Windows"
+  release: "11"
+  machine: "AMD64"
+  processor: "Intel64 Family 6 Model 170 Stepping 4, GenuineIntel"
+  cpu_count: 14
+
+packages:
+  numpy: "2.4.4"
+  scipy: "1.17.1"
+  matplotlib: "3.11.0"
+  torch: "2.13.0+cpu"
+  pytest: "8.3.5"
+
+typesetting:
+  pdflatex: "MiKTeX-pdfTeX 4.23 (MiKTeX 25.12)"
+  documentclass: elsarticle
+
+determinism:
+  # Results are deterministic given the seeds for a fixed BLAS configuration. Reduction order
+  # in threaded BLAS is not guaranteed across machines or thread counts, so bit-identical
+  # reproduction on different hardware is not claimed; the reported tolerances are.
+  blas_threads_env:
+    - OMP_NUM_THREADS
+    - MKL_NUM_THREADS
+    - OPENBLAS_NUM_THREADS
+    - NUMEXPR_NUM_THREADS
+  gpu_hidden_for_cpu_campaigns: true   # CUDA_VISIBLE_DEVICES="" unless --device says otherwise
+
+install:
+  cpu: |
+    python -m venv .venv
+    python -m pip install -r requirements.txt
+  accelerator: |
+    # E7 only. Install the vendor CUDA build for the host architecture, then:
+    python scripts/check_env_gpu.py

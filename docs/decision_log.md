@@ -1,0 +1,169 @@
+# Decision log
+
+Append-only. Each entry records a decision, when it was taken, what evidence was available at
+the time, and what it commits us to. Entries are never edited after the fact; corrections are
+added as new entries that reference the old one.
+
+The point of this file is to make the order of events auditable. A referee should be able to
+verify that the analysis plan predates the results it was applied to.
+
+---
+
+## D1 — 2026-08-08 — Pre-registration: the affine-parity outcome is a result, not a failure
+
+**Status:** binding
+**Evidence available:** E1–E6 as reported in the current manuscript. No new experiment from the
+scaled campaign (J1–J8) has been run. No affine probe stronger than the three fixed readouts of
+E5 has ever been fitted. No width beyond `d=50` has been trained.
+
+**Commitment, recorded verbatim in the form agreed with the principal investigator:**
+
+> If a properly trained, validation-selected affine decoder matches the network, we will report
+> that result as a central finding rather than searching for a different metric that restores a
+> nonlinear advantage.
+
+**What this rules out.** Once the locked test sets of J1 are opened we will not: change the
+primary estimand; change the sparsity grid; introduce a new summary statistic chosen because it
+favours the network; restrict the reported readout family; or reclassify the affine oracle as
+"not a fair baseline" after seeing that it wins.
+
+**Pivot text authorised in advance**, to be used if the outcome is affine parity:
+
+> The apparent separation between linear and nonlinear decoding disappears once analog
+> reconstruction is distinguished from optimal affine support recovery.
+
+and, if the robust affine frontier (G2) is informative enough to carry it:
+
+> Selected linear readouts substantially underestimate the support-recovery capacity of the
+> representation; the relevant hierarchy is analog reconstruction → affine support recovery →
+> genuinely nonlinear recovery.
+
+**Symmetry clause.** If instead the network robustly beats the affine optimum, that is the
+stronger story and is reported as such. Both outcomes are publishable. The one thing that is
+not acceptable is designing the analysis so that the network is guaranteed to win.
+
+---
+
+## D2 — 2026-08-08 — G2 is reformulated as a hard-margin programme
+
+**Status:** binding
+**Evidence:** the ball-constrained formulation `γ = ½ max_{‖w‖₂≤1}[a_i + L_{s−1} − U_s]` was
+found to be degenerate before any implementation was built. The gap is positively homogeneous
+of degree one and `w = 0` is feasible, so the optimum over the ball equals
+`max(0, optimum over the sphere)` and can never be negative — the certificate of affine
+insufficiency it was supposed to provide is unreachable. Confirmed numerically: on
+non-separable codes the optimiser drives `w → 0` and returns ≈ 0.
+
+**Decision.** Adopt `minimise ½‖w‖₂²` subject to a worst-case gap of at least 1. Feasible ⟺
+affinely separable over every support of size `s`; the robust margin is `1/‖w*‖₂`;
+infeasibility yields a Farkas certificate.
+
+**Nomenclature, fixed here to avoid a signed scalar that hides the distinction:**
+
+| Case | Reported quantity |
+|---|---|
+| Feasible | **robust affine margin** `γ_i*(s) = 1/‖w*‖₂ > 0` |
+| Infeasible | **affine infeasibility certificate**, with the witnessing support pair |
+
+We do not force a single signed scalar when the convex formulation distinguishes the two cases
+better.
+
+**Independent verification required before any use.** The certificate must be a mathematical
+artefact checkable outside the solver that produced it: residuals recomputed in a fresh
+process, and the witnessing supports exhibited explicitly. "The solver said infeasible" is not
+evidence.
+
+---
+
+## D3 — 2026-08-08 — G2 must stand on its own, independently of nonlinearity
+
+**Status:** design constraint
+
+The robust affine frontier is **not** to be built as an instrument for proving that
+nonlinearity is necessary. Its value is that it characterises the affine limit of a code,
+whatever the empirical outcome turns out to be. If D1's affine-parity outcome materialises, G2
+is the object that explains *why*, and it remains the paper's main methodological contribution.
+
+Consequence for implementation: `robust_affine_frontier` takes a code and returns the frontier.
+It has no argument, no branch and no output that refers to a trained network.
+
+---
+
+## D4 — 2026-08-08 — Theory scope is closed at G1 + G2 + G4
+
+**Status:** binding until the core experiments are complete
+
+In scope: the code-specific analog optimum and its leverage decomposition (G1); the robust
+affine frontier (G2); the distribution-aware extension (G4).
+
+Out of scope, and not to be reopened while the critical path is open: sign-rank lower bounds; a
+sharp `s = Θ(d/log F)` converse; a new family of Welch-type bounds; any further frame-theory
+programme.
+
+**Acceptability clause.** If the novelty audit concludes that G1 is close to known results on
+canonical duals, that G2 is a new formulation and algorithm rather than a deep theorem, and
+that G4 is a known identity newly integrated, that is an acceptable outcome. The framework plus
+the experimental evidence about trained systems is the contribution. We will not convert a
+publishable systems paper into an open-ended search for a larger theorem.
+
+---
+
+## D5 — 2026-08-08 — Venue decision is deferred to a gate
+
+**Status:** binding
+
+Neurocomputing is the primary target and the work is designed to clear its standard. The final
+choice among Neurocomputing / TMLR / Neural Networks is deferred until G1 and G2 are closed and
+audited, the multi-width campaign has run, the optimal affine baseline is in, Boolean vs native
+is characterised, and the second-system pilot has resolved.
+
+No irreversible journal-specific framing before that gate. In particular the title, the abstract
+and the emphasis of the contribution stay provisional.
+
+---
+
+## D6 — 2026-08-08 — The invented second task is withdrawn
+
+**Status:** executed
+
+The `square` / `abs` elementwise targets added to the toy model on 2026-08-08 are removed. They
+were an invented protocol with no primary-source grounding, and a second task chosen by us to
+be convenient is not independent evidence of generality.
+
+Replacement: a Universal-AND pilot from primary source under a hard one-working-day budget,
+with automatic fallback to a second *architecture* on the current task (two hidden layers) if
+any abandonment criterion triggers. Abandonment criteria, agreed in advance: the original result
+does not reproduce; the code needs substantial reconstruction; it is unclear which
+representation should be diagnosed; integrating the diagnostic would require altering the
+original protocol; or the work would consume several days before yielding interpretable
+information.
+
+If the fallback is used, the manuscript states plainly that it demonstrates architectural
+generality, not task generality.
+
+---
+
+## D7 — 2026-08-08 — E6 is demoted to a scalability stress test
+
+**Status:** executed in the plan, pending manuscript edit
+
+Four widths cannot discriminate `d/log d` from the alternatives — the competing fits were
+already reported and do not separate. E6 is retained as an algorithmic scalability
+demonstration and consistency check. The scaling-law narrative and the `d/(16 ln d)` reference
+curve are withdrawn from the results, the latter because its constant is inherited and not
+derived anywhere in this work.
+
+---
+
+## D8 — 2026-08-08 — Provenance is mandatory for every run from now on
+
+**Status:** binding
+
+No experiment is run from an unidentified working tree. Every run manifest records the git
+commit and the dirty status of the tree; if the tree is dirty this is recorded explicitly
+alongside the list of modified files, rather than silently omitted.
+
+Repository handling until further notice: local commits are made so that the state is clean and
+reproducible; there is **no** public push, **no** definitive tag and **no** release or
+visibility change without explicit approval. The immutable tag cited by the paper is created
+only after the Phase-0 review.
