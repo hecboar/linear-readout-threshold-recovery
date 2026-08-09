@@ -1,0 +1,19 @@
+{
+  "shapes": [[50, 100], [100, 200], [200, 400], [400, 800]],
+  "seed_batches": [1, 5, 10, 20],
+  "steps": 5000,
+  "batch": 2048,
+  "lr": 0.001,
+  "frontier_shapes": [[50, 100], [100, 200], [200, 400]],
+  "frontier_features": 5,
+  "frontier_sparsities": [1, 2, 3, 4],
+  "smoke": {
+    "shapes": [[16, 32], [24, 48]],
+    "seed_batches": [1, 4],
+    "steps": 60,
+    "batch": 64,
+    "frontier_shapes": [[16, 32]],
+    "frontier_features": 3,
+    "frontier_sparsities": [1, 2]
+  }
+}
