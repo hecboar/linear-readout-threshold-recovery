@@ -289,3 +289,120 @@ def test_uniform_support_moment_reproduces_the_boolean_closed_form():
     closed = ((m["diagonal"] - m["off_diagonal"]) * float(np.sum(A * A))
               + m["off_diagonal"] * float(A.sum(axis=1) @ A.sum(axis=1))) / F
     assert distribution_weighted_error(A, C) == pytest.approx(closed, rel=1e-9)
+
+
+# =====================================================================================
+# G2 -- the compact robust-counterpart route must reach the same feasible set
+# =====================================================================================
+
+@pytest.mark.parametrize("F,s", [(8, 1), (8, 2), (9, 2), (10, 2), (10, 3), (12, 2), (12, 3)])
+def test_compact_reformulation_agrees_with_constraint_generation(F, s):
+    """Bertsimas-Sim lifting vs. our separation oracle: verdicts must match exactly.
+
+    This is the check that the oracle is not missing constraints. The compact route derives its
+    constraints from LP duality rather than from a sort, so the two share no code path.
+    """
+    from lrtr.affine_frontier import robust_affine_margin_compact
+    for seed in range(3):
+        Phi = _code(4, F, 5150 + 13 * seed + F)
+        for i in range(min(F, 4)):
+            a = robust_affine_margin(Phi, i, s)
+            b = robust_affine_margin_compact(Phi, i, s)
+            assert b["status"] != "solver_failure", b
+            assert a["status"] == b["status"], f"F={F} s={s} i={i}: {a['status']} vs {b['status']}"
+            if a["status"] == "separable":
+                # The compact route returns a feasible, not minimum-norm, w: it lower-bounds.
+                assert b["margin"] <= a["margin"] * (1 + 1e-6)
+
+
+@pytest.mark.parametrize("F,s", [(9, 2), (11, 3)])
+def test_compact_solution_also_separates_every_support(F, s):
+    from lrtr.affine_frontier import robust_affine_margin_compact
+    theta = 0.5
+    for seed in range(3):
+        Phi = _code(4, F, 606 + seed)
+        for i in range(F):
+            rec = robust_affine_margin_compact(Phi, i, s, theta=theta)
+            if rec["status"] != "separable":
+                continue
+            w, c = np.array(rec["w"]), rec["bias"]
+            a = w @ Phi
+            for S in itertools.combinations(range(F), s):
+                assert ((c + a[list(S)].sum()) >= theta) == (i in S)
+
+
+# =====================================================================================
+# G2 -- the collision radius: one LP per feature decides every sparsity
+# =====================================================================================
+
+def _brute_hulls_disjoint(Phi, i, s):
+    """Ground truth: strict separation of the two hulls, over their full vertex sets."""
+    from scipy.optimize import linprog
+    d, F = Phi.shape
+    others = [j for j in range(F) if j != i]
+    Vp = [Phi[:, i] + (Phi[:, list(A)].sum(1) if s > 1 else 0)
+          for A in itertools.combinations(others, s - 1)]
+    Vm = [Phi[:, list(B)].sum(1) for B in itertools.combinations(others, s)]
+    nv = d + 2
+    rows = []
+    for p in Vp:
+        r = np.zeros(nv); r[:d] = -p; r[d] = 1.0; r[d + 1] = 1.0; rows.append(r)
+    for q in Vm:
+        r = np.zeros(nv); r[:d] = q; r[d] = -1.0; r[d + 1] = 1.0; rows.append(r)
+    c = np.zeros(nv); c[d + 1] = -1.0
+    res = linprog(c, A_ub=np.array(rows), b_ub=np.zeros(len(rows)),
+                  bounds=[(-1, 1)] * d + [(None, None)] + [(None, 1.0)], method="highs")
+    return bool(res.success and res.x[d + 1] > 1e-9)
+
+
+@pytest.mark.parametrize("d,F", [(3, 7), (4, 8), (4, 9), (5, 9)])
+def test_collision_radius_decides_every_sparsity(d, F):
+    """rho_i > 2 min(s, F-s) - 1  <=>  separable, for every feature and every sparsity."""
+    from lrtr.affine_frontier import collision_radius, separable_from_rho
+    for seed in range(4):
+        Phi = _code(d, F, 31337 + 7 * seed + F)
+        for i in range(F):
+            rho = collision_radius(Phi, i)["rho"]
+            for s in range(1, F):
+                assert separable_from_rho(rho, s, F) == _brute_hulls_disjoint(Phi, i, s), \
+                    f"d={d} F={F} seed={seed} i={i} s={s} rho={rho}"
+
+
+def test_collision_frontier_matches_the_quadratic_route():
+    """The LP frontier and the per-(feature, sparsity) QP frontier must agree."""
+    from lrtr.affine_frontier import collision_frontier
+    for d, F in [(3, 7), (4, 8)]:
+        Phi = _code(d, F, 808 + F)
+        fast = collision_frontier(Phi)
+        slow = robust_affine_frontier(Phi, list(range(1, (F - 1) // 2 + 2)))
+        assert fast["s_aff_robust"] == slow["s_aff_robust"], (fast["s_aff_robust"],
+                                                              slow["s_aff_robust"])
+
+
+def test_duplicated_column_has_collision_radius_one():
+    """Two identical columns collide at s=1: rho must be exactly 1, so s_max = 0."""
+    from lrtr.affine_frontier import collision_radius
+    Phi = _code(4, 8, 11)
+    Phi[:, 1] = Phi[:, 0]
+    rec = collision_radius(Phi, 0)
+    assert rec["rho"] == pytest.approx(1.0, abs=1e-8)
+    assert rec["s_max"] == 0
+
+
+def test_margin_equals_the_minimum_norm_over_all_constraints():
+    """The reported margin must equal the definition: min-norm w over every (A, B) constraint."""
+    from lrtr.affine_frontier import _min_norm
+    for F, s in [(8, 1), (9, 2), (10, 2)]:
+        for seed in range(2):
+            Phi = _code(4, F, 2024 + 5 * seed + F)
+            for i in range(min(F, 3)):
+                rec = robust_affine_margin(Phi, i, s)
+                if rec["status"] != "separable":
+                    continue
+                others = [j for j in range(F) if j != i]
+                V = np.stack([cut_vector(Phi, i, np.array(A, dtype=int), np.array(B, dtype=int))
+                              for A in itertools.combinations(others, s - 1)
+                              for B in itertools.combinations(others, s)], axis=1)
+                w_ref = _min_norm(V)["w"]
+                ref = 1.0 / (2.0 * float(np.linalg.norm(w_ref)))
+                assert rec["margin"] == pytest.approx(ref, rel=2e-4), (F, s, i)

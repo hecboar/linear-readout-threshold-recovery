@@ -167,3 +167,40 @@ Repository handling until further notice: local commits are made so that the sta
 reproducible; there is **no** public push, **no** definitive tag and **no** release or
 visibility change without explicit approval. The immutable tag cited by the paper is created
 only after the Phase-0 review.
+
+---
+
+## D9 — 2026-08-10 — G2 verdict: STRONG GO, on the collision-radius characterisation
+
+**Status:** binding
+**Evidence:** derivation plus exhaustive validation, ~20 000 (feature, sparsity) pairs against
+brute-force strict separation of the two convex hulls over their full vertex sets. Zero
+mismatches, on random codes and on constructed degenerate cases.
+
+**Result.** Affine separability of feature `i` at sparsity `s` holds iff
+`rho_i > 2 min(s, F-s) - 1`, where
+`rho_i = min{ ||z||_1 : Phi_{-i} z = phi_i, 1^T z = 1, ||z||_inf <= 1 }`. One linear programme
+per feature decides every sparsity, so the full frontier of a code costs `F` LPs instead of one
+convex programme per (feature, sparsity) pair.
+
+**Why the verdict moved from the first pass.** The first audit concluded "useful methodological
+specialisation" because the machinery — Bertsimas–Sim, Farkas, cutting planes — is all standard.
+The collision-radius statement is a mathematical result rather than a repackaging, and it is not
+in the five nearest bodies of work: Euclidean/weighted superimposed codes give distinctness of
+subset sums and rate bounds for families, not a per-code affine threshold; Donoho–Tanner
+neighborliness is asymptotic, for random projections, and governs ell-1 recovery; the null-space
+/ recoverable-supports line is per-matrix but again ell-1; group testing's `k`-separability is
+Boolean-OR algebra.
+
+**Caveats recorded so they are not lost later.** The proof is elementary — a Minkowski-difference
+argument plus a counting identity — and must be presented as a proposition, not a theorem.
+Quantitative group testing was not reached inside the time box and is the last place an
+equivalent could exist; it must be read before submission.
+
+**Two corrections to the first pass, both applied.** The Farkas certificate witnesses a convex
+combination of active states equal to a convex combination of inactive states, not a single pair
+of supports; `n_supports_involved` now records how many states are needed. And the compact
+route's margin lower-bounded the exact one because it optimised a different objective, not
+because the formulations differ; the margin is now checked for equality against the definition
+— the minimum-norm solution over every `(A, B)` constraint — rather than against another
+reformulation.

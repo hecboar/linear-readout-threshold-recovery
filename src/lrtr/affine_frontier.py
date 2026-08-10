@@ -47,8 +47,12 @@ Two outcomes, reported as different objects rather than as one signed scalar:
 * **infeasible** -> an *affine infeasibility certificate*: weights `lambda >= 0` summing to one
   with `sum_k lambda_k v_k = 0`. By Gordan's theorem this is exactly the obstruction, and it is
   checkable without trusting the solver: recompute the combination and see that it vanishes.
-  Geometrically it places the origin in the convex hull of the active-minus-inactive
-  differences, i.e. the two convex hulls touch.
+
+  What it witnesses, stated precisely because an earlier draft got this wrong: each `v_k` is an
+  (active state - inactive state) difference, so the certificate exhibits a **convex combination
+  of active states equal to a convex combination of inactive states**. It reduces to a single
+  pair of supports only when `lambda` is supported on one index, which is not the general case;
+  `n_supports_involved` records how many are actually needed.
 
 This is a statement about the *worst case over supports*, and must not be read as a statement
 about typical supports; empirical recovery is a separate, average-case quantity.
@@ -63,8 +67,12 @@ from scipy.optimize import linprog, minimize
 
 __all__ = [
     "worst_case_scores",
+    "collision_radius",
+    "collision_frontier",
+    "separable_from_rho",
     "cut_vector",
     "robust_affine_margin",
+    "robust_affine_margin_compact",
     "robust_affine_frontier",
     "verify_certificate",
 ]
@@ -183,6 +191,8 @@ def _farkas(V: np.ndarray) -> Dict[str, Any]:
         "scale": float(np.max(np.linalg.norm(V, axis=0))),
         "sum_lambda": float(lam.sum()),
         "support": np.nonzero(lam > 1e-8)[0],
+        # A convex combination, not a single colliding pair: this is how many states it needs.
+        "n_supports_involved": int((lam > 1e-8).sum()),
     }
 
 
@@ -222,6 +232,10 @@ def robust_affine_margin(Phi: np.ndarray, feature_index: int, sparsity: int,
     Returns a record with `status` in `{"separable", "infeasible"}` and, respectively, the
     robust margin with its optimal `(w, bias)` and worst-case supports, or a Farkas certificate
     with the cut list needed to re-verify it independently.
+
+    For the *verdict* alone, :func:`collision_radius` is cheaper and exact: one linear programme
+    per feature settles every sparsity at once. This routine is what supplies the margin, which
+    the collision radius does not, and serves as the independent check on it.
     """
     Phi = np.ascontiguousarray(Phi, dtype=np.float64)
     d, F = Phi.shape
@@ -281,6 +295,211 @@ def robust_affine_margin(Phi: np.ndarray, feature_index: int, sparsity: int,
         })
     else:
         rec.update(out)
+    return rec
+
+
+def collision_radius(Phi: np.ndarray, feature_index: int) -> Dict[str, Any]:
+    """`rho_i(Phi)`: one linear programme that determines the whole per-feature frontier.
+
+    Affine separability of feature `i` at sparsity `s` fails exactly when the convex hulls of
+    the active and inactive states touch,
+
+        C_i^+(s) = phi_i + Phi_{-i} D(F-1, s-1),   C_i^-(s) = Phi_{-i} D(F-1, s),
+
+    with `D(n, k) = {z in [0,1]^n : 1^T z = k}` the hypersimplex. Writing a point of the
+    intersection as `phi_i + Phi_{-i} u = Phi_{-i} v` and setting `z = v - u` gives
+
+        Phi_{-i} z = phi_i,    1^T z = 1,    ||z||_inf <= 1,
+
+    and conversely any such `z` splits back into an admissible `(u, v)` iff the budget fits:
+    `v_j` must lie in `[z_j^+, 1 - z_j^-]`, non-empty by `||z||_inf <= 1`, and `1^T v = s` is
+    reachable iff `sum_j z_j^+ <= s <= (F-1) - sum_j z_j^-`. Since `1^T z = 1` forces
+    `sum z^+ = (||z||_1 + 1)/2` and `sum z^- = (||z||_1 - 1)/2`, both reduce to a single bound:
+
+        the hulls meet at sparsity s   <=>   ||z||_1 <= 2 min(s, F - s) - 1  for some such z.
+
+    Therefore, defining
+
+        rho_i(Phi) = min { ||z||_1 : Phi_{-i} z = phi_i, 1^T z = 1, ||z||_inf <= 1 },
+
+    feature `i` is affinely separable at sparsity `s` **iff** `rho_i > 2 min(s, F-s) - 1`. The
+    entire frontier of a feature -- every sparsity at once -- is decided by this one number, and
+    `rho_i` is a linear programme. An infeasible programme means `rho_i = inf`: `phi_i` is not an
+    affine combination of the other columns within the box, and the feature is separable at
+    every sparsity.
+
+    Returns `rho`, the minimiser `z` when finite, and the derived per-feature frontier.
+    """
+    Phi = np.ascontiguousarray(Phi, dtype=np.float64)
+    d, F = Phi.shape
+    i = int(feature_index)
+    P = np.delete(Phi, i, axis=1)
+    n = F - 1
+    t0 = time.perf_counter()
+
+    # Variables [z (n) | t (n)] with t >= |z|, minimising 1^T t.
+    c = np.concatenate([np.zeros(n), np.ones(n)])
+    A_ub = np.vstack([np.hstack([np.eye(n), -np.eye(n)]),
+                      np.hstack([-np.eye(n), -np.eye(n)])])
+    A_eq = np.vstack([np.hstack([P, np.zeros((d, n))]),
+                      np.concatenate([np.ones(n), np.zeros(n)])[None, :]])
+    b_eq = np.concatenate([Phi[:, i], [1.0]])
+    res = linprog(c, A_ub=A_ub, b_ub=np.zeros(2 * n), A_eq=A_eq, b_eq=b_eq,
+                  bounds=[(-1.0, 1.0)] * n + [(0.0, None)] * n, method="highs")
+
+    rec: Dict[str, Any] = {"feature": i, "d": int(d), "F": int(F),
+                           "runtime_s": time.perf_counter() - t0}
+    if not res.success:
+        # Infeasible: no admissible z exists, so the hulls never meet.
+        rec.update({"rho": float("inf"), "z": None, "s_max": (F - 1) // 2,
+                    "status": "infeasible_lp_separable_everywhere"})
+        return rec
+
+    rho = float(res.fun)
+    z = res.x[:n]
+    # Largest integer s with rho > 2 min(s, F-s) - 1. For s <= F/2 the bound grows with s, so
+    # the frontier is the largest s below (rho + 1) / 2.
+    s_max = int(np.ceil((rho + 1.0) / 2.0)) - 1
+    if abs((rho + 1.0) / 2.0 - round((rho + 1.0) / 2.0)) < 1e-9:
+        s_max = int(round((rho + 1.0) / 2.0)) - 1          # exact tie: s must be strictly below
+    s_max = max(0, min(s_max, (F - 1) // 2))
+    rec.update({"rho": rho, "z": z.tolist(), "s_max": s_max, "status": "ok"})
+    return rec
+
+
+def separable_from_rho(rho: float, s: int, F: int) -> bool:
+    """The frontier rule: separable at `s` iff `rho > 2 min(s, F-s) - 1`."""
+    return bool(rho > 2.0 * min(s, F - s) - 1.0 + 1e-9)
+
+
+def collision_frontier(Phi: np.ndarray,
+                       feature_subset: Optional[Sequence[int]] = None) -> Dict[str, Any]:
+    """The complete robust affine frontier of a code, from `F` linear programmes.
+
+    Equivalent to :func:`robust_affine_frontier` but without solving one convex programme per
+    (feature, sparsity) pair: each feature contributes a single `rho_i`, and every sparsity is
+    then decided by comparison. `s_aff_robust = min_i s_max(i)`.
+    """
+    Phi = np.ascontiguousarray(Phi, dtype=np.float64)
+    d, F = Phi.shape
+    feats = list(range(F)) if feature_subset is None else [int(x) for x in feature_subset]
+    recs = [collision_radius(Phi, i) for i in feats]
+    rhos = [r["rho"] for r in recs]
+    return {
+        "d": int(d), "F": int(F),
+        "features_tested": len(feats),
+        "is_upper_bound": feature_subset is not None,
+        "rho": rhos,
+        "rho_min": float(min(rhos)),
+        "argmin_feature": feats[int(np.argmin(rhos))],
+        "s_aff_robust": int(min(r["s_max"] for r in recs)),
+        "per_feature": recs,
+        "runtime_s": float(sum(r["runtime_s"] for r in recs)),
+    }
+
+
+def robust_affine_margin_compact(Phi: np.ndarray, feature_index: int, sparsity: int,
+                                 theta: float = 0.5) -> Dict[str, Any]:
+    """Reference implementation via the compact robust-counterpart reformulation.
+
+    The worst-case terms are support functions of a hypersimplex, so LP duality replaces each
+    with `O(F)` auxiliary variables and constraints instead of exponentially many. This is the
+    cardinality-constrained robust-optimisation reduction of Bertsimas and Sim, applied here to
+    a classification constraint:
+
+        U_s(a)   = min  { s r + sum_j t_j : r + t_j >= a_j,  t >= 0 }
+        L_{s-1}(a) = max { (s-1) p - sum_j q_j : p - q_j <= a_j,  q >= 0 }
+
+    so the separability constraint becomes a finite linear system in `(w, p, q, r, t)`.
+
+    This exists to cross-check :func:`robust_affine_margin`, which reaches the same feasible set
+    by constraint generation. Agreement between two independent routes is the evidence that the
+    separation oracle is not silently missing constraints.
+
+    Scope of what it returns. The lifted problem is solved here as an LP that maximises slack,
+    so the verdict (separable or not) is exact, but the `w` it returns is merely *some* feasible
+    point rather than the minimum-norm one. Its margin therefore **lower-bounds** the true
+    robust margin, which is what :func:`robust_affine_margin` computes. The tests use it that
+    way: verdicts must match exactly, margins must satisfy the inequality.
+
+    Constraint generation stays the production path: its per-iteration cost is a sort, so it
+    scales in `F`, whereas this formulation grows to `d + 2F` variables.
+    """
+    Phi = np.ascontiguousarray(Phi, dtype=np.float64)
+    d, F = Phi.shape
+    i, s = int(feature_index), int(sparsity)
+    others = np.delete(np.arange(F), i)
+    n = others.size
+    P = Phi[:, others]                                   # d x n
+    phi_i = Phi[:, i]
+    t0 = time.perf_counter()
+
+    # Variable layout: w (d) | p | q (n) | r | t (n) | tau
+    nv = d + 1 + n + 1 + n + 1
+    iw, ip, iq, ir, it, ita = 0, d, d + 1, d + 1 + n, d + 2 + n, d + 2 + 2 * n
+
+    rows, rhs = [], []
+    # -(margin expression) + tau <= 0
+    row = np.zeros(nv)
+    row[iw:iw + d] = -phi_i
+    row[ip] = -(s - 1)
+    row[iq:iq + n] = 1.0
+    row[ir] = s
+    row[it:it + n] = 1.0
+    row[ita] = 1.0
+    rows.append(row); rhs.append(0.0)
+    # p - q_j - w^T phi_j <= 0
+    block = np.zeros((n, nv))
+    block[:, iw:iw + d] = -P.T
+    block[:, ip] = 1.0
+    block[np.arange(n), iq + np.arange(n)] = -1.0
+    rows.append(block); rhs.extend([0.0] * n)
+    # -(r + t_j) + w^T phi_j <= 0
+    block2 = np.zeros((n, nv))
+    block2[:, iw:iw + d] = P.T
+    block2[:, ir] = -1.0
+    block2[np.arange(n), it + np.arange(n)] = -1.0
+    rows.append(block2); rhs.extend([0.0] * n)
+
+    A_ub = np.vstack([r if r.ndim == 2 else r[None, :] for r in rows])
+    b_ub = np.array(rhs)
+    big = float(np.sqrt(d)) * 4.0 + 1.0
+    bounds = ([(-1.0, 1.0)] * d + [(-big, big)] + [(0.0, big)] * n
+              + [(-big, big)] + [(0.0, big)] * n + [(None, 1.0)])
+    c = np.zeros(nv); c[ita] = -1.0
+    res = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method="highs")
+
+    rec: Dict[str, Any] = {"d": int(d), "F": int(F), "feature": i, "sparsity": s,
+                           "method": "compact", "runtime_s": time.perf_counter() - t0}
+    if not res.success:
+        rec.update({"status": "solver_failure", "message": res.message})
+        return rec
+    tau = float(res.x[ita])
+    if tau <= TOL:
+        rec["status"] = "infeasible"
+        return rec
+
+    # Feasible. This LP finds *a* feasible point, not the minimum-norm one, so the margin it
+    # yields lower-bounds the exact one. That is an objective difference, not a formulation gap:
+    # the lifted system describes the same feasible set. The exact margin comes from
+    # `robust_affine_margin`, whose value is checked against the definition -- the minimum-norm
+    # solution over *all* (A, B) constraints -- in `tests/test_theory_g124.py`.
+    w = res.x[iw:iw + d] / tau
+    gap = worst_case_scores(w @ Phi, i, s)["gap"]
+    if gap <= TOL:
+        rec.update({"status": "solver_failure", "message": f"lifted feasible but gap={gap:.2e}"})
+        return rec
+    w = w / gap
+    final = worst_case_scores(w @ Phi, i, s)
+    rec.update({
+        "status": "separable",
+        "margin": 1.0 / (2.0 * float(np.linalg.norm(w))),
+        "w_norm": float(np.linalg.norm(w)),
+        "w": w.tolist(),
+        "bias": float(theta - (final["worst_active"] + final["worst_inactive"]) / 2.0),
+        "worst_active_support": final["active_support"].tolist(),
+        "worst_inactive_support": final["inactive_support"].tolist(),
+    })
     return rec
 
 
