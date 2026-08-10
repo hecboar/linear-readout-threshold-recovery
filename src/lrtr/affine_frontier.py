@@ -727,26 +727,50 @@ def separable_from_rho(rho: float, s: int, F: int) -> bool:
     return bool(rho > 2.0 * min(s, F - s) - 1.0 + 1e-9)
 
 
-def collision_frontier(Phi: np.ndarray,
-                       feature_subset: Optional[Sequence[int]] = None) -> Dict[str, Any]:
-    """The complete robust affine frontier of a code, from `F` linear programmes.
+def collision_frontier(Phi: np.ndarray, feature_subset: Optional[Sequence[int]] = None,
+                       model: str = "atmost", alpha: float = 1.0) -> Dict[str, Any]:
+    """The complete robust affine frontier of a code, from one linear programme per feature.
 
-    Equivalent to :func:`robust_affine_frontier` but without solving one convex programme per
-    (feature, sparsity) pair: each feature contributes a single `rho_i`, and every sparsity is
-    then decided by comparison. `s_aff_robust = min_i s_max(i)`.
+    ``model="atmost"`` (the default) is the primary statement: supports of size **at most** `s`,
+    threshold `kappa_i > s`, monotone by construction. ``model="exact"`` is the earlier
+    exactly-`s` formulation, kept because the published E2/E6 results are stated in it; its
+    threshold is `2 min(s, F-s) - 1`, which is non-monotone past `F/2`.
+
+    ``alpha`` is the minimum detectable amplitude and applies to the at-most model only. Since
+    the state amplitudes wash out of the convex hulls, this single scalar is the whole
+    dependence of the affine level on the state distribution.
+
+    Either way the cost is `F` linear programmes for the entire frontier, against one convex
+    programme per (feature, sparsity) pair for :func:`robust_affine_frontier`.
     """
     Phi = np.ascontiguousarray(Phi, dtype=np.float64)
     d, F = Phi.shape
+    if model not in ("atmost", "exact"):
+        raise ValueError(f"unknown model {model!r}; use 'atmost' or 'exact'")
+    if model == "exact" and alpha != 1.0:
+        raise ValueError("alpha applies to the at-most model only; the exactly-s formulation "
+                         "has no amplitude version")
     feats = list(range(F)) if feature_subset is None else [int(x) for x in feature_subset]
-    recs = [collision_radius(Phi, i) for i in feats]
-    rhos = [r["rho"] for r in recs]
+
+    if model == "atmost":
+        recs = [collision_radius_atmost(Phi, i, alpha=alpha) for i in feats]
+        key = "rho_hat"
+    else:
+        recs = [collision_radius(Phi, i) for i in feats]
+        key = "rho"
+    vals = [r[key] for r in recs]
+
     return {
-        "d": int(d), "F": int(F),
+        "d": int(d), "F": int(F), "model": model, "alpha": float(alpha),
         "features_tested": len(feats),
         "is_upper_bound": feature_subset is not None,
-        "rho": rhos,
-        "rho_min": float(min(rhos)),
-        "argmin_feature": feats[int(np.argmin(rhos))],
+        key: vals,
+        # `frontier_min` is the stable name: callers should not have to know whether the model in
+        # force calls its scalar `rho` or `rho_hat`. The model-specific keys are kept alongside it
+        # because the two quantities are not interchangeable and mixing them would be a real error.
+        "frontier_min": float(min(vals)),
+        f"{key}_min": float(min(vals)),
+        "argmin_feature": feats[int(np.argmin(vals))],
         "s_aff_robust": int(min(r["s_max"] for r in recs)),
         "per_feature": recs,
         "runtime_s": float(sum(r["runtime_s"] for r in recs)),

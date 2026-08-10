@@ -369,14 +369,38 @@ def test_collision_radius_decides_every_sparsity(d, F):
 
 
 def test_collision_frontier_matches_the_quadratic_route():
-    """The LP frontier and the per-(feature, sparsity) QP frontier must agree."""
+    """The LP frontier and the per-(feature, sparsity) QP frontier must agree.
+
+    Compared in the **exactly-s** model, since that is what `robust_affine_frontier` computes.
+    The default `atmost` model is a different (and stricter) question and is validated against
+    its own brute force in `tests/test_frontier_extensions.py`.
+    """
     from lrtr.affine_frontier import collision_frontier
     for d, F in [(3, 7), (4, 8)]:
         Phi = _code(d, F, 808 + F)
-        fast = collision_frontier(Phi)
+        fast = collision_frontier(Phi, model="exact")
         slow = robust_affine_frontier(Phi, list(range(1, (F - 1) // 2 + 2)))
         assert fast["s_aff_robust"] == slow["s_aff_robust"], (fast["s_aff_robust"],
                                                               slow["s_aff_robust"])
+
+
+def test_atmost_frontier_is_never_above_the_exact_one():
+    """At-most-s is a strictly harder requirement, so its frontier cannot be larger."""
+    from lrtr.affine_frontier import collision_frontier
+    for d, F in [(3, 7), (4, 9), (5, 11)]:
+        Phi = _code(d, F, 4040 + F)
+        a = collision_frontier(Phi, model="atmost")["s_aff_robust"]
+        e = collision_frontier(Phi, model="exact")["s_aff_robust"]
+        assert a <= e, (d, F, a, e)
+
+
+def test_frontier_rejects_a_bad_model_or_misplaced_alpha():
+    from lrtr.affine_frontier import collision_frontier
+    Phi = _code(4, 10, 1)
+    with pytest.raises(ValueError, match="unknown model"):
+        collision_frontier(Phi, model="approximate")
+    with pytest.raises(ValueError, match="at-most model only"):
+        collision_frontier(Phi, model="exact", alpha=0.5)
 
 
 def test_duplicated_column_has_collision_radius_one():

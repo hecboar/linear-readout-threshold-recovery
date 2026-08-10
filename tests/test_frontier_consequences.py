@@ -80,7 +80,7 @@ def test_coherence_bound_is_only_a_bound():
 def test_circuit_bound_and_dimensional_cap(d, F):
     Phi = _code(d, F, 313 + d * F)
     info = affine_circuit_size(Phi)
-    fr = collision_frontier(Phi)
+    fr = collision_frontier(Phi, model="exact")   # the circuit bound is stated for exactly-s
 
     assert info["q_exact"] is not None and info["q_exact"] <= d + 2
     assert fr["rho_min"] <= info["q_exact"] - 1 + 1e-7
@@ -94,7 +94,7 @@ def test_cap_holds_on_many_codes_including_designed_ones(d, F):
     cap = int(np.ceil(d / 2.0))
     for seed in range(6):
         Phi = _code(d, F, 5000 + seed)
-        assert collision_frontier(Phi)["s_aff_robust"] <= cap
+        assert collision_frontier(Phi, model="exact")["s_aff_robust"] <= cap
 
 
 def test_circuit_construction_yields_an_admissible_z():
@@ -141,7 +141,7 @@ def test_analog_level_cannot_distinguish_the_two_codes(d):
 @pytest.mark.parametrize("d", [8, 16, 32])
 def test_affine_level_separates_them_completely(d):
     A, B = duplicated_basis_code(d), basis_hadamard_code(d)
-    fa, fb = collision_frontier(A), collision_frontier(B)
+    fa, fb = collision_frontier(A, model="exact"), collision_frontier(B, model="exact")
 
     # [I, I] repeats every column, so no feature is separable even at s = 1.
     assert fa["rho_min"] == pytest.approx(1.0, abs=1e-8)
@@ -156,7 +156,7 @@ def test_affine_level_separates_them_completely(d):
 
 
 def test_hadamard_frontier_grows_with_width():
-    fronts = [collision_frontier(basis_hadamard_code(d))["s_aff_robust"]
+    fronts = [collision_frontier(basis_hadamard_code(d), model="exact")["s_aff_robust"]
               for d in (8, 16, 32, 64)]
     assert fronts == sorted(fronts), fronts
     assert fronts[-1] > fronts[0]

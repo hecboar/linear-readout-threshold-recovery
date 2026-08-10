@@ -61,10 +61,15 @@
     "native_n_test": 256,
     "probe_n_val": 200,
     "probe_steps": 60,
-    "probe_batch": 128
+    "probe_batch": 128,
+    "frontier_n_low": 6,
+    "frontier_n_random": 2
   },
   "probe_n_val": 4096,
   "probe_steps": 300,
   "probe_batch": 4096,
-  "include_oracle": true
+  "include_oracle": true,
+  "frontier_n_low": 24,
+  "frontier_n_random": 8,
+  "frontier_alpha": 1.0
 }

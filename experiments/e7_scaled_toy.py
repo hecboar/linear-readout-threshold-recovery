@@ -33,11 +33,19 @@ import numpy as np
 
 from _common import RunRecord, base_parser, log, prepare, write_json
 
+from lrtr.affine_frontier import (
+    affine_failure_threshold,
+    collision_frontier,
+    leverage_upper_bound_on_kappa,
+)
+from lrtr.analog_optimum import code_specific_floor, leverage, leverage_excess
+from lrtr.codes import welch_floor
 from lrtr.diagnostic import (
     interface_energy_moments,
     interface_floor_diagnostic,
     interface_linear_energy,
 )
+from lrtr.interface import crosstalk_mean_sq
 from lrtr.distributional import native_distribution_profile
 from lrtr.probes import (DEFAULT_RIDGE_GRID, evaluate_fixed_readout, evaluate_network,
                          probe_profile)
@@ -67,6 +75,105 @@ def _fit_states(bundle, F: int, n_fit: int) -> np.ndarray:
             f"{missing.size} of {F} features never appear in the readout fitting set; "
             f"raise probe_n_train (currently giving {B.shape[1]} states)")
     return B
+
+
+def _frontier_features(W_in: np.ndarray, n_low: int, n_random: int,
+                       seed: int) -> Dict[str, Any]:
+    """Which features to compute the affine frontier for, when `F` LPs is too many.
+
+    The frontier is `min_i kappa_i`, so only the argmin matters, and E3 proves that low leverage
+    forces `kappa` down -- which makes ranking by leverage a theory-justified rule rather than a
+    convenience. Measured on nine codes (four random, five trained), the argmin sat in the lowest
+    16 leverage ranks in eight of them.
+
+    It failed once, at rank 35 of 100, and that failure is expected: the E3 bound is *sufficient*
+    for collapse, not necessary, so a feature of middling leverage can still have a small `kappa`
+    for reasons leverage does not see -- a near-duplicate partner, for instance. So a fixed random
+    sample is drawn alongside the low-leverage block, and the record reports the leverage rank of
+    whichever feature turned out to be the argmin, so the heuristic audits itself run by run.
+
+    Testing a subset can only *overestimate* the minimum, so the resulting frontier is an upper
+    bound and is labelled as one.
+    """
+    F = W_in.shape[1]
+    h = leverage(W_in)
+    order = np.argsort(h)
+    low = order[:min(n_low, F)]
+    rng = np.random.default_rng(seed)
+    pool = np.setdiff1d(np.arange(F), low)
+    extra = rng.choice(pool, size=min(n_random, pool.size), replace=False) if pool.size else []
+    feats = np.unique(np.concatenate([low, np.asarray(extra, dtype=int)]))
+    return {"features": feats.tolist(), "n_low": int(low.size), "n_random": int(len(extra)),
+            "leverage_rank_of": {int(f): int(np.where(order == f)[0][0]) for f in feats}}
+
+
+def _theory_block(W_in: np.ndarray, W_out: np.ndarray, readouts: Dict[str, np.ndarray],
+                  cfg: Dict[str, Any], seed: int) -> Dict[str, Any]:
+    """G1's decomposition and G2's frontier for one model — the quantities the theory predicts.
+
+    Two things the published diagnostics do not contain, and which the campaign exists to
+    replicate across widths:
+
+    * the **geometry / readout split** of the attainment ratio (finding D11). The published number
+      divides by the global rank-trace floor and is therefore pure geometry under the
+      pseudoinverse; splitting it separates a property of the code from a property of the decoder,
+      and on the five E5 seeds the two point opposite ways for `L2` and `L4`.
+    * the **affine frontier** and the **E3 arrow**: whether `h_min` below
+      `(s-1)^2/((F-1)+(s-1)^2)` really does force the frontier below `s`. That implication is
+      proved and was verified on one width; whether it survives scaling is an empirical question
+      this records the answer to.
+    """
+    d, F = W_in.shape
+    w_glob = welch_floor(F, d)
+    w_code = code_specific_floor(W_in)
+    h = leverage(W_in)
+
+    analog: Dict[str, Any] = {
+        "welch_floor": w_glob,
+        "code_specific_floor": w_code,
+        "R_geom": w_code / w_glob,
+        "leverage_min": float(h.min()), "leverage_max": float(h.max()),
+        "leverage_cv": float(np.std(h) / np.mean(h)),
+        **{k: v for k, v in leverage_excess(W_in).items() if k == "excess"},
+        "R_readout": {}, "ratio_vs_welch": {},
+    }
+    for name, G in readouts.items():
+        try:
+            measured = crosstalk_mean_sq(np.ascontiguousarray(G, dtype=np.float64), W_in)
+        except ValueError as exc:
+            analog["R_readout"][name] = None
+            analog["ratio_vs_welch"][name] = None
+            analog[f"error_{name}"] = str(exc)
+            continue
+        analog["R_readout"][name] = measured / w_code
+        analog["ratio_vs_welch"][name] = measured / w_glob
+
+    sel = _frontier_features(W_in, cfg.get("frontier_n_low", 24),
+                             cfg.get("frontier_n_random", 8), seed)
+    fr = collision_frontier(W_in, feature_subset=sel["features"], model="atmost",
+                            alpha=cfg.get("frontier_alpha", 1.0))
+    kappa_min = float(min(fr["rho_hat"]))
+    argmin = fr["argmin_feature"]
+
+    # The E3 arrow: the smallest sparsity the leverage bound says must fail, against the measured
+    # frontier. `predicted >= observed + 1` would be a violation of the proposition.
+    s_pred = next((s for s in range(2, F)
+                   if h.min() <= affine_failure_threshold(F, s)), None)
+    affine = {
+        "model": "atmost", "alpha": fr["alpha"],
+        "features_tested": fr["features_tested"], "is_upper_bound": True,
+        "s_aff_robust_upper": fr["s_aff_robust"],
+        "kappa_min": kappa_min,
+        "argmin_feature": argmin,
+        "argmin_leverage_rank": sel["leverage_rank_of"].get(argmin),
+        "subset": {k: sel[k] for k in ("n_low", "n_random")},
+        "leverage_upper_bound_on_kappa_at_argmin": float(
+            leverage_upper_bound_on_kappa(W_in)[argmin]),
+        "e3_first_predicted_failure_s": s_pred,
+        "e3_bound_respected": bool(s_pred is None or fr["s_aff_robust"] < s_pred),
+        "runtime_s": fr["runtime_s"],
+    }
+    return {"analog": analog, "affine": affine}
 
 
 def diagnose(model: Dict[str, Any], cfg: Dict[str, Any], sparsities: List[int],
@@ -125,6 +232,7 @@ def diagnose(model: Dict[str, Any], cfg: Dict[str, Any], sparsities: List[int],
         "final_mse": model.get("final_mse"),
         "mse_ratio_to_zero_predictor": model.get("mse_ratio_to_zero_predictor"),
         "floor_stats": floor_stats,
+        "theory": _theory_block(W_in, W_out, readouts, cfg, seed + 3),
         "linearity": linearity_report(W_in, W_out, B_fit, cfg.get("theta", 0.5)),
         "splits": probes["splits"],
         "probes_global": probes["global"],
@@ -231,12 +339,16 @@ def main() -> None:
                              if probes_key.startswith("probe_"))
             s95p = [max(v for k, v in x["s95"].items() if k.startswith("probe_"))
                     for x in diags]
-            ratios = [x["floor_stats"]["pinv"]["ratio_mean_sq"] for x in diags
-                      if "ratio_mean_sq" in x["floor_stats"].get("pinv", {})]
+            geom = [x["theory"]["analog"]["R_geom"] for x in diags]
+            wout = [x["theory"]["analog"]["R_readout"]["wout"] for x in diags
+                    if x["theory"]["analog"]["R_readout"].get("wout") is not None]
+            kap = [x["theory"]["affine"]["kappa_min"] for x in diags]
+            ok = all(x["theory"]["affine"]["e3_bound_respected"] for x in diags)
             log(f"  [{cell_name(task, loss, p, d)}] "
-                f"s95(model) median={np.median(s95m):.1f}  "
-                f"s95(best probe) median={np.median(s95p):.1f}  "
-                + (f"pinv ratio mean={np.mean(ratios):.4f}" if ratios else "pinv degenerate"))
+                f"s95(model) med={np.median(s95m):.1f}  probe med={np.median(s95p):.1f}  "
+                f"R_geom={np.mean(geom):.3f}  R_readout(wout)="
+                + (f"{np.mean(wout):.4f}" if wout else "n/a")
+                + f"  kappa_min={np.mean(kap):.2f}  E3 held={ok}")
 
         rec.set("n_diagnoses", len(all_diagnoses))
         write_json(out_dir / "raw" / "e7_runs.json",
