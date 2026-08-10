@@ -232,3 +232,54 @@ Stage A campaign. The one remaining literature debt is quantitative group testin
 on the pre-submission checklist rather than the critical path.
 
 **Next, in order:** `probes.py`, the G1 reanalysis of existing results, then J0 on the Spark.
+
+---
+
+## D11 — 2026-08-10 — The G1 reanalysis reverses the reading of E5's attainment ratios
+
+**Status:** finding, to be carried into the manuscript and replicated in the campaign
+**Evidence:** `docs/g1_reanalysis.md`, from `results/e5_weights/` (E5 re-run for weights, 186 min
+CPU, 25/25 models matched against the committed diagnostics to 8e-10 relative — the residual is
+float32 weight storage, not solver noise).
+
+**What the published number actually measured.** `R_readout(pinv) = 1.000000` in every cell, by
+construction: the calibrated pseudoinverse *is* the code-specific optimum (G1). So both
+"L4 sits 1.0006 above the floor" and "L2 sits 19.0 above the floor" are statements about the
+**leverage heterogeneity of the code** and say nothing whatever about any decoder. The
+manuscript currently presents them as if they characterised the model.
+
+**The split, per cell:**
+
+| cell | `R_geom` | `R_readout(wout)` | leverage range | CV | limited by |
+|---|---|---|---|---|---|
+| L4 p=0.01 | 1.0006 | 1.0254 | 0.480–0.519 | 0.017 | neither |
+| L2 p=0.01 | 19.0052 | 1.0053 | 0.009–0.994 | 0.867 | geometry |
+| L4 p=0.02 | 1.0004 | 1.0249 | 0.484–0.518 | 0.014 | neither |
+| L2 p=0.02 | 29.1032 | 1.0089 | 0.009–0.992 | 0.952 | geometry |
+| random | 1.0170 | 1.0000 | 0.393–0.626 | 0.092 | neither |
+
+**Two readings that change.**
+
+1. **`L2` is geometry-limited, and its own decoder is near-optimal for the code it built** —
+   within 0.5–0.9% of the best readout that code admits. It is not decoding crudely; it is doing
+   close to the best linear thing available given a code whose leverage runs from 0.009 to 0.994.
+   Minimum leverage near 0.01 means some features sit almost outside the row space: effectively
+   dead directions. That is the quantitative form of the reading that `L2` does not compute in
+   superposition, and it is sharper than the current `frac_relu_clipped` evidence.
+2. **`L4` is the reverse.** Its code is near-ideal — leverage essentially uniform, CV 0.017 — but
+   its trained decoder leaves about 2.5% on the table against its own code's optimum, which in
+   relative terms is *worse* than `L2`'s decoder. The 1.0006 was never evidence that `L4`'s
+   decoder is good.
+
+**Consistency check.** `R_readout(wout) = 1.0000` exactly for the random control because
+`random_code_baseline` sets `W_out = pinv(Phi)`, so its "own decoder" is the code-specific
+optimum by construction. That is audit finding P1 resurfacing and it confirms the decomposition
+behaves as intended.
+
+**What this does not license.** Five seeds at one width, unchanged. The optimisation underneath
+is Capon/MVDR and is classical (see the novelty audit); the split is arithmetic on it. This
+reinterprets an existing number and adds no new evidence.
+
+**Carried forward.** `R_readout(wout)` is the quantity the scaled campaign should track: it asks
+whether training produced a decoder that is good *for the code it built*, which is a different
+question from whether the code is good, and the two answers point opposite ways here.

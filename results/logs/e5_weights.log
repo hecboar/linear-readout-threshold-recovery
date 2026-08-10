@@ -1,1 +1,30 @@
 E5: 25 model runs on 6 worker processes
+  1/25 model runs finished
+  2/25 model runs finished
+  3/25 model runs finished
+  4/25 model runs finished
+  5/25 model runs finished
+  6/25 model runs finished
+  7/25 model runs finished
+  8/25 model runs finished
+  9/25 model runs finished
+  10/25 model runs finished
+  11/25 model runs finished
+  12/25 model runs finished
+  13/25 model runs finished
+  14/25 model runs finished
+  15/25 model runs finished
+  16/25 model runs finished
+  17/25 model runs finished
+  18/25 model runs finished
+  19/25 model runs finished
+  20/25 model runs finished
+  21/25 model runs finished
+  22/25 model runs finished
+  23/25 model runs finished
+  24/25 model runs finished
+  25/25 model runs finished
+  weights written to results\e5_weights\weights
+  L2     : s95(model)=[0, 0, 0, 0, 0] s95(linear,ls)=[0, 0, 0, 0, 0]  ReLU-clipped=0.046 agree-with-linear=0.991
+  L4     : s95(model)=[3, 3, 3, 3, 3] s95(linear,ls)=[3, 3, 3, 3, 3]  ReLU-clipped=0.486 agree-with-linear=0.218
+  random : s95(model)=[0, 0, 0, 0, 0] s95(linear,ls)=[1, 1, 2, 2, 2]  ReLU-clipped=0.500 agree-with-linear=0.138
