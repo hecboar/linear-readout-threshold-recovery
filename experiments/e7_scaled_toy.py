@@ -294,8 +294,138 @@ def run_cell(task: str, loss: str, p: float, d: int, F: int, sparsities: List[in
     return diagnoses
 
 
+def stage_cells(stage: Dict[str, Any], tasks: List[str]) -> List[Any]:
+    """Expand a stage definition into `(task, loss, p, d, F, n_seeds)` tuples."""
+    out: List[Any] = []
+    for block in stage.get("cells", []):
+        ratio = int(block["overcompleteness"])
+        for t in tasks:
+            for loss in block["losses"]:
+                for p in block["train_sparsities"]:
+                    for d in block["widths"]:
+                        out.append((t, loss, float(p), int(d), ratio * int(d),
+                                    int(block["n_seeds"])))
+    ctrl = stage.get("controls")
+    if ctrl:
+        ratio = int(ctrl["overcompleteness"])
+        for d in ctrl["widths"]:
+            out.append((tasks[0], "random", 0.01, int(d), ratio * int(d), int(ctrl["n_seeds"])))
+    return out
+
+
+def stage_report(diags: List[Dict[str, Any]], stage: str) -> Dict[str, Any]:
+    """The GO/NO-GO summary a stage must produce before further compute is spent.
+
+    Four questions, each answerable from this stage alone and each able to end the campaign:
+
+    * **does the network beat the strongest affine probe?** If not, decision D1 already commits us
+      to reporting that as the finding rather than hunting for a metric that reverses it.
+    * **does the L2/L4 distinction replicate across width?** This is the empirical hook. Without
+      it the paper has a method and a null result.
+    * **does the geometry/readout split replicate?** The two terms pointed opposite ways for `L2`
+      and `L4` on five seeds at one width (finding D11); whether that survives is the question.
+    * **does the E3 arrow hold?** A single violation refutes a *proved* proposition, so it would
+      mean a bug rather than a result, and the run stops.
+    """
+    def med(rows, f):
+        vals = [f(x) for x in rows]
+        vals = [v for v in vals if v is not None]
+        return float(np.median(vals)) if vals else None
+
+    def best_probe(x):
+        return max(v for k, v in x["s95"].items() if k.startswith("probe_"))
+
+    widths = sorted({x["d"] for x in diags})
+    per_width: Dict[str, Any] = {}
+    for d in widths:
+        at_d = [x for x in diags if x["d"] == d]
+        row: Dict[str, Any] = {}
+        for kind in ("L2", "L4", "random"):
+            sub = [x for x in at_d if x["loss_kind"] == kind]
+            if not sub:
+                continue
+            row[kind] = {
+                "n": len(sub),
+                "s95_model": med(sub, lambda x: x["s95"]["model"]),
+                "s95_best_probe": med(sub, best_probe),
+                "R_geom": med(sub, lambda x: x["theory"]["analog"]["R_geom"]),
+                "R_readout_wout": med(
+                    sub, lambda x: x["theory"]["analog"]["R_readout"].get("wout")),
+                "kappa_min": med(sub, lambda x: x["theory"]["affine"]["kappa_min"]),
+                "leverage_min": med(sub, lambda x: x["theory"]["analog"]["leverage_min"]),
+            }
+        per_width[str(d)] = row
+
+    trained = [x for x in diags if x["loss_kind"] != "random"]
+    beats = [1.0 if x["s95"]["model"] > best_probe(x) else 0.0 for x in trained]
+
+    seps = []
+    for d in widths:
+        a = [x for x in diags if x["d"] == d and x["loss_kind"] == "L4"]
+        b = [x for x in diags if x["d"] == d and x["loss_kind"] == "L2"]
+        if a and b:
+            ga = med(a, lambda x: x["theory"]["analog"]["R_geom"])
+            gb = med(b, lambda x: x["theory"]["analog"]["R_geom"])
+            seps.append({"d": d, "R_geom_L4": ga, "R_geom_L2": gb,
+                         "separated": bool(ga is not None and gb is not None
+                                           and gb > 2.0 * ga)})
+
+    violations = [{"d": x["d"], "loss": x["loss_kind"], "seed": x["seed"]}
+                  for x in diags if not x["theory"]["affine"]["e3_bound_respected"]]
+
+    return {
+        "stage": stage, "n_models": len(diags), "widths": widths, "per_width": per_width,
+        "network_beats_best_probe_fraction": (float(np.mean(beats)) if beats else None),
+        "l2_l4_geometry_separated_by_width": seps,
+        "l2_l4_separates_everywhere": bool(seps) and all(x["separated"] for x in seps),
+        "e3_violations": violations,
+        "e3_arrow_held": not violations,
+    }
+
+
+def write_stage_report(rep: Dict[str, Any], out_dir: Path) -> Path:
+    def f(x, n=4):
+        return "n/a" if x is None else f"{x:.{n}f}"
+
+    L = [f"# Stage {rep['stage']} — GO/NO-GO report", "",
+         f"{rep['n_models']} models, widths {rep['widths']}.", "",
+         "## Per width", "",
+         "| d | loss | n | s95(model) | s95(best probe) | R_geom | R_readout(wout) | kappa_min |",
+         "|---|---|---|---|---|---|---|---|"]
+    for d, row in rep["per_width"].items():
+        for kind, v in row.items():
+            L.append(f"| {d} | {kind} | {v['n']} | {f(v['s95_model'], 1)} | "
+                     f"{f(v['s95_best_probe'], 1)} | {f(v['R_geom'], 3)} | "
+                     f"{f(v['R_readout_wout'])} | {f(v['kappa_min'], 2)} |")
+    frac = (rep["network_beats_best_probe_fraction"] or 0.0) * 100.0
+    L += ["", "## Gates", "",
+          f"- the network beats the best affine probe on **{frac:.0f}%** of trained models",
+          f"- L2/L4 geometry separated at every width: **{rep['l2_l4_separates_everywhere']}**",
+          f"- E3 arrow held: **{rep['e3_arrow_held']}**"
+          + ("" if rep["e3_arrow_held"] else f" — VIOLATIONS: {rep['e3_violations']}"), ""]
+    if not rep["e3_arrow_held"]:
+        L.append("**A violated E3 arrow is a bug, not a result.** The implication is proved, so a "
+                 "counterexample means the frontier or the leverage computation is wrong. Find it "
+                 "before reading anything else here.")
+    elif rep["l2_l4_separates_everywhere"]:
+        L.append("The empirical hook survives this stage, so spending the next one is justified.")
+    else:
+        L.append("The L2/L4 separation did **not** hold at every width. Under decision D1 that is "
+                 "reported rather than rescued: re-read the plan's yellow outcomes before "
+                 "committing more compute, because the paper's framing may have to change.")
+    path = out_dir / f"stage_{rep['stage']}_report.md"
+    path.write_text("\n".join(L) + "\n", encoding="utf-8", newline="\n")
+    return path
+
+
 def main() -> None:
     parser = base_parser("e7")
+    parser.add_argument("--stage", type=str, default="A",
+                        help="Stage to run: A, B, C or 'all'. Stages are gated: each writes a "
+                             "GO/NO-GO report and stops unless --proceed is given.")
+    parser.add_argument("--proceed", action="store_true",
+                        help="Continue past a stage gate. Pass this only after reading the "
+                             "previous stage's report.")
     args = parser.parse_args()
     cfg, out_dir, threads = prepare("e7", args)
 
@@ -306,55 +436,74 @@ def main() -> None:
             "--device cuda requested but torch.cuda.is_available() is False. "
             "Run scripts/check_env_gpu.py to see what this interpreter can reach.")
 
-    widths: List[int] = cfg["widths"]
-    ratio: int = cfg["overcompleteness"]
-    tasks: List[str] = cfg["tasks"]
-    losses: List[str] = cfg["losses"]
-    ps: List[float] = cfg["train_sparsities"]
-    s_max_by_d: Dict[str, int] = cfg["eval_s_max"]
+    stages_cfg: Dict[str, Any] = cfg["stages"]
+    order = ([args.stage] if args.stage != "all"
+             else [k for k in ("A", "B", "C") if k in stages_cfg])
+    for st in order:
+        if st not in stages_cfg:
+            raise SystemExit(f"unknown stage {st!r}; the config defines {sorted(stages_cfg)}")
 
-    cells = [(t, l, p, d) for t in tasks for l in losses for p in ps for d in widths]
-    cells += [(tasks[0], "random", ps[0], d) for d in widths]
+    tasks: List[str] = cfg["tasks"]
+    s_max_by_d: Dict[str, int] = cfg["eval_s_max"]
 
     (out_dir / "raw").mkdir(parents=True, exist_ok=True)
     with RunRecord("e7_scaled_toy", out_dir,
                    config={**cfg, "threads": threads, "device": device,
-                           "n_cells": len(cells), "resume": bool(args.resume)},
+                           "stages_run": order, "resume": bool(args.resume)},
                    smoke=args.smoke) as rec:
-        log(f"E7: {len(cells)} cells x {cfg['n_seeds']} seeds on device={device}")
-        if device == "cpu":
-            log("  note: device=cpu. This configuration is meant for an accelerator; "
-                "on CPU expect the full grid to take many hours.")
+        for st in order:
+            stage = stages_cfg[st]
+            cells = stage_cells(stage, tasks)
+            if not cells:
+                log(f"Stage {st}: no cells defined, skipping")
+                continue
+            log("")
+            log(f"Stage {st}: {len(cells)} cells, {sum(c[5] for c in cells)} models on "
+                f"device={device}  — {stage.get('note', '')}")
+            if device == "cpu":
+                log("  note: device=cpu. This campaign is meant for an accelerator.")
 
-        all_diagnoses: List[Dict[str, Any]] = []
-        for task, loss, p, d in cells:
-            F = ratio * d
-            s_max = int(s_max_by_d[str(d)])
-            sparsities = list(range(1, s_max + 1))
-            diags = run_cell(task, loss, p, d, F, sparsities, cfg, device, out_dir,
-                             bool(args.resume))
-            all_diagnoses.extend(diags)
-            s95m = [x["s95"]["model"] for x in diags]
-            best_probe = max(probes_key for probes_key in diags[0]["s95"]
-                             if probes_key.startswith("probe_"))
-            s95p = [max(v for k, v in x["s95"].items() if k.startswith("probe_"))
-                    for x in diags]
-            geom = [x["theory"]["analog"]["R_geom"] for x in diags]
-            wout = [x["theory"]["analog"]["R_readout"]["wout"] for x in diags
-                    if x["theory"]["analog"]["R_readout"].get("wout") is not None]
-            kap = [x["theory"]["affine"]["kappa_min"] for x in diags]
-            ok = all(x["theory"]["affine"]["e3_bound_respected"] for x in diags)
-            log(f"  [{cell_name(task, loss, p, d)}] "
-                f"s95(model) med={np.median(s95m):.1f}  probe med={np.median(s95p):.1f}  "
-                f"R_geom={np.mean(geom):.3f}  R_readout(wout)="
-                + (f"{np.mean(wout):.4f}" if wout else "n/a")
-                + f"  kappa_min={np.mean(kap):.2f}  E3 held={ok}")
+            diags: List[Dict[str, Any]] = []
+            for task, loss, p, d, F, n_seeds in cells:
+                sparsities = list(range(1, int(s_max_by_d[str(d)]) + 1))
+                got = run_cell(task, loss, p, d, F, sparsities,
+                               {**cfg, "n_seeds": n_seeds}, device, out_dir, bool(args.resume))
+                diags.extend(got)
+                s95m = [x["s95"]["model"] for x in got]
+                s95p = [max(v for k, v in x["s95"].items() if k.startswith("probe_"))
+                        for x in got]
+                geom = [x["theory"]["analog"]["R_geom"] for x in got]
+                wout = [x["theory"]["analog"]["R_readout"]["wout"] for x in got
+                        if x["theory"]["analog"]["R_readout"].get("wout") is not None]
+                kap = [x["theory"]["affine"]["kappa_min"] for x in got]
+                ok = all(x["theory"]["affine"]["e3_bound_respected"] for x in got)
+                log(f"  [{cell_name(task, loss, p, d)}] "
+                    f"s95(model) med={np.median(s95m):.1f}  probe med={np.median(s95p):.1f}  "
+                    f"R_geom={np.mean(geom):.3f}  R_readout(wout)="
+                    + (f"{np.mean(wout):.4f}" if wout else "n/a")
+                    + f"  kappa_min={np.mean(kap):.2f}  E3 held={ok}")
 
-        rec.set("n_diagnoses", len(all_diagnoses))
-        write_json(out_dir / "raw" / "e7_runs.json",
-                   {"runs": all_diagnoses, "cells": [cell_name(*c) for c in cells],
-                    "widths": widths, "overcompleteness": ratio, "tasks": tasks,
-                    "losses": losses, "train_sparsities": ps, "device": device})
+            rep = stage_report(diags, st)
+            write_json(out_dir / "raw" / f"e7_stage_{st}.json", {"runs": diags, "report": rep})
+            path = write_stage_report(rep, out_dir)
+            rec.set(f"stage_{st}", {k: v for k, v in rep.items() if k != "per_width"})
+            frac = (rep["network_beats_best_probe_fraction"] or 0.0) * 100.0
+            log("")
+            log(f"  Stage {st} report -> {path.name}")
+            log(f"    network beats the best probe on {frac:.0f}% of models")
+            log(f"    L2/L4 separated at every width: {rep['l2_l4_separates_everywhere']}")
+            log(f"    E3 arrow held: {rep['e3_arrow_held']}")
+
+            if not rep["e3_arrow_held"]:
+                raise SystemExit(
+                    f"Stage {st}: the E3 arrow was violated. That implication is proved, so this "
+                    f"is a bug and not a result. Stopping rather than interpreting it.")
+            if st != order[-1] and not args.proceed:
+                nxt = order[order.index(st) + 1]
+                log("")
+                log(f"  Gate: stopping after stage {st}. Read {path.name}, then rerun with "
+                    f"--stage {nxt} --proceed")
+                break
 
 
 if __name__ == "__main__":

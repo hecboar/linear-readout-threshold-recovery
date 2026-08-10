@@ -27,18 +27,39 @@ __all__ = ["StateSplit", "SplitBundle", "draw_supports", "make_state_splits", "r
 
 @dataclass(frozen=True)
 class StateSplit:
-    """A set of Boolean states, as `(n, s)` support indices plus the sparsity of each."""
+    """A set of sparse states: `(n, s)` support indices, sparsities, and optional amplitudes.
+
+    ``amplitudes`` is ``None`` for Boolean states, where every active coordinate is 1. When
+    present it has the same shape as ``supports`` and carries the value of each active
+    coordinate, so the same container serves signed states, continuous amplitudes and the
+    native training distribution.
+
+    Labels are always read from the **support**, never from the amplitude. That keeps "feature
+    `i` is active" unambiguous under a signed or continuous law, where the sign of an amplitude
+    says nothing about presence and a near-zero amplitude would otherwise make the label a
+    matter of tolerance.
+    """
 
     supports: np.ndarray          # (n, s_max) int; row k uses the first sparsity[k] entries
     sparsity: np.ndarray          # (n,) int
     F: int
+    amplitudes: Optional[np.ndarray] = None   # (n, s_max) float, aligned with `supports`
 
     def __len__(self) -> int:
         return int(self.supports.shape[0])
 
     def of_sparsity(self, s: int) -> "StateSplit":
         m = self.sparsity == s
-        return StateSplit(supports=self.supports[m, :s], sparsity=self.sparsity[m], F=self.F)
+        return StateSplit(supports=self.supports[m, :s], sparsity=self.sparsity[m], F=self.F,
+                          amplitudes=None if self.amplitudes is None
+                          else self.amplitudes[m, :s])
+
+    def with_amplitudes(self, amplitudes: np.ndarray) -> "StateSplit":
+        if amplitudes.shape != self.supports.shape:
+            raise ValueError(f"amplitudes must match supports {self.supports.shape}, "
+                             f"got {amplitudes.shape}")
+        return StateSplit(supports=self.supports, sparsity=self.sparsity, F=self.F,
+                          amplitudes=amplitudes)
 
     def keys(self) -> List[Tuple[int, ...]]:
         """Canonical hashable form of each state, for disjointness checks."""
@@ -215,11 +236,11 @@ def make_state_splits(F: int, sparsities: Sequence[int], n_train: int, n_val: in
 
 
 def representations(W_in: np.ndarray, split: StateSplit, post_relu: bool) -> np.ndarray:
-    """`(n, d)` representations of the states, built from support indices.
+    """`(n, d)` representations of the states, built from support indices and amplitudes.
 
-    `pre` is the linear representation `Phi 1_S`; `post` is the hidden activation
-    `ReLU(Phi 1_S)`. The `(F, n)` indicator matrix is never formed: each of the `s_max` support
-    positions contributes one gather-and-add of shape `(n, d)`.
+    `pre` is the linear representation `Phi a`; `post` is the hidden activation `ReLU(Phi a)`.
+    The `(F, n)` state matrix is never formed: each of the `s_max` support positions contributes
+    one gather-and-add of shape `(n, d)`.
     """
     d = W_in.shape[0]
     n, s_max = split.supports.shape
@@ -228,12 +249,19 @@ def representations(W_in: np.ndarray, split: StateSplit, post_relu: bool) -> np.
         active = split.sparsity > j
         if not active.any():
             break
-        R[active] += W_in[:, split.supports[active, j]].T
+        cols = W_in[:, split.supports[active, j]].T
+        if split.amplitudes is not None:
+            cols = cols * split.amplitudes[active, j][:, None]
+        R[active] += cols
     return np.maximum(R, 0.0) if post_relu else R
 
 
 def one_hot_targets(split: StateSplit) -> np.ndarray:
-    """`(n, F)` Boolean targets. Only call this on a batch: the full matrix is large."""
+    """`(n, F)` Boolean targets, from the support. Only call this on a batch; the matrix is large.
+
+    Deliberately independent of the amplitudes: presence is a property of the support, so the
+    label of a state does not shift when its amplitude law changes.
+    """
     n = len(split)
     Y = np.zeros((n, split.F), dtype=np.float64)
     for j in range(split.supports.shape[1]):
