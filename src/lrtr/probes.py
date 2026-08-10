@@ -1,259 +1,469 @@
-"""Cross-validated affine probes and native-distribution evaluation.
+"""Affine support-recovery probes: the strongest baseline the network has to beat.
 
-Two objections to the E5 protocol are answered here, and both are answered by measurement
-rather than argument.
+The middle level of the interface hierarchy is *affine support recovery*. Two things measure it,
+and they answer different questions:
 
-*The linear baseline may have been too weak.* E5 fits its least-squares readout and evaluates
-it on freshly drawn supports, but the probe has no intercept and only ever sees the *linear*
-representation ``Phi b``. A referee is entitled to ask what happens against the strongest
-affine probe of the representation the network actually produces, ``ReLU(Phi b)``, fitted with
-a held-out split. :func:`boolean_probe_profile` runs exactly that comparison, on the same
-evaluation states as the network, per sparsity, so neither side gets a distributional edge.
+* :mod:`lrtr.affine_frontier` computes the **exact worst-case frontier** of the code -- the
+  largest sparsity at which *some* featurewise affine rule succeeds on *every* support. It is a
+  property of the code and needs no data.
+* this module fits the **best affine rule we can actually train**, and scores it on held-out
+  states. It is an empirical, average-case quantity.
 
-*The evaluation distribution is not the training distribution.* The network is trained on
-``x = mask * U[-1, 1]`` and E5 diagnoses it on Boolean states ``1_S``. That is deliberate --
-Boolean states are the object of the theory -- but it leaves the trained-network claims open to
-the charge of being off-distribution. :func:`native_profile` repeats the diagnosis on the
-training distribution itself, where the analog error has an exact closed form and support
-detection is measured at the best held-out threshold.
+Both are needed. The frontier says what is possible; the probe says what is achievable by
+fitting, which is the comparison a referee cares about when the claim is that a trained network
+decodes better than a linear readout of its own representation.
 
-Neither probe here carries a floor claim. The affine probes are rank ``d+1`` maps of a
-representation that is nonlinear in the post-ReLU case, so Theorem 4.1 does not apply to them;
-they are controls on the *empirical* comparison, and the floor statements stay with the three
-readouts of :func:`lrtr.toymodel.diagnose_model`.
+What the audit demanded, and what is here. The published protocol fitted one least-squares
+readout, without an intercept, at a single sparsity, on states drawn from the same stream as the
+evaluation states, and scored it at a fixed threshold. Every one of those is a way to understate
+the baseline. This module instead offers:
+
+* two representations -- pre-ReLU `Phi b` and post-ReLU `ReLU(Phi b)`;
+* three probe families -- ridge, logistic and squared-hinge (linear SVM) -- all with an intercept;
+* a regularisation grid, selected on validation;
+* three threshold policies -- the semantically fixed `theta`, a validation-selected global
+  threshold, and validation-selected per-feature thresholds;
+* three disjoint splits, with disjointness enforced rather than assumed (:mod:`lrtr.splits`);
+* both a **global** interface, fitted once on a sparsity mixture, and a **per-sparsity oracle**,
+  refitted and retuned at each sparsity. The oracle is an upper envelope, not an implementable
+  interface, and is labelled as such everywhere it appears.
+
+Nothing in the selection path ever sees the locked test set. `tests/test_probes.py` enforces that
+structurally: it poisons the test set and asserts that not one selected hyperparameter moves.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Sequence
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
-from .interface import energy_floor_uniform, unit_diagonal
+from .splits import SplitBundle, StateSplit, one_hot_targets, representations
 from .stats import wilson_interval
-from .threshold import s95_from_curve
+from .threshold import s95_from_curve, s95_interpolated
 
 __all__ = [
-    "fit_affine_probe",
-    "apply_affine_probe",
-    "boolean_states",
-    "boolean_probe_profile",
-    "native_profile",
+    "PROBE_FAMILIES",
+    "REPRESENTATIONS",
+    "THRESHOLD_POLICIES",
+    "fit_probe",
+    "score_probe",
+    "evaluate_scores",
+    "evaluate_network",
+    "evaluate_fixed_readout",
+    "select_probe",
+    "SELECTION_OBJECTIVES",
+    "select_thresholds",
+    "evaluate_probe",
+    "probe_profile",
 ]
 
+PROBE_FAMILIES = ("ridge", "logistic", "svm")
 REPRESENTATIONS = ("pre", "post")
+THRESHOLD_POLICIES = ("fixed", "global", "per_feature")
+DEFAULT_RIDGE_GRID = (1e-6, 1e-4, 1e-2, 1e-1, 1.0, 10.0)
 
 
-def _represent(W_in: np.ndarray, X: np.ndarray, representation: str) -> np.ndarray:
-    """``(n, d)`` representations of the ``(F, n)`` states ``X``.
+def _design(R: np.ndarray) -> np.ndarray:
+    return np.hstack([R, np.ones((R.shape[0], 1))])
 
-    ``pre`` is the linear representation ``Phi x``; ``post`` is the network's own hidden
-    activation ``ReLU(Phi x)``.
+
+def _xty(X: np.ndarray, split: StateSplit) -> np.ndarray:
+    """`X^T Y` for one-hot `Y`, by scatter-add: never forms the `(n, F)` target matrix."""
+    out = np.zeros((X.shape[1], split.F))
+    for j in range(split.supports.shape[1]):
+        active = split.sparsity > j
+        if not active.any():
+            break
+        np.add.at(out.T, split.supports[active, j], X[active])
+    return out
+
+
+# --------------------------------------------------------------------------------------
+# Fitting
+# --------------------------------------------------------------------------------------
+
+def _fit_ridge(X: np.ndarray, split: StateSplit, grid: Sequence[float]) -> Dict[float, np.ndarray]:
+    """Ridge for every penalty on the grid, from one pass over the data.
+
+    The intercept is never penalised. `X^T X` is `(d+1) x (d+1)` and `X^T Y` is `(d+1) x F`, both
+    accumulated once; each penalty then costs one small solve, so the size of the grid is never a
+    reason to shrink it.
     """
-    pre = (W_in @ X).T
-    if representation == "pre":
-        return pre
-    if representation == "post":
-        return np.maximum(pre, 0.0)
-    raise ValueError(f"unknown representation {representation!r}; use 'pre' or 'post'")
+    XtX = X.T @ X
+    XtY = _xty(X, split)
+    p = XtX.shape[0]
+    mask = np.ones(p)
+    mask[-1] = 0.0                                     # intercept unpenalised
+    out: Dict[float, np.ndarray] = {}
+    for lam in grid:
+        out[float(lam)] = np.linalg.solve(XtX + lam * np.diag(mask), XtY)
+    return out
 
 
-def fit_affine_probe(R: np.ndarray, Y: np.ndarray, ridge: float = 1e-8) -> np.ndarray:
-    """Ridge-regularised affine fit ``Y ~ [R, 1] @ W``. Returns ``W`` of shape ``(d+1, F)``.
+def _fit_margin_family(X: np.ndarray, split: StateSplit, grid: Sequence[float], kind: str,
+                       steps: int, batch: int, lr: float, seed: int) -> Dict[float, np.ndarray]:
+    """Logistic or squared-hinge fit, minibatched over states, vectorised over all `F` features.
 
-    The intercept column is not penalised, which is the usual convention and matters here
-    because the targets are Boolean and therefore far from mean-zero.
+    Both are multi-label problems sharing one design matrix, so the weights are a single
+    `(d+1, F)` array and one pass costs one `(m, F)` product. The `(n, F)` logit matrix is never
+    materialised -- that is what makes `F = 800` at `n = 100 000` affordable on a CPU.
     """
-    n, d = R.shape
-    X = np.hstack([R, np.ones((n, 1))])
-    A = X.T @ X
-    pen = ridge * np.eye(d + 1)
-    pen[d, d] = 0.0
-    return np.linalg.solve(A + pen, X.T @ Y)
-
-
-def apply_affine_probe(W: np.ndarray, R: np.ndarray) -> np.ndarray:
-    """Scores ``(n, F)`` of the probe ``W`` on representations ``R``."""
-    return np.hstack([R, np.ones((R.shape[0], 1))]) @ W
-
-
-def boolean_states(F: int, s: int, n: int, rng: np.random.Generator) -> np.ndarray:
-    """``(F, n)`` matrix whose columns are indicators of uniform random size-``s`` supports.
-
-    Drawn by partial-sorting one uniform key per (column, feature): the ``s`` smallest keys of
-    a column are exchangeable, so the selected set is uniform over size-``s`` subsets. This is
-    the same law as repeated ``rng.choice(..., replace=False)`` and is orders of magnitude
-    faster at the sizes the scaled campaign uses, where support drawing would otherwise cost
-    more than the linear algebra it feeds.
-    """
-    if not 1 <= s <= F:
-        raise ValueError(f"need 1 <= s <= F, got s={s}, F={F}")
-    keys = rng.random((n, F))
-    idx = np.argpartition(keys, s - 1, axis=1)[:, :s]
-    B = np.zeros((F, n))
-    B[idx.ravel(), np.repeat(np.arange(n), s)] = 1.0
-    return B
-
-
-_boolean_states = boolean_states  # previous private name
-
-
-def boolean_probe_profile(W_in: np.ndarray, W_out: np.ndarray, sparsities: Sequence[int],
-                          n_train: int, n_test: int, seed: int, theta: float = 0.5,
-                          ridge: float = 1e-8, conf: float = 0.95,
-                          extra_readouts: Optional[Dict[str, np.ndarray]] = None
-                          ) -> Dict[str, Any]:
-    """Network output versus cross-validated affine probes, on identical held-out states.
-
-    For each sparsity a probe is fitted on ``n_train`` states and scored on ``n_test`` disjoint
-    ones drawn from the same law, separately for the ``pre`` and ``post`` representations. The
-    network's own thresholded output is scored on those same ``n_test`` states, so the
-    comparison at each sparsity is paired.
-
-    Fitting one probe *per sparsity* deliberately favours the probe: it is told the sparsity it
-    will be tested at, which the network is not. A network that still wins has won against a
-    generous baseline.
-
-    ``extra_readouts`` maps a name to an ``(F, d)`` readout of the *linear* representation --
-    the pseudoinverse, the model's own decoder, a least-squares fit -- which is calibrated to
-    unit diagonal here and scored on the same held-out states, so the fixed readouts of the
-    theory and the fitted probes appear side by side on identical evidence.
-    """
-    d, F = W_in.shape
+    n, p = X.shape
+    F = split.F
     rng = np.random.default_rng(seed)
-    rows: List[Dict[str, Any]] = []
-
-    fixed: Dict[str, np.ndarray] = {}
-    for name, G in (extra_readouts or {}).items():
-        try:
-            fixed[name] = unit_diagonal(np.asarray(G, dtype=np.float64) @ W_in)
-        except ValueError:
-            continue                                          # vanishing gain: interface undefined
-
-    for s in [int(x) for x in sparsities]:
-        B_tr = _boolean_states(F, s, n_train, rng)
-        B_te = _boolean_states(F, s, n_test, rng)
-        target_te = B_te.T                                   # (n_test, F)
-
-        row: Dict[str, Any] = {"s": s, "n_train": n_train, "n_test": n_test}
-
-        # ---- the network, on the held-out states ----
-        Y = (W_out @ np.maximum(W_in @ B_te, 0.0)).T         # (n_test, F)
-        ok = np.all((Y >= theta) == (target_te > 0.5), axis=1)
-        lo, hi = wilson_interval(int(ok.sum()), n_test, conf=conf)
-        row.update({"p_rec_model": float(ok.mean()), "ci_low_model": lo, "ci_high_model": hi,
-                    "rms_model": float(np.sqrt(((Y - target_te) ** 2).mean()))})
-
-        # ---- affine probes, fitted out of sample ----
-        for rep in REPRESENTATIONS:
-            W = fit_affine_probe(_represent(W_in, B_tr, rep), B_tr.T, ridge=ridge)
-            Z = apply_affine_probe(W, _represent(W_in, B_te, rep))
-            ok_p = np.all((Z >= theta) == (target_te > 0.5), axis=1)
-            lo_p, hi_p = wilson_interval(int(ok_p.sum()), n_test, conf=conf)
-            row.update({
-                f"p_rec_probe_{rep}": float(ok_p.mean()),
-                f"ci_low_probe_{rep}": lo_p,
-                f"ci_high_probe_{rep}": hi_p,
-                f"rms_probe_{rep}": float(np.sqrt(((Z - target_te) ** 2).mean())),
-            })
-
-        # ---- the fixed linear interfaces of the theory, on the same held-out states ----
-        for name, M in fixed.items():
-            Zf = (M @ B_te).T
-            ok_f = np.all((Zf >= theta) == (target_te > 0.5), axis=1)
-            lo_f, hi_f = wilson_interval(int(ok_f.sum()), n_test, conf=conf)
-            row.update({
-                f"p_rec_linear_{name}": float(ok_f.mean()),
-                f"ci_low_linear_{name}": lo_f,
-                f"ci_high_linear_{name}": hi_f,
-                f"rms_linear_{name}": float(np.sqrt(((Zf - target_te) ** 2).mean())),
-            })
-
-        row["rms_floor_uniform"] = float(np.sqrt(energy_floor_uniform(F, d, s)))
-        rows.append(row)
-
-    probs = {"model": [r["p_rec_model"] for r in rows]}
-    for rep in REPRESENTATIONS:
-        probs[f"probe_{rep}"] = [r[f"p_rec_probe_{rep}"] for r in rows]
-    for name in fixed:
-        probs[f"linear_{name}"] = [r[f"p_rec_linear_{name}"] for r in rows]
-    s95 = {k: s95_from_curve([r["s"] for r in rows], v) for k, v in probs.items()}
-
-    return {"d": d, "F": F, "theta": theta, "ridge": ridge, "seed": seed,
-            "rows": rows, "s95": s95}
+    out: Dict[float, np.ndarray] = {}
+    for lam in grid:
+        W = np.zeros((p, F))
+        vel = np.zeros_like(W)
+        for t in range(steps):
+            idx = rng.integers(0, n, size=min(batch, n))
+            Xb = X[idx]
+            sub = StateSplit(supports=split.supports[idx], sparsity=split.sparsity[idx], F=F)
+            Yb = one_hot_targets(sub)
+            Zb = Xb @ W
+            if kind == "logistic":
+                # Stable sigmoid: exp(-|z|) cannot overflow, unlike exp(-z) for very negative z.
+                e = np.exp(-np.abs(Zb))
+                sig = np.where(Zb >= 0, 1.0 / (1.0 + e), e / (1.0 + e))
+                G = Xb.T @ (sig - Yb) / len(idx)
+            else:                                       # squared hinge on +-1 labels
+                S = 2.0 * Yb - 1.0
+                slack = np.maximum(0.0, 1.0 - S * Zb)
+                G = Xb.T @ (-2.0 * S * slack) / len(idx)
+            G[:-1] += lam * W[:-1]                      # intercept unpenalised
+            vel = 0.9 * vel - lr * G
+            W += vel
+        out[float(lam)] = W
+    return out
 
 
-def native_profile(W_in: np.ndarray, W_out: np.ndarray, p: float, n_train: int, n_test: int,
-                   seed: int, ridge: float = 1e-8,
-                   readouts: Optional[Dict[str, np.ndarray]] = None) -> Dict[str, Any]:
-    """The same diagnosis on the *training* distribution, ``x = mask * U[-1, 1]``.
+def fit_probe(W_in: np.ndarray, split: StateSplit, family: str, representation: str,
+              grid: Sequence[float] = DEFAULT_RIDGE_GRID, steps: int = 300, batch: int = 4096,
+              lr: float = 0.5, seed: int = 0) -> Dict[float, np.ndarray]:
+    """Fit one probe family over a regularisation grid. Returns `{penalty: W (d+1, F)}`."""
+    if family not in PROBE_FAMILIES:
+        raise ValueError(f"unknown family {family!r}; use one of {PROBE_FAMILIES}")
+    if representation not in REPRESENTATIONS:
+        raise ValueError(f"unknown representation {representation!r}; use 'pre' or 'post'")
+    X = _design(representations(W_in, split, post_relu=(representation == "post")))
+    if family == "ridge":
+        return _fit_ridge(X, split, grid)
+    return _fit_margin_family(X, split, grid, family, steps, batch, lr, seed)
 
-    Two quantities are reported.
 
-    *Analog reconstruction.* For a calibrated interface ``M`` with ``A = M - I`` and inputs
-    whose coordinates are independent with ``E[x_i^2] = p/3``, the expected per-coordinate
-    squared error is exactly ``(p/3) ||A||_F^2 / F``. No Monte Carlo is involved, and the floor
-    ``||A||_F^2 >= F(F-d)/d`` turns into the native-distribution floor ``(p/3)(F-d)/d``.
+def score_probe(W_in: np.ndarray, split: StateSplit, W: np.ndarray,
+                representation: str) -> np.ndarray:
+    """`(n, F)` scores of a fitted probe on a split."""
+    X = _design(representations(W_in, split, post_relu=(representation == "post")))
+    return X @ W
 
-    *Support detection.* Exact recovery of ``1{x_i != 0}`` is the wrong metric here: a
-    coordinate drawn near zero is undetectable in principle, so the exact-recovery rate
-    collapses to zero for reasons that have nothing to do with the code. We report instead the
-    per-coordinate detection accuracy at the threshold that maximises it on the *training*
-    split, evaluated on the held-out split, for the network and for both affine probes.
+
+# --------------------------------------------------------------------------------------
+# Selection -- validation only
+# --------------------------------------------------------------------------------------
+
+def _exact_recovery(Z: np.ndarray, split: StateSplit, theta: np.ndarray | float) -> np.ndarray:
+    """Per-state indicator that *every* feature was labelled correctly."""
+    Y = one_hot_targets(split) > 0.5
+    return np.all((Z >= theta) == Y, axis=1)
+
+
+def select_thresholds(Z_val: np.ndarray, val: StateSplit, policy: str, theta_fixed: float = 0.5,
+                      n_grid: int = 64) -> np.ndarray | float:
+    """Choose thresholds on validation scores. Never called with test data.
+
+    ``fixed`` keeps the semantically meaningful `theta` -- for unit-gain Boolean targets the
+    midpoint is not an arbitrary choice, and reporting it keeps the comparison with the
+    theory honest. ``global`` maximises the exact-recovery rate over a quantile grid.
+    ``per_feature`` gives every feature its own absolute threshold, but selects them jointly:
+    `theta_i = quantile(Z_val[:, i], q)` for a single level `q` chosen to maximise exact recovery
+    on validation. The per-feature adaptivity is real -- each feature gets a threshold matched to
+    its own score distribution -- while the *objective* is the metric actually reported.
+
+    Tuning each threshold independently, on any per-feature criterion, is the trap here and it
+    was measured before this was written. Exact recovery needs all `F` coordinates right at once,
+    so a per-coordinate error rate `eps` gives roughly `(1-eps)^F` exact recovery: independent
+    per-feature optima each accept a few false positives, and those compound. Both raw and
+    balanced per-feature accuracy came out *worse* than a single fixed threshold for that reason.
+    Selecting one shared quantile level fixes it without giving up the per-feature scale.
     """
-    d, F = W_in.shape
-    rng = np.random.default_rng(seed)
+    if policy not in THRESHOLD_POLICIES:
+        raise ValueError(f"unknown policy {policy!r}; use one of {THRESHOLD_POLICIES}")
+    if policy == "fixed":
+        return float(theta_fixed)
 
-    def draw(n):
-        mask = (rng.random((F, n)) < p).astype(float)
-        return mask * (rng.random((F, n)) * 2.0 - 1.0)
+    Y = one_hot_targets(val) > 0.5
+    if policy == "global":
+        grid = np.quantile(Z_val, np.linspace(0.01, 0.999, n_grid))
+        best, best_theta = -1.0, float(theta_fixed)
+        for t in grid:
+            score = float(np.all((Z_val >= t) == Y, axis=1).mean())
+            if score > best:
+                best, best_theta = score, float(t)
+        return best_theta
 
-    X_tr, X_te = draw(n_train), draw(n_test)
-    on_tr, on_te = (X_tr != 0.0).T, (X_te != 0.0).T          # (n, F)
+    # per_feature: one shared quantile level, per-feature absolute thresholds.
+    qs = np.linspace(0.5, 0.9995, n_grid)
+    best, best_thetas = -1.0, np.full(Z_val.shape[1], float(theta_fixed))
+    for q in qs:
+        thetas = np.quantile(Z_val, q, axis=0)
+        score = float(np.all((Z_val >= thetas) == Y, axis=1).mean())
+        if score > best:
+            best, best_thetas = score, thetas
+    return best_thetas
 
-    # ---- analog side: exact, from the interfaces of the linear representation ----
-    if readouts is None:
-        readouts = {"pinv": np.linalg.pinv(W_in), "wout": W_out}
-    second_moment = p / 3.0
-    analog: Dict[str, Any] = {"second_moment": second_moment,
-                              "rms_floor_native": float(np.sqrt(second_moment * (F - d) / d))}
-    for name, G in readouts.items():
-        try:
-            A = unit_diagonal(np.asarray(G, dtype=np.float64) @ W_in) - np.eye(F)
-        except ValueError as exc:                            # vanishing gain: undefined
-            analog[name] = {"error": str(exc)}
+
+SELECTION_OBJECTIVES = ("curve_auc", "mixture_exact")
+
+
+def _val_curve(W_in: np.ndarray, val_by_s: Dict[int, StateSplit], W: np.ndarray,
+               representation: str, theta) -> List[Tuple[int, float]]:
+    rows = []
+    for s in sorted(val_by_s):
+        sub_ = val_by_s[s]
+        if len(sub_) == 0:
             continue
-        frob_sq = float(np.sum(A * A))
-        analog[name] = {
-            "frob_sq_A": frob_sq,
-            "energy_per_coord": second_moment * frob_sq / F,
-            "rms": float(np.sqrt(second_moment * frob_sq / F)),
-        }
+        Z = score_probe(W_in, sub_, W, representation)
+        rows.append((s, float(_exact_recovery(Z, sub_, theta).mean())))
+    return rows
 
-    # ---- detection side: best threshold chosen on train, reported on test ----
-    def detection(score_tr: np.ndarray, score_te: np.ndarray) -> Dict[str, float]:
-        grid = np.quantile(np.abs(score_tr), np.linspace(0.5, 0.999, 60))
-        acc_tr = [float(((np.abs(score_tr) >= t) == on_tr).mean()) for t in grid]
-        t_best = float(grid[int(np.argmax(acc_tr))])
-        pred = np.abs(score_te) >= t_best
-        tp = float((pred & on_te).sum())
-        fp = float((pred & ~on_te).sum())
-        fn = float((~pred & on_te).sum())
-        return {
-            "threshold": t_best,
-            "accuracy": float((pred == on_te).mean()),
-            "precision": tp / (tp + fp) if tp + fp else 0.0,
-            "recall": tp / (tp + fn) if tp + fn else 0.0,
-            "f1": 2 * tp / (2 * tp + fp + fn) if tp else 0.0,
-        }
 
-    detect = {"model": detection((W_out @ np.maximum(W_in @ X_tr, 0.0)).T,
-                                 (W_out @ np.maximum(W_in @ X_te, 0.0)).T)}
-    for rep in REPRESENTATIONS:
-        R_tr, R_te = _represent(W_in, X_tr, rep), _represent(W_in, X_te, rep)
-        W = fit_affine_probe(R_tr, X_tr.T, ridge=ridge)      # regress the *values*, not the mask
-        detect[f"probe_{rep}"] = detection(apply_affine_probe(W, R_tr),
-                                           apply_affine_probe(W, R_te))
+def select_probe(W_in: np.ndarray, train: StateSplit, val: StateSplit, family: str,
+                 representation: str, policy: str, grid: Sequence[float] = DEFAULT_RIDGE_GRID,
+                 theta_fixed: float = 0.5, val_by_s: Optional[Dict[int, StateSplit]] = None,
+                 objective: str = "curve_auc", **fit_kw) -> Dict[str, Any]:
+    """Fit over the grid, pick the penalty and thresholds on validation, return the winner.
 
-    return {"d": d, "F": F, "p": p, "n_train": n_train, "n_test": n_test, "seed": seed,
-            "analog": analog, "detection": detect,
-            "base_rate": float(on_te.mean())}
+    ``objective`` decides what "best on validation" means, and it must match what is reported or
+    the selection quietly optimises the wrong thing. Measured on a small model, choosing by
+    exact recovery over the sparsity *mixture* picked configurations whose recovery **AUC over
+    the curve** was four times worse than the best -- the mixture is dominated by whichever
+    sparsities happen to be easy. So the default is ``curve_auc``: the area under the
+    per-sparsity validation recovery curve, which is the co-primary estimand of the analysis
+    plan. ``mixture_exact`` is retained for comparison and needs no per-sparsity validation
+    split.
+    """
+    if objective not in SELECTION_OBJECTIVES:
+        raise ValueError(f"unknown objective {objective!r}; use one of {SELECTION_OBJECTIVES}")
+    if objective == "curve_auc" and not val_by_s:
+        objective = "mixture_exact"          # no per-sparsity validation available
+    fits = fit_probe(W_in, train, family, representation, grid=grid, **fit_kw)
+    best: Optional[Dict[str, Any]] = None
+    for lam, W in fits.items():
+        Z = score_probe(W_in, val, W, representation)
+        theta = select_thresholds(Z, val, policy, theta_fixed=theta_fixed)
+        mixture_exact = float(_exact_recovery(Z, val, theta).mean())
+        if objective == "curve_auc":
+            curve = _val_curve(W_in, val_by_s, W, representation, theta)
+            xs = [a for a, _ in curve]
+            ys = [b for _, b in curve]
+            crit = (float(np.trapezoid(ys, xs) / (max(xs) - min(xs))) if len(xs) > 1
+                    else (ys[0] if ys else 0.0))
+        else:
+            crit = mixture_exact
+        if best is None or crit > best["val_criterion"]:
+            best = {"W": W, "penalty": lam, "theta": theta, "val_criterion": crit,
+                    "val_objective": objective, "val_exact_recovery": mixture_exact,
+                    "family": family, "representation": representation, "policy": policy}
+    assert best is not None
+    return best
+
+
+# --------------------------------------------------------------------------------------
+# Locked evaluation
+# --------------------------------------------------------------------------------------
+
+def _margins(Z: np.ndarray, split: StateSplit, theta: np.ndarray | float) -> Dict[str, float]:
+    """Signed distance to the threshold, worst feature per state."""
+    S = 2.0 * (one_hot_targets(split) > 0.5) - 1.0
+    m = np.min(S * (Z - theta), axis=1)
+    return {"margin_median": float(np.median(m)), "margin_p05": float(np.quantile(m, 0.05)),
+            "margin_min": float(m.min()), "frac_positive_margin": float((m > 0).mean())}
+
+
+def _calibration(Z: np.ndarray, split: StateSplit, n_bins: int = 10) -> Dict[str, float]:
+    """Brier score and expected calibration error of the logistic link applied to the scores."""
+    P = 1.0 / (1.0 + np.exp(-Z))
+    Y = (one_hot_targets(split) > 0.5).astype(np.float64)
+    brier = float(np.mean((P - Y) ** 2))
+    edges = np.linspace(0.0, 1.0, n_bins + 1)
+    ece = 0.0
+    flat_p, flat_y = P.ravel(), Y.ravel()
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        m = (flat_p >= lo) & (flat_p < hi)
+        if m.any():
+            ece += m.mean() * abs(flat_p[m].mean() - flat_y[m].mean())
+    return {"brier": brier, "ece": float(ece)}
+
+
+def evaluate_scores(score_fn, test_by_s: Dict[int, StateSplit], theta: np.ndarray | float,
+                    conf: float = 0.95, calibrated: bool = False) -> Dict[str, Any]:
+    """Score any decision rule on the locked test sets. No selection happens here.
+
+    `score_fn(split) -> (n, F)` is the only thing that varies between a fitted probe, a fixed
+    calibrated readout and the network's own output, so all three are evaluated by this one
+    function on the *same* states. That is what keeps the comparison paired: every decoder sees
+    an identical set of supports at every sparsity.
+    """
+    rows: List[Dict[str, Any]] = []
+    for s in sorted(test_by_s):
+        split = test_by_s[s]
+        if len(split) == 0:
+            continue
+        Z = score_fn(split)
+        ok = _exact_recovery(Z, split, theta)
+        Y = one_hot_targets(split) > 0.5
+        k, n = int(ok.sum()), len(split)
+        lo, hi = wilson_interval(k, n)
+        rows.append({"s": s, "n_test": n, "successes": k, "p_rec": k / n,
+                     "ci_low": lo, "ci_high": hi,
+                     "coord_accuracy": float(((Z >= theta) == Y).mean()),
+                     **_margins(Z, split, theta),
+                     **(_calibration(Z, split) if calibrated else {})})
+    sp = [r["s"] for r in rows]
+    pr = [r["p_rec"] for r in rows]
+    return {"rows": rows, "sparsities": sp,
+            "s95": s95_from_curve(sp, pr), "s95_interp": s95_interpolated(sp, pr),
+            "s50": s95_from_curve(sp, pr, level=0.5),
+            "s50_interp": s95_interpolated(sp, pr, level=0.5),
+            "recovery_auc": float(np.trapezoid(pr, sp) / (max(sp) - min(sp))) if len(sp) > 1
+            else float(pr[0])}
+
+
+def evaluate_probe(W_in: np.ndarray, test_by_s: Dict[int, StateSplit], W: np.ndarray,
+                   representation: str, theta: np.ndarray | float,
+                   conf: float = 0.95, calibrated: bool = False) -> Dict[str, Any]:
+    """Locked evaluation of a fitted probe.
+
+    ``calibrated`` reports Brier score and expected calibration error, which mean something only
+    when the scores are logits. Set it for the logistic family and leave it off elsewhere, rather
+    than quoting a calibration number for a ridge fit where the logistic link is arbitrary.
+    """
+    return evaluate_scores(lambda sp: score_probe(W_in, sp, W, representation),
+                           test_by_s, theta, conf, calibrated=calibrated)
+
+
+def evaluate_network(W_in: np.ndarray, W_out: np.ndarray, test_by_s: Dict[int, StateSplit],
+                     theta: float = 0.5, conf: float = 0.95) -> Dict[str, Any]:
+    """Locked evaluation of the network's own thresholded output, `W_out ReLU(W_in b)`."""
+    def scores(split: StateSplit) -> np.ndarray:
+        return representations(W_in, split, post_relu=True) @ W_out.T
+    return evaluate_scores(scores, test_by_s, theta, conf)
+
+
+def evaluate_fixed_readout(W_in: np.ndarray, G: np.ndarray, test_by_s: Dict[int, StateSplit],
+                           theta: float = 0.5, conf: float = 0.95) -> Dict[str, Any]:
+    """Locked evaluation of a fixed readout, gain-normalised to unit diagonal first.
+
+    These are the readouts of the theory -- the calibrated pseudoinverse, the model's own
+    decoder, a least-squares fit. They carry the floor statements that the fitted probes do not,
+    and they are scored here on the same states so the two families sit side by side.
+    """
+    from .interface import gains
+
+    G = np.ascontiguousarray(G, dtype=np.float64)
+    Gc = G / gains(G, W_in)[:, None]
+
+    def scores(split: StateSplit) -> np.ndarray:
+        return representations(W_in, split, post_relu=False) @ Gc.T
+    return evaluate_scores(scores, test_by_s, theta, conf)
+
+
+def _tail_auc(rows: List[Dict[str, Any]], s_from: float) -> Optional[float]:
+    tail = [(r["s"], r["p_rec"]) for r in rows if r["s"] > s_from]
+    if len(tail) < 2:
+        return None
+    xs, ys = zip(*tail)
+    return float(np.trapezoid(ys, xs) / (max(xs) - min(xs)))
+
+
+def probe_profile(W_in: np.ndarray, bundle: SplitBundle,
+                  families: Sequence[str] = PROBE_FAMILIES,
+                  reps: Sequence[str] = REPRESENTATIONS,
+                  policies: Sequence[str] = THRESHOLD_POLICIES,
+                  grid: Sequence[float] = DEFAULT_RIDGE_GRID, theta_fixed: float = 0.5,
+                  include_oracle: bool = True, objective: str = "curve_auc",
+                  **fit_kw) -> Dict[str, Any]:
+    """Every (family, representation, policy) combination, as a global probe and as an oracle.
+
+    The **global** probe is fitted once on the sparsity mixture and evaluated across the whole
+    curve: one interface, as a real decoder would be. The **per-sparsity oracle** is refitted and
+    retuned at every sparsity from that sparsity's own train/val split. The oracle is told the
+    sparsity it will be tested at, which the network is not, so it is an *upper envelope* and is
+    tagged `is_oracle` wherever it appears.
+
+    The tail AUC is taken past the global probe's own validation-selected `s95`, so the interval
+    is fixed by validation data before the locked test set is touched.
+    """
+    out: Dict[str, Any] = {"d": int(W_in.shape[0]), "F": int(W_in.shape[1]),
+                           "seed": bundle.seed, "sparsities": bundle.sparsities,
+                           "splits": {"train": len(bundle.train), "val": len(bundle.val),
+                                      "test_by_s": {s: len(v) for s, v in
+                                                    bundle.test_by_s.items()},
+                                      "n_redrawn": bundle.n_redrawn,
+                                      "exhausted_sparsities": bundle.exhausted},
+                           "global": {}, "oracle": {}}
+
+    for fam in families:
+        for rep in reps:
+            for pol in policies:
+                key = f"{fam}_{rep}_{pol}"
+                sel = select_probe(W_in, bundle.train, bundle.val, fam, rep, pol,
+                                   grid=grid, theta_fixed=theta_fixed,
+                                   val_by_s=bundle.val_by_s, objective=objective, **fit_kw)
+                ev = evaluate_probe(W_in, bundle.test_by_s, sel["W"], rep, sel["theta"],
+                                    calibrated=(fam == "logistic"))
+                # The tail interval is fixed from validation, before the test rows are read.
+                Zv = score_probe(W_in, bundle.val, sel["W"], rep)
+                val_rows = []
+                for s in bundle.sparsities:
+                    sub = bundle.val.of_sparsity(s)
+                    if len(sub):
+                        Zs = score_probe(W_in, sub, sel["W"], rep)
+                        val_rows.append((s, float(_exact_recovery(Zs, sub, sel["theta"]).mean())))
+                s95_val = s95_from_curve([a for a, _ in val_rows],
+                                         [b for _, b in val_rows]) if val_rows else 0
+                out["global"][key] = {
+                    "penalty": sel["penalty"], "policy": pol, "family": fam,
+                    "representation": rep, "is_oracle": False,
+                    "theta": (sel["theta"] if np.isscalar(sel["theta"])
+                              else {"per_feature": True,
+                                    "median": float(np.median(sel["theta"]))}),
+                    "val_exact_recovery": sel["val_exact_recovery"],
+                    "val_criterion": sel["val_criterion"],
+                    "val_objective": sel["val_objective"],
+                    "s95_validation": s95_val,
+                    "tail_auc": _tail_auc(ev["rows"], s95_val),
+                    **{k: v for k, v in ev.items() if k != "sparsities"},
+                }
+                del Zv
+
+                if not include_oracle:
+                    continue
+                rows: List[Dict[str, Any]] = []
+                for s in bundle.sparsities:
+                    tr, va, te = (bundle.train_by_s[s], bundle.val_by_s[s], bundle.test_by_s[s])
+                    if min(len(tr), len(va), len(te)) == 0:
+                        continue
+                    o = select_probe(W_in, tr, va, fam, rep, pol, grid=grid,
+                                     theta_fixed=theta_fixed, objective="mixture_exact",
+                                     **fit_kw)
+                    ev_s = evaluate_probe(W_in, {s: te}, o["W"], rep, o["theta"],
+                                          calibrated=(fam == "logistic"))
+                    r = ev_s["rows"][0]
+                    r["penalty"] = o["penalty"]
+                    rows.append(r)
+                sp = [r["s"] for r in rows]
+                pr = [r["p_rec"] for r in rows]
+                out["oracle"][key] = {
+                    "family": fam, "representation": rep, "policy": pol, "is_oracle": True,
+                    "note": "upper envelope: refitted and retuned per sparsity, not an "
+                            "implementable single interface",
+                    "rows": rows,
+                    "s95": s95_from_curve(sp, pr), "s95_interp": s95_interpolated(sp, pr),
+                    "s50": s95_from_curve(sp, pr, level=0.5),
+                    "recovery_auc": (float(np.trapezoid(pr, sp) / (max(sp) - min(sp)))
+                                     if len(sp) > 1 else (float(pr[0]) if pr else None)),
+                }
+    return out

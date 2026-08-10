@@ -38,8 +38,10 @@ from lrtr.diagnostic import (
     interface_floor_diagnostic,
     interface_linear_energy,
 )
-from lrtr.probes import boolean_probe_profile, boolean_states, native_profile
-from lrtr.threshold import s95_from_curve, s95_interpolated
+from lrtr.distributional import native_distribution_profile
+from lrtr.probes import (DEFAULT_RIDGE_GRID, evaluate_fixed_readout, evaluate_network,
+                         probe_profile)
+from lrtr.splits import make_state_splits, one_hot_targets
 from lrtr.toymodel import (
     linear_readouts,
     linearity_report,
@@ -50,18 +52,20 @@ from lrtr.toymodel import (
 READOUTS = ("pinv", "wout", "ls")
 
 
-def _fit_states(F: int, s_fit: int, n_fit: int, rng: np.random.Generator) -> np.ndarray:
-    """Boolean fitting set for the least-squares readout, covering every feature at least once.
+def _fit_states(bundle, F: int, n_fit: int) -> np.ndarray:
+    """`(F, n)` indicator matrix for fitting the least-squares readout of the theory.
 
-    A feature that never appears gets an identically zero row in the fitted readout, and the
-    unit-diagonal calibration is then undefined for that coordinate.
+    Drawn from the probe *training* split, so the fixed readouts and the fitted probes are
+    estimated from the same data and evaluated on the same locked states. Every feature must
+    appear at least once: a feature that never does gets an identically zero row in the fitted
+    readout, and the unit-diagonal calibration is then undefined for that coordinate.
     """
-    n_fit = max(n_fit, int(np.ceil(2 * F / max(1, s_fit))))
-    B = boolean_states(F, s_fit, n_fit, rng)
-    for i, feat in enumerate(np.nonzero(B.sum(axis=1) == 0)[0]):
-        B[feat, i % n_fit] = 1.0
-    if np.any(B.sum(axis=1) == 0):
-        raise RuntimeError("could not cover every feature in the readout fitting set")
+    B = one_hot_targets(bundle.train).T[:, :max(n_fit, 1)]
+    missing = np.nonzero(B.sum(axis=1) == 0)[0]
+    if missing.size:
+        raise RuntimeError(
+            f"{missing.size} of {F} features never appear in the readout fitting set; "
+            f"raise probe_n_train (currently giving {B.shape[1]} states)")
     return B
 
 
@@ -76,9 +80,11 @@ def diagnose(model: Dict[str, Any], cfg: Dict[str, Any], sparsities: List[int],
     W_in = np.asarray(model["W_in"], dtype=np.float64)
     W_out = np.asarray(model["W_out"], dtype=np.float64)
     d, F = W_in.shape
-    rng = np.random.default_rng(seed)
 
-    B_fit = _fit_states(F, max(1, int(np.median(sparsities))), cfg["n_fit"], rng)
+    bundle = make_state_splits(F=F, sparsities=sparsities, n_train=cfg["probe_n_train"],
+                              n_val=cfg["probe_n_val"], n_test=cfg["probe_n_test"],
+                              seed=seed + 1)
+    B_fit = _fit_states(bundle, F, cfg["n_fit"])
     readouts = linear_readouts(W_in, W_out, B_fit)
 
     floor_stats: Dict[str, Any] = {}
@@ -93,21 +99,25 @@ def diagnose(model: Dict[str, Any], cfg: Dict[str, Any], sparsities: List[int],
             continue
         analog[name] = {str(s): interface_linear_energy(mom, s) for s in sparsities}
 
-    profile = boolean_probe_profile(
-        W_in, W_out, sparsities=sparsities,
-        n_train=cfg["probe_n_train"], n_test=cfg["probe_n_test"],
-        seed=seed + 1, extra_readouts=readouts)
+    # Fitted affine probes: every family, representation and threshold policy, selected on
+    # validation and scored on the locked test set. Plus the network and the fixed readouts of
+    # the theory, on those same states, so the whole comparison is paired.
+    probes = probe_profile(W_in, bundle, grid=cfg.get("ridge_grid", None) or DEFAULT_RIDGE_GRID,
+                           theta_fixed=cfg.get("theta", 0.5),
+                           include_oracle=cfg.get("include_oracle", True),
+                           steps=cfg.get("probe_steps", 300),
+                           batch=cfg.get("probe_batch", 4096))
+    network = evaluate_network(W_in, W_out, bundle.test_by_s, theta=cfg.get("theta", 0.5))
+    fixed = {name: evaluate_fixed_readout(W_in, G, bundle.test_by_s,
+                                          theta=cfg.get("theta", 0.5))
+             for name, G in readouts.items()}
 
-    # Attach the exact analog error to each row, next to the measured recovery rates.
-    for row in profile["rows"]:
+    # The exact analog error sits alongside the measured recovery rates, per sparsity.
+    for row in network["rows"]:
         for name, per_s in analog.items():
             e = per_s[str(row["s"])]
             row[f"analog_energy_{name}"] = e
             row[f"analog_rms_{name}"] = float(np.sqrt(e))
-
-    probs = {k: [r[f"p_rec_{k}"] for r in profile["rows"]] for k in
-             ["model"] + [f"probe_{r}" for r in ("pre", "post")]
-             + [f"linear_{n}" for n in readouts if f"p_rec_linear_{n}" in profile["rows"][0]]}
 
     return {
         "d": d, "F": F, "seed": model["seed"], "loss_kind": model["loss_kind"],
@@ -116,13 +126,22 @@ def diagnose(model: Dict[str, Any], cfg: Dict[str, Any], sparsities: List[int],
         "mse_ratio_to_zero_predictor": model.get("mse_ratio_to_zero_predictor"),
         "floor_stats": floor_stats,
         "linearity": linearity_report(W_in, W_out, B_fit, cfg.get("theta", 0.5)),
-        "rows": profile["rows"],
-        "s95": {k: s95_from_curve(sparsities, v) for k, v in probs.items()},
-        "s95_interpolated": {k: s95_interpolated(sparsities, v) for k, v in probs.items()},
-        "native": native_profile(W_in, W_out, p=model.get("p") or cfg["train_sparsities"][0],
-                                 n_train=cfg["native_n_train"], n_test=cfg["native_n_test"],
-                                 seed=seed + 2,
-                                 readouts={n: np.asarray(readouts[n]) for n in READOUTS}),
+        "splits": probes["splits"],
+        "probes_global": probes["global"],
+        "probes_oracle": probes["oracle"],
+        "network": network,
+        "fixed_readouts": fixed,
+        "s95": {"model": network["s95"],
+                **{f"linear_{k}": v["s95"] for k, v in fixed.items()},
+                **{f"probe_{k}": v["s95"] for k, v in probes["global"].items()}},
+        "s95_interpolated": {"model": network["s95_interp"],
+                             **{f"linear_{k}": v["s95_interp"] for k, v in fixed.items()},
+                             **{f"probe_{k}": v["s95_interp"]
+                                for k, v in probes["global"].items()}},
+        "native": native_distribution_profile(
+            W_in, W_out, p=model.get("p") or cfg["train_sparsities"][0],
+            n_train=cfg["native_n_train"], n_test=cfg["native_n_test"], seed=seed + 2,
+            readouts={n: np.asarray(readouts[n]) for n in READOUTS}),
     }
 
 
@@ -208,12 +227,15 @@ def main() -> None:
                              bool(args.resume))
             all_diagnoses.extend(diags)
             s95m = [x["s95"]["model"] for x in diags]
-            s95p = [x["s95"]["probe_post"] for x in diags]
+            best_probe = max(probes_key for probes_key in diags[0]["s95"]
+                             if probes_key.startswith("probe_"))
+            s95p = [max(v for k, v in x["s95"].items() if k.startswith("probe_"))
+                    for x in diags]
             ratios = [x["floor_stats"]["pinv"]["ratio_mean_sq"] for x in diags
                       if "ratio_mean_sq" in x["floor_stats"].get("pinv", {})]
             log(f"  [{cell_name(task, loss, p, d)}] "
                 f"s95(model) median={np.median(s95m):.1f}  "
-                f"s95(probe_post) median={np.median(s95p):.1f}  "
+                f"s95(best probe) median={np.median(s95p):.1f}  "
                 + (f"pinv ratio mean={np.mean(ratios):.4f}" if ratios else "pinv degenerate"))
 
         rec.set("n_diagnoses", len(all_diagnoses))
