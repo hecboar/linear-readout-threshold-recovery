@@ -33,6 +33,7 @@ structurally: it poisons the test set and asserts that not one selected hyperpar
 """
 from __future__ import annotations
 
+import zlib
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -56,6 +57,7 @@ __all__ = [
     "select_thresholds",
     "evaluate_probe",
     "probe_profile",
+    "distribution_profile",
 ]
 
 PROBE_FAMILIES = ("ridge", "logistic", "svm")
@@ -284,7 +286,10 @@ def _margins(Z: np.ndarray, split: StateSplit, theta: np.ndarray | float) -> Dic
 
 def _calibration(Z: np.ndarray, split: StateSplit, n_bins: int = 10) -> Dict[str, float]:
     """Brier score and expected calibration error of the logistic link applied to the scores."""
-    P = 1.0 / (1.0 + np.exp(-Z))
+    # Stable sigmoid, as in the fitter: exp(-|z|) cannot overflow where exp(-z) does. Calibration
+    # is evaluated on raw scores that can be large, so this is not a theoretical concern.
+    e = np.exp(-np.abs(Z))
+    P = np.where(Z >= 0, 1.0 / (1.0 + e), e / (1.0 + e))
     Y = (one_hot_targets(split) > 0.5).astype(np.float64)
     brier = float(np.mean((P - Y) ** 2))
     edges = np.linspace(0.0, 1.0, n_bins + 1)
@@ -466,4 +471,80 @@ def probe_profile(W_in: np.ndarray, bundle: SplitBundle,
                     "recovery_auc": (float(np.trapezoid(pr, sp) / (max(sp) - min(sp)))
                                      if len(sp) > 1 else (float(pr[0]) if pr else None)),
                 }
+    return out
+
+
+# --------------------------------------------------------------------------------------
+# The same diagnosis under several state distributions
+# --------------------------------------------------------------------------------------
+
+def distribution_profile(W_in: np.ndarray, W_out: np.ndarray, bundle: SplitBundle,
+                         family_names: Sequence[str], frontier_features: Optional[Sequence[int]]
+                         = None, families_cfg: Optional[Dict[str, Any]] = None,
+                         theta: float = 0.5, **profile_kw) -> Dict[str, Any]:
+    """Refit and rescore everything under each state distribution, on identical supports.
+
+    The probes are **refitted and reselected per family**, which is the whole point: a probe tuned
+    on Boolean states and then shown continuous amplitudes would be a straw baseline, and the
+    audit already found one of those. The supports are shared across families, so a change in
+    recovery is attributable to the amplitude law and not to an easier draw.
+
+    Two things this reports that a blind six-distribution sweep would not:
+
+    * **the theory's prediction for each family.** By E2 the affine frontier depends on the state
+      law through the minimum amplitude alone, so for every truncated family the frontier is
+      recomputed at that family's `alpha`. That is a falsifiable prediction, not a description.
+    * **which families exact recovery even means something for.** A law whose amplitudes reach
+      zero has undetectable active coordinates by construction, so its exact-recovery rate
+      measures the draw. Those families carry `exact_recovery_meaningful: False` and their
+      recovery numbers must not be compared against the truncated ones.
+    """
+    from .affine_frontier import collision_frontier
+    from .state_families import apply_family_to_bundle, family
+
+    d = W_in.shape[0]
+    out: Dict[str, Any] = {"d": int(d), "F": int(W_in.shape[1]), "families": {}}
+    for name in family_names:
+        fam = family(name)
+        # zlib.crc32, not hash(): Python randomises string hashing per process, so hash(name)
+        # would draw different amplitudes on every run and silently break reproducibility.
+        bb = apply_family_to_bundle(bundle, fam, d=d,
+                                    seed=int(zlib.crc32(name.encode())) % (2 ** 31))
+        probes = probe_profile(W_in, bb, theta_fixed=theta, **profile_kw)
+        net = evaluate_network(W_in, W_out, bb.test_by_s, theta=theta)
+
+        rec: Dict[str, Any] = {
+            "alpha": fam.alpha,
+            "rep_noise_sigma": fam.rep_noise_sigma,
+            "exact_recovery_meaningful": fam.exact_recovery_meaningful,
+            "note": fam.note,
+            "network": {k: v for k, v in net.items() if k != "rows"},
+            "network_rows": net["rows"],
+            "probes": {k: {kk: vv for kk, vv in v.items() if kk != "rows"}
+                       for k, v in probes["global"].items()},
+            "best_probe_s95": max(v["s95"] for v in probes["global"].values()),
+            "best_probe_auc": max(v["recovery_auc"] for v in probes["global"].values()),
+        }
+        if fam.alpha is not None and frontier_features is not None:
+            fr = collision_frontier(W_in, feature_subset=list(frontier_features),
+                                    model="atmost", alpha=fam.alpha)
+            rec["frontier_at_alpha"] = {
+                "s_aff_robust_upper": fr["s_aff_robust"], "kappa_min": fr["frontier_min"],
+                "is_upper_bound": True,
+                # The frontier is worst case over supports; s95 is the 95th percentile over a
+                # random draw. So the frontier should sit at or below the s95 an *optimal* affine
+                # decoder attains. Our probe is fitted rather than optimal, so a violation here is
+                # weak evidence about the probe and none at all about the theory.
+                "at_most_best_probe_s95": bool(fr["s_aff_robust"] <= rec["best_probe_s95"]),
+            }
+        out["families"][name] = rec
+
+    # Does the frontier move with alpha the way E2 requires? A weaker activation cannot be
+    # easier to detect, so kappa must not increase as alpha falls.
+    trunc = sorted(((v["alpha"], v["frontier_at_alpha"]["kappa_min"])
+                    for v in out["families"].values()
+                    if v["alpha"] is not None and "frontier_at_alpha" in v),
+                   key=lambda t: -t[0])
+    out["alpha_monotone"] = all(a >= b - 1e-6 for (_, a), (_, b) in zip(trunc, trunc[1:]))
+    out["alpha_vs_kappa"] = [{"alpha": a, "kappa_min": k} for a, k in trunc]
     return out

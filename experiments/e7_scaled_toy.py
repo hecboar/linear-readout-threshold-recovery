@@ -294,6 +294,106 @@ def run_cell(task: str, loss: str, p: float, d: int, F: int, sparsities: List[in
     return diagnoses
 
 
+def run_stage_c(stage: Dict[str, Any], cfg: Dict[str, Any], out_dir: Path) -> Dict[str, Any]:
+    """Stage C: the distribution sweep, by re-analysing weights rather than retraining.
+
+    No model is trained here. Every state family is evaluated on the models Stages A and B already
+    produced, which is what the external review specified and what makes the sweep cheap: the
+    expensive part was the training and it is done.
+
+    The families share supports, so the comparison across distributions is paired and only the
+    amplitude law varies. For every family with a positive minimum amplitude the affine frontier is
+    recomputed at that ``alpha``, which is the theory's falsifiable prediction for it (E2). Families
+    whose amplitudes reach zero carry no frontier statement, and their exact-recovery numbers are
+    flagged as not comparable with the rest -- an active coordinate drawn near zero is undetectable
+    in principle, so such a rate measures the draw as much as the code.
+    """
+    from lrtr.probes import distribution_profile
+    from lrtr.splits import make_state_splits
+
+    names: List[str] = stage["families"]
+    weight_files = sorted((out_dir / "weights").glob("*.npz"))
+    if not weight_files:
+        raise SystemExit(
+            f"Stage C found no weights in {out_dir / 'weights'}. It re-analyses what A and B "
+            f"trained, so run at least stage A first.")
+
+    log(f"Stage C: {len(names)} families over {len(weight_files)} weight files"
+        f"  -- {stage.get('note', '')}")
+    per_model: List[Dict[str, Any]] = []
+    for wf in weight_files:
+        z = np.load(wf, allow_pickle=True)
+        meta = json.loads(str(z["meta"]))
+        W_in_all, W_out_all = z["W_in"], z["W_out"]
+        sparsities = z["sparsities"].tolist()
+        for k, seed in enumerate(z["seeds"].tolist()):
+            W_in = W_in_all[k].astype(np.float64)
+            W_out = W_out_all[k].astype(np.float64)
+            F = W_in.shape[1]
+            bundle = make_state_splits(F=F, sparsities=sparsities,
+                                       n_train=cfg["probe_n_train"], n_val=cfg["probe_n_val"],
+                                       n_test=cfg["probe_n_test"], seed=90_000 + 13 * k)
+            sel = _frontier_features(W_in, cfg.get("frontier_n_low", 24),
+                                     cfg.get("frontier_n_random", 8), 91_000 + k)
+            prof = distribution_profile(
+                W_in, W_out, bundle, names, frontier_features=sel["features"],
+                theta=cfg.get("theta", 0.5), steps=cfg.get("probe_steps", 300),
+                batch=cfg.get("probe_batch", 4096), include_oracle=False)
+            per_model.append({"cell": wf.stem, "seed": int(seed), "d": int(meta["d"]),
+                              "F": F, "loss_kind": meta["loss"], "p_train": meta["p"],
+                              **prof})
+        log(f"  [{wf.stem}] {len(z['seeds'])} models swept")
+
+    # Aggregate per family, keeping truncated and untruncated apart: their recovery numbers are
+    # not on the same footing and averaging across them would hide that.
+    agg: Dict[str, Any] = {}
+    for name in names:
+        rows = [m["families"][name] for m in per_model if name in m["families"]]
+        if not rows:
+            continue
+        agg[name] = {
+            "alpha": rows[0]["alpha"],
+            "exact_recovery_meaningful": rows[0]["exact_recovery_meaningful"],
+            "n_models": len(rows),
+            "network_auc_median": float(np.median([r["network"]["recovery_auc"] for r in rows])),
+            "best_probe_auc_median": float(np.median([r["best_probe_auc"] for r in rows])),
+            "network_beats_probe_fraction": float(np.mean(
+                [1.0 if r["network"]["recovery_auc"] > r["best_probe_auc"] else 0.0
+                 for r in rows])),
+            "kappa_min_median": (float(np.median(
+                [r["frontier_at_alpha"]["kappa_min"] for r in rows]))
+                if "frontier_at_alpha" in rows[0] else None),
+        }
+    return {"stage": "C", "families": agg, "n_models": len(per_model),
+            "alpha_monotone_all_models": all(m["alpha_monotone"] for m in per_model),
+            "per_model": per_model}
+
+
+def write_stage_c_report(rep: Dict[str, Any], out_dir: Path) -> Path:
+    L = ["# Stage C - state distributions", "",
+         f"{rep['n_models']} models re-analysed; nothing trained. Supports are shared across "
+         "families, so the comparison is paired and only the amplitude law varies.", "",
+         "| family | alpha | exact recovery meaningful | network AUC | best probe AUC | "
+         "network wins | kappa_min |",
+         "|---|---|---|---|---|---|---|"]
+    for name, v in rep["families"].items():
+        a = "n/a" if v["alpha"] is None else f"{v['alpha']:.2f}"
+        km = "n/a" if v["kappa_min_median"] is None else f"{v['kappa_min_median']:.2f}"
+        L.append(f"| {name} | {a} | {v['exact_recovery_meaningful']} | "
+                 f"{v['network_auc_median']:.3f} | {v['best_probe_auc_median']:.3f} | "
+                 f"{v['network_beats_probe_fraction'] * 100:.0f}% | {km} |")
+    L += ["", "## Gates", "",
+          f"- the affine frontier is monotone in alpha on every model: "
+          f"**{rep['alpha_monotone_all_models']}**. E2 requires it, so a failure here is a bug.",
+          "",
+          "Rows with `exact recovery meaningful = False` have amplitudes reaching zero, so an "
+          "active coordinate can be undetectable in principle. Their recovery numbers measure the "
+          "draw as much as the code and must not be set against the truncated families."]
+    path = out_dir / "stage_C_report.md"
+    path.write_text("\n".join(L) + "\n", encoding="utf-8", newline="\n")
+    return path
+
+
 def stage_cells(stage: Dict[str, Any], tasks: List[str]) -> List[Any]:
     """Expand a stage definition into `(task, loss, p, d, F, n_seeds)` tuples."""
     out: List[Any] = []
@@ -453,6 +553,20 @@ def main() -> None:
                    smoke=args.smoke) as rec:
         for st in order:
             stage = stages_cfg[st]
+            if stage.get("reanalysis"):
+                rep = run_stage_c(stage, cfg, out_dir)
+                write_json(out_dir / "raw" / f"e7_stage_{st}.json", rep)
+                path = write_stage_c_report(rep, out_dir)
+                rec.set(f"stage_{st}", {k: v for k, v in rep.items() if k != "per_model"})
+                log("")
+                log(f"  Stage {st} report -> {path.name}")
+                log(f"    frontier monotone in alpha on every model: "
+                    f"{rep['alpha_monotone_all_models']}")
+                if not rep["alpha_monotone_all_models"]:
+                    raise SystemExit(
+                        f"Stage {st}: the frontier was not monotone in alpha. E2 requires it, so "
+                        f"this is a bug rather than a result.")
+                continue
             cells = stage_cells(stage, tasks)
             if not cells:
                 log(f"Stage {st}: no cells defined, skipping")

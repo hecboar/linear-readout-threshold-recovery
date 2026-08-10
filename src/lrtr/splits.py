@@ -44,6 +44,7 @@ class StateSplit:
     sparsity: np.ndarray          # (n,) int
     F: int
     amplitudes: Optional[np.ndarray] = None   # (n, s_max) float, aligned with `supports`
+    rep_noise: Optional[np.ndarray] = None    # (n, d) float, added to the representation
 
     def __len__(self) -> int:
         return int(self.supports.shape[0])
@@ -52,14 +53,15 @@ class StateSplit:
         m = self.sparsity == s
         return StateSplit(supports=self.supports[m, :s], sparsity=self.sparsity[m], F=self.F,
                           amplitudes=None if self.amplitudes is None
-                          else self.amplitudes[m, :s])
+                          else self.amplitudes[m, :s],
+                          rep_noise=None if self.rep_noise is None else self.rep_noise[m])
 
     def with_amplitudes(self, amplitudes: np.ndarray) -> "StateSplit":
         if amplitudes.shape != self.supports.shape:
             raise ValueError(f"amplitudes must match supports {self.supports.shape}, "
                              f"got {amplitudes.shape}")
         return StateSplit(supports=self.supports, sparsity=self.sparsity, F=self.F,
-                          amplitudes=amplitudes)
+                          amplitudes=amplitudes, rep_noise=self.rep_noise)
 
     def keys(self) -> List[Tuple[int, ...]]:
         """Canonical hashable form of each state, for disjointness checks."""
@@ -253,6 +255,14 @@ def representations(W_in: np.ndarray, split: StateSplit, post_relu: bool) -> np.
         if split.amplitudes is not None:
             cols = cols * split.amplitudes[active, j][:, None]
         R[active] += cols
+    if split.rep_noise is not None:
+        # Noise is added *before* the nonlinearity, so it perturbs the representation the decoder
+        # actually receives rather than the decision downstream of it. That is the perturbation the
+        # robust affine margin certifies a tolerance for, which makes this sweep a test of that
+        # bound instead of an unrelated robustness check.
+        if split.rep_noise.shape != R.shape:
+            raise ValueError(f"rep_noise must be {R.shape}, got {split.rep_noise.shape}")
+        R = R + split.rep_noise
     return np.maximum(R, 0.0) if post_relu else R
 
 

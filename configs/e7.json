@@ -81,6 +81,17 @@
           }
         ],
         "controls": null
+      },
+      "C": {
+        "note": "smoke",
+        "reanalysis": true,
+        "families": [
+          "boolean",
+          "amp_0.5",
+          "native"
+        ],
+        "cells": [],
+        "controls": null
       }
     }
   },
@@ -180,7 +191,18 @@
       }
     },
     "C": {
-      "note": "state distributions and the second system",
+      "note": "state distributions, by re-analysing the weights A and B already trained",
+      "reanalysis": true,
+      "families": [
+        "boolean",
+        "signed",
+        "amp_0.5",
+        "amp_0.25",
+        "signed_amp_0.5",
+        "native",
+        "boolean_noise_0.05",
+        "boolean_noise_0.15"
+      ],
       "cells": [],
       "controls": null
     }
