@@ -406,3 +406,47 @@ def test_margin_equals_the_minimum_norm_over_all_constraints():
                 w_ref = _min_norm(V)["w"]
                 ref = 1.0 / (2.0 * float(np.linalg.norm(w_ref)))
                 assert rec["margin"] == pytest.approx(ref, rel=2e-4), (F, s, i)
+
+
+# =====================================================================================
+# G1 -- the geometry / readout factorisation used by the reanalysis
+# =====================================================================================
+
+@pytest.mark.parametrize("d,F", [(8, 40), (12, 60), (50, 100), (16, 96)])
+def test_attainment_ratio_factors_into_geometry_and_readout(d, F):
+    """W(G,Phi)/W_global = [W_*(Phi)/W_global] x [W(G,Phi)/W_*(Phi)], exactly.
+
+    The published number is the left-hand side, which conflates a property of the code with a
+    property of the decoder. The split is arithmetic, but it has to be exact for the reanalysis
+    to be reporting the same quantity the manuscript does.
+    """
+    Phi = _code(d, F, d)
+    w_code, w_glob = code_specific_floor(Phi), welch_floor(F, d)
+    rng = np.random.default_rng(0)
+    for G in (optimal_analog_readout(Phi), np.ascontiguousarray(Phi.T),
+              np.linalg.pinv(Phi) + 0.1 * rng.standard_normal((F, d))):
+        measured = crosstalk_mean_sq(np.ascontiguousarray(G), Phi)
+        assert (w_code / w_glob) * (measured / w_code) == pytest.approx(measured / w_glob,
+                                                                       rel=1e-12)
+
+
+@pytest.mark.parametrize("d,F", [(8, 40), (50, 100)])
+def test_readout_term_is_exactly_one_for_the_pseudoinverse(d, F):
+    """Under the calibrated pseudoinverse the whole ratio is geometry: R_readout = 1.
+
+    This is why "the trained code sits within a few parts in a thousand of the floor" under the
+    pseudoinverse is a statement about the code's leverage profile, not about its decoder.
+    """
+    Phi = _code(d, F, 5 + d)
+    measured = crosstalk_mean_sq(optimal_analog_readout(Phi), Phi)
+    assert measured / code_specific_floor(Phi) == pytest.approx(1.0, abs=1e-12)
+
+
+@pytest.mark.parametrize("d,F", [(8, 40), (16, 96)])
+def test_readout_term_is_at_least_one_for_any_readout(d, F):
+    Phi = _code(d, F, 700 + d)
+    w_code = code_specific_floor(Phi)
+    rng = np.random.default_rng(1)
+    for _ in range(10):
+        G = np.linalg.pinv(Phi) + 0.3 * rng.standard_normal((F, d))
+        assert crosstalk_mean_sq(G, Phi) / w_code >= 1.0 - 1e-9
