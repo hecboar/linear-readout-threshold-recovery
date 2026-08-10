@@ -283,3 +283,38 @@ reinterprets an existing number and adds no new evidence.
 **Carried forward.** `R_readout(wout)` is the quantity the scaled campaign should track: it asks
 whether training produced a decoder that is good *for the code it built*, which is a different
 question from whether the code is good, and the two answers point opposite ways here.
+
+---
+
+## D12 — 2026-08-11 — Theory reopened briefly, and the hierarchy is now an implication
+
+**Status:** finding. Supersedes the "theory closed" clause of D10 for these five items only;
+nothing further is opened.
+
+Five extensions were worked through (`docs/theory_extensions.md`). Four conclusions from the
+first pass were corrected by the external review and all four corrections are adopted:
+
+| item | first pass | corrected |
+|---|---|---|
+| E2 | "the affine level is now distribution-aware" | **overclaimed.** Two laws with the same support give the same frontier, so it is a *support-level worst-case* property. Both levels are induced by one law `P`: analog through `C = E[aa^T]`, affine through `supp(P)` |
+| E3 | lower bound `rho_i >= sqrt(h_i/(1-h_i))`, nearly vacuous | **wrong direction.** The needed bound is *upper*, via Sherman-Morrison: `min ||z||_2^2 = h_i/(1-h_i)`, hence `kappa_i <= 1 + sqrt((F-1)h_i/(1-h_i))`. My original conjecture routed through coherence, which cannot work at all — `rho >= 1/mu` is a lower bound, so large `mu` puts no ceiling on `rho` |
+| E4b | "equality essentially never attained" | **explained.** For the *pure* `ell_1` problem `[I,H]` attains it exactly (`sqrt(d) = 1/mu`, verified at four widths); the affine row `1^T z = 1` is what breaks it, which accounts for the measured 1.018 |
+| E5 | "no object exists; structural" | **half right.** No *frontier*, but a finite Radon witness of at most about `d+2` states, derived from G2's own certificate. Stronger and implementable |
+
+**The result.** `h_i <= (s-1)^2/((F-1)+(s-1)^2)` implies feature `i` is not affinely separable at
+sparsity `s`. Verified on 967 predicted failures with no counterexample. Combined with `[I, I]` —
+uniform leverage, `kappa = 1` — the hierarchy is **strictly one-way**: bad analog geometry implies
+a bad affine frontier, and the converse fails.
+
+**It predicts the trained models.** At `F = 100` the `s = 2` threshold is `0.01`; `L2` has
+`h_min = 0.0091` and measured `kappa = 1.001`, i.e. separable at `s = 1` and lost at `s = 2`,
+exactly as the bound requires. `L4` has `h_min = 0.4822` and `kappa = 4.672`. This is the only
+place the theory touches a trained network, and it holds on five seeds at one width — which makes
+replicating the arrow across widths a Stage A deliverable rather than a new project.
+
+**Also adopted:** `|S| <= s` becomes the primary formulation (E1). Dropping `1^T z = 1` is what
+makes E3 provable, so E1 and E3 are one reform. Monotonicity now holds by construction and the
+`s > F/2` artefact is gone.
+
+**Not opened:** the `1-delta` probabilistic affine frontier, sign-rank, and any bound on hidden
+units. E5's witness extractor is authorised only as a one-day build when Stage A is under way.

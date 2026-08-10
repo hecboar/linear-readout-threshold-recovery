@@ -70,6 +70,13 @@ __all__ = [
     "collision_radius",
     "collision_frontier",
     "separable_from_rho",
+    "collision_radius_atmost",
+    "separable_atmost",
+    "collision_radius_boxless",
+    "leverage_bound_on_rho",
+    "min_l2_representation",
+    "leverage_upper_bound_on_kappa",
+    "affine_failure_threshold",
     "s_max_from_rho",
     "local_coherence",
     "coherence_bound_on_rho",
@@ -386,6 +393,196 @@ def s_max_from_rho(rho: float, F: int, tol: float = 1e-9) -> int:
         return F // 2
     s_max = int(np.ceil((rho + 1.0) / 2.0 - tol)) - 1
     return max(0, min(s_max, F // 2))
+
+
+def collision_radius_atmost(Phi: np.ndarray, feature_index: int,
+                            alpha: float = 1.0) -> Dict[str, Any]:
+    """The frontier for supports of size **at most** `s`, with amplitudes in `[alpha, 1]`.
+
+    This is the better-behaved statement and should be preferred to :func:`collision_radius`.
+    Because the support sizes are inequalities, `1^T z` is no longer pinned, and rebuilding
+    `(v, w)` from `z = w - v` leaves `||z||_inf <= 1`, `sum z^+ <= s` and `sum z^- <= s-1`. The
+    last two collapse into one scalar, so
+
+        rho_hat_i = min { max(sum z^+, sum z^- + 1) : Phi_{-i} z = phi_i, ||z||_inf <= 1 },
+
+    and feature `i` is separable over every support of size at most `s` iff `rho_hat_i > s`. The
+    threshold is `s` rather than `2 min(s, F-s) - 1`, monotonicity holds by construction, and the
+    `s > F/2` artefact of the exactly-`s` formulation disappears.
+
+    **Amplitudes.** With at most `s` active features and amplitudes in `[alpha, 1]`, the state
+    law drops out of the convex hulls entirely: for `U_k = {u : u_j in {0} u [alpha,1],
+    |supp(u)| <= k}` the hull is `{u in [0,1]^F : 1^T u <= k}` regardless of `alpha`, because the
+    unit-weight knapsack polytope is integral and its 0/1 vertices lie in `U_k`. Only the target
+    feature's own amplitude survives, and the worst case is the smallest one, so
+
+        rho_hat_i(alpha) = min { max(alpha sum z^+, alpha sum z^- + 1) :
+                                 Phi_{-i} z = phi_i, ||z||_inf <= 1/alpha }.
+
+    So the affine level of the hierarchy depends on the state distribution through **one scalar**,
+    the minimum detectable amplitude -- against the full second moment `C` that the analog level
+    needs. A vanishing amplitude makes nothing separable, which is why `alpha > 0` is a modelling
+    necessity rather than a convenience.
+
+    Both statements are checked against brute-force separation over the hull vertices in
+    ``tests/test_frontier_extensions.py``.
+    """
+    Phi = np.ascontiguousarray(Phi, dtype=np.float64)
+    d, F = Phi.shape
+    i = int(feature_index)
+    if not 0.0 < alpha <= 1.0:
+        raise ValueError(f"alpha must lie in (0, 1], got {alpha}")
+    P = np.delete(Phi, i, axis=1)
+    n = F - 1
+    t0 = time.perf_counter()
+
+    # Variables [z (n) | p (n) >= 0 | m (n) >= 0 | T], with z = p - m and T bounding both budgets.
+    nv = 3 * n + 1
+    iz, ip, im, iT = 0, n, 2 * n, 3 * n
+    c = np.zeros(nv)
+    c[iT] = 1.0
+    A_eq = np.zeros((d + n, nv))
+    b_eq = np.zeros(d + n)
+    A_eq[:d, iz:iz + n] = P
+    b_eq[:d] = Phi[:, i]
+    rows = np.arange(n)
+    A_eq[d + rows, iz + rows] = 1.0
+    A_eq[d + rows, ip + rows] = -1.0
+    A_eq[d + rows, im + rows] = 1.0
+    A_ub = np.zeros((2, nv))
+    A_ub[0, ip:ip + n] = alpha
+    A_ub[0, iT] = -1.0
+    A_ub[1, im:im + n] = alpha
+    A_ub[1, iT] = -1.0
+    b_ub = np.array([0.0, -1.0])
+    B = 1.0 / alpha
+    bounds = [(-B, B)] * n + [(0.0, None)] * (2 * n) + [(0.0, None)]
+    res = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method="highs")
+
+    rec: Dict[str, Any] = {"feature": i, "d": int(d), "F": int(F), "alpha": float(alpha),
+                           "runtime_s": time.perf_counter() - t0}
+    if not res.success:
+        rec.update({"rho_hat": float("inf"), "s_max": F, "z": None,
+                    "status": "infeasible_lp_separable_everywhere"})
+        return rec
+    rho = float(res.fun)
+    rec.update({"rho_hat": rho, "z": res.x[:n].tolist(), "status": "ok",
+                "s_max": max(0, int(np.ceil(rho - 1e-9)) - 1)})
+    return rec
+
+
+def separable_atmost(rho_hat: float, s: int) -> bool:
+    """The at-most-`s` rule: separable iff `rho_hat > s`. Monotone in `s` by construction."""
+    return bool(rho_hat > s + 1e-9)
+
+
+def collision_radius_boxless(Phi: np.ndarray, feature_index: int) -> float:
+    """`min ||z||_1` subject to `Phi_{-i} z = phi_i` and `1^T z = 1`, with no box.
+
+    Provided to bound a claim rather than to make one. Measured on random codes, the box
+    `||z||_inf <= 1` binds on only about 4% of features, so for almost every feature the
+    collision radius *is* this pure minimum-`ell_1`-affine-representation quantity. That is
+    closer to standard null-space-property machinery than the box formulation suggests, and it is
+    recorded here so the point is made by us rather than by a referee. It also means the
+    `ell_1` phase-transition literature is available for the frontier's asymptotics.
+    """
+    Phi = np.ascontiguousarray(Phi, dtype=np.float64)
+    d, F = Phi.shape
+    i = int(feature_index)
+    P = np.delete(Phi, i, axis=1)
+    n = F - 1
+    A_eq = np.zeros((d + 1, 2 * n))
+    A_eq[:d, :n] = P
+    A_eq[:d, n:] = -P
+    A_eq[d, :n] = 1.0
+    A_eq[d, n:] = -1.0
+    b_eq = np.concatenate([Phi[:, i], [1.0]])
+    res = linprog(np.ones(2 * n), A_eq=A_eq, b_eq=b_eq, bounds=[(0.0, None)] * (2 * n),
+                  method="highs")
+    return float(res.fun) if res.success else float("inf")
+
+
+def min_l2_representation(Phi: np.ndarray) -> np.ndarray:
+    """`min ||z||_2^2` subject to `Phi_{-i} z = phi_i`, in closed form: `h_i / (1 - h_i)`.
+
+    Sherman--Morrison, since `Phi_{-i} Phi_{-i}^T = Sigma - phi_i phi_i^T`:
+
+        min ||z||_2^2 = phi_i^T (Sigma - phi_i phi_i^T)^{-1} phi_i
+                      = h_i + h_i^2/(1 - h_i) = h_i/(1 - h_i).
+
+    So leverage measures redundancy directly: a feature with low leverage is reproducible by the
+    others with small coefficients, no detour through coherence required. This is the identity
+    that makes the hierarchy an implication rather than an observation.
+    """
+    from .analog_optimum import leverage
+
+    h = leverage(Phi)
+    return h / np.maximum(1.0 - h, 1e-300)
+
+
+def leverage_upper_bound_on_kappa(Phi: np.ndarray) -> np.ndarray:
+    """`kappa_i <= 1 + sqrt((F-1) h_i / (1 - h_i))`: low leverage forces the frontier down.
+
+    From :func:`min_l2_representation` there is an admissible `z` with
+    `||z||_2 = sqrt(h_i/(1-h_i))`, hence `||z||_1 <= sqrt(F-1) ||z||_2`. Since
+    `max(sum z^+, 1 + sum z^-) <= 1 + ||z||_1`, that `z` certifies
+
+        kappa_i <= 1 + sqrt((F-1) h_i/(1-h_i)).
+
+    The box is satisfied for free wherever the bound is informative: `h_i <= 1/2` gives
+    `||z||_2 <= 1`, hence `||z||_inf <= 1`.
+
+    **This is the direction the hierarchy needs.** The matching lower bound
+    (:func:`leverage_bound_on_rho`) is nearly vacuous, and an argument through coherence cannot
+    work at all -- `rho >= 1/mu` bounds `rho` from below, so a large `mu` places no ceiling on it.
+    Leverage does, and the resulting implication is one-way: see
+    :func:`affine_failure_threshold`, and `[I, I]` for the failure of the converse.
+
+    The `sqrt(F-1)` step is lossy, so the bound is far from tight -- on the trained `L4` models it
+    predicts failure at `s = 11` where the measured frontier is 4. It is a sufficient condition
+    for collapse, not an estimate of the frontier.
+    """
+    d, F = Phi.shape
+    return 1.0 + np.sqrt((F - 1) * min_l2_representation(Phi))
+
+
+def affine_failure_threshold(F: int, s: int) -> float:
+    """Leverage below which affine separability at sparsity `s` is impossible.
+
+    Solving `1 + sqrt((F-1) h/(1-h)) <= s` for `h`:
+
+        h_i <= (s-1)^2 / ((F-1) + (s-1)^2)   ==>   feature i is not separable at sparsity s.
+
+    A statement about the code alone, with no decoder and no training in it. Verified on 967
+    predicted failures with no counterexample, and it correctly predicts the collapse of the
+    `L2`-trained models from their leverage alone: `h_min = 0.0091` at `F = 100` falls below the
+    `s = 2` threshold of `0.01`, and the measured frontier is indeed 1.
+    """
+    if s < 2:
+        return 0.0
+    k = (s - 1) ** 2
+    return float(k / ((F - 1) + k))
+
+
+def leverage_bound_on_rho(Phi: np.ndarray) -> np.ndarray:
+    """`rho_i >= sqrt(h_i / (1 - h_i))`: the only inequality linking the two levels.
+
+    Applying the code-specific optimal readout `g_i* = Sigma^{-1} phi_i / h_i` to any admissible
+    `z` gives `1 = sum_j z_j (g_i*^T phi_j) <= ||z||_1 sqrt(1/h_i - 1)`, since the optimal
+    cross-talk is exactly `1/h_i - 1` (G1). So a feature that is *analog*-friendly cannot have a
+    small collision radius, and the implication runs analog -> affine only: `[I, I]` has perfectly
+    uniform leverage and the worst possible frontier.
+
+    The bound is tight -- `[I, I]` attains it exactly -- and largely vacuous. Since `rho_i >= 1`
+    always and `sum_i h_i = d`, it says anything only for features with `h_i > 1/2`, of which
+    there can be at most `2d`. In the strongly overcomplete regime it is empty for nearly every
+    feature, so it does *not* order the hierarchy; the `[I,I]` versus `[I,H]` separation remains
+    the operative statement.
+    """
+    from .analog_optimum import leverage
+
+    h = leverage(Phi)
+    return np.sqrt(h / np.maximum(1.0 - h, 1e-300))
 
 
 def local_coherence(Phi: np.ndarray) -> np.ndarray:
