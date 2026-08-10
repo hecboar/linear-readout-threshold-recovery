@@ -70,6 +70,11 @@ __all__ = [
     "collision_radius",
     "collision_frontier",
     "separable_from_rho",
+    "s_max_from_rho",
+    "local_coherence",
+    "coherence_bound_on_rho",
+    "affine_circuit_size",
+    "collision_distance",
     "cut_vector",
     "robust_affine_margin",
     "robust_affine_margin_compact",
@@ -356,15 +361,168 @@ def collision_radius(Phi: np.ndarray, feature_index: int) -> Dict[str, Any]:
         return rec
 
     rho = float(res.fun)
-    z = res.x[:n]
-    # Largest integer s with rho > 2 min(s, F-s) - 1. For s <= F/2 the bound grows with s, so
-    # the frontier is the largest s below (rho + 1) / 2.
-    s_max = int(np.ceil((rho + 1.0) / 2.0)) - 1
-    if abs((rho + 1.0) / 2.0 - round((rho + 1.0) / 2.0)) < 1e-9:
-        s_max = int(round((rho + 1.0) / 2.0)) - 1          # exact tie: s must be strictly below
-    s_max = max(0, min(s_max, (F - 1) // 2))
-    rec.update({"rho": rho, "z": z.tolist(), "s_max": s_max, "status": "ok"})
+    rec.update({"rho": rho, "z": res.x[:n].tolist(), "s_max": s_max_from_rho(rho, F),
+                "status": "ok"})
     return rec
+
+
+def s_max_from_rho(rho: float, F: int, tol: float = 1e-9) -> int:
+    """Largest `s` in the monotone regime with `rho > 2s - 1`: the per-feature frontier.
+
+    The frontier is the largest integer **strictly below** `(rho + 1) / 2`, which is
+    `ceil(t) - 1` whether or not `t` is an integer, so no case split is needed. The `ceil` does
+    need a tolerance: a `rho` that should land exactly on the tie `t = 2` arrives as
+    `2 + 1e-16` and would return 2 instead of 1. Exact ties are not a corner case here -- a
+    duplicated column gives `rho = 1` exactly, and its tie must resolve to `s_max = 0`.
+
+    **Valid only for `s <= floor(F/2)`, and capped there.** The threshold `2 min(s, F-s) - 1`
+    increases with `s` only in that regime; beyond `F/2` it decreases again, so separability can
+    reappear at very large `s`. That is a symmetry artefact -- identifying which `s` features are
+    on is the same problem as identifying which `F - s` are off -- and not a regime any
+    sparse-coding claim inhabits. For sparsities past `F/2`, call
+    :func:`separable_from_rho` directly instead of reading this number.
+    """
+    if not np.isfinite(rho):
+        return F // 2
+    s_max = int(np.ceil((rho + 1.0) / 2.0 - tol)) - 1
+    return max(0, min(s_max, F // 2))
+
+
+def local_coherence(Phi: np.ndarray) -> np.ndarray:
+    """`mu_i = max_{j != i} |<phi_i, phi_j>|` for unit-norm columns: coherence, per feature."""
+    G = np.abs(np.asarray(Phi, dtype=np.float64).T @ Phi)
+    np.fill_diagonal(G, -np.inf)
+    return G.max(axis=1)
+
+
+def coherence_bound_on_rho(Phi: np.ndarray) -> np.ndarray:
+    """The lower bound `rho_i >= 1 / mu_i`, and with it a refinement of the coherence condition.
+
+    Taking the inner product of `Phi_{-i} z = phi_i` with `phi_i` gives
+    `1 = sum_{j != i} z_j <phi_i, phi_j> <= ||z||_1 mu_i` for every admissible `z`, so
+    `rho_i >= 1 / mu_i`.
+
+    Consequence: `mu_i < 1/(2s - 1)` suffices for separability at sparsity `s`. The classical
+    coherence condition for threshold recovery asks `mu < 1/(2s)`, so this refines it twice
+    over -- the constant improves from `2s` to `2s - 1`, and the requirement is *local*, on
+    `mu_i` rather than on the global coherence. It also shows how much is lost by stopping at
+    coherence: `rho_i` can exceed `1/mu_i` by a wide margin, and it is `rho_i`, not `mu_i`, that
+    decides.
+    """
+    return 1.0 / local_coherence(Phi)
+
+
+def affine_circuit_size(Phi: np.ndarray, tol: float = 1e-9) -> Dict[str, Any]:
+    """Smallest affine circuit `q` of the columns, and the dimensional cap it forces.
+
+    An affine circuit is a minimally affinely dependent set: `sum_{j in C} l_j phi_j = 0` with
+    `sum_j l_j = 0` and every `l_j != 0`. Any `d + 2` points in `R^d` are affinely dependent, so
+    `q <= d + 2` whenever `F > d + 1`.
+
+    A circuit bounds the collision radius. Given one, take `i` with `|l_i|` largest and set
+    `z_j = -l_j / l_i` on `C \\ {i}`, zero elsewhere. Then `Phi_{-i} z = phi_i`; the affine
+    constraint `1^T z = 1` holds *automatically*, because `sum_j l_j = 0` forces
+    `sum_{j != i} l_j = -l_i`; `||z||_inf <= 1` by the choice of `i`; and `||z||_1 <= q - 1`.
+    Hence
+
+        rho_min <= q - 1 <= d + 1,      and so      s_aff_robust <= ceil(d / 2).
+
+    This is a hard dimensional ceiling on the affine level: no code, however well designed,
+    supports featurewise affine support recovery beyond `ceil(d/2)`. It is the affine counterpart
+    of the analog floor -- one bounds error from below, the other bounds sparsity from above, and
+    both follow from the dimension alone.
+
+    Returns the dimensional bound always, and the exact `q` by ascending search when the code is
+    small enough for that to be cheap.
+    """
+    Phi = np.ascontiguousarray(Phi, dtype=np.float64)
+    d, F = Phi.shape
+    out: Dict[str, Any] = {
+        "d": int(d), "F": int(F),
+        "q_upper_bound": int(min(F, d + 2)),
+        "rho_min_upper_bound": float(min(F, d + 2) - 1),
+        "s_aff_robust_cap": int(np.ceil(d / 2.0)),
+    }
+    if F <= 40 and d <= 12:
+        import itertools as _it
+        for k in range(2, min(F, d + 3) + 1):
+            found = False
+            for C in _it.combinations(range(F), k):
+                M = Phi[:, list(C)]
+                if np.linalg.matrix_rank(M[:, 1:] - M[:, :1], tol=tol) < k - 1:
+                    out["q_exact"], out["circuit"] = k, list(C)
+                    found = True
+                    break
+            if found:
+                break
+    return out
+
+
+def collision_distance(Phi: np.ndarray, feature_index: int, sparsity: int) -> Dict[str, Any]:
+    """`delta_i(s)`: the Euclidean distance between the active and inactive convex hulls.
+
+    The admissible set of `z = v - u` at sparsity `s` is exactly
+
+        Z_s = { z : ||z||_inf <= 1,  1^T z = 1,  ||z||_1 <= 2 min(s, F-s) - 1 },
+
+    by the same reconstruction argument behind the collision radius, so
+
+        delta_i(s) = min_{z in Z_s} || Phi_{-i} z - phi_i ||_2 .
+
+    `rho_i` is the exact-representation version of this programme; `delta_i(s)` is its residual
+    once the budget is capped at what sparsity `s` permits. So `delta_i(s) = 0` exactly when
+    `rho_i <= 2 min(s, F-s) - 1`, which is exactly when the feature is not separable -- the two
+    quantities are two readings of one object.
+
+    **The margin is half this distance.** The margin programme is `min ||w||` subject to
+    `min_{u in D} w^T u >= 1` with `D = C_i^+ - C_i^-`. Support-function/distance duality gives
+    `max_{||w|| <= 1} min_{u in D} w^T u = dist(0, D) = delta_i(s)`, hence `||w*|| = 1/delta_i(s)`
+    and `gamma_i(s) = 1/(2||w*||) = delta_i(s)/2`.
+
+    **Noise robustness, as a corollary.** With the optimal unit-norm `w` and its centred bias, a
+    perturbed input `x + eta` still receives the correct label for feature `i` on every support of
+    size `s` provided `||eta||_2 < delta_i(s)/2 = gamma_i(s)`, since the score moves by at most
+    `||w|| ||eta||`. The robust margin is therefore a certified noise tolerance in the units of
+    the representation, not merely a scale.
+    """
+    Phi = np.ascontiguousarray(Phi, dtype=np.float64)
+    d, F = Phi.shape
+    i, s = int(feature_index), int(sparsity)
+    P = np.delete(Phi, i, axis=1)
+    phi = Phi[:, i]
+    n = F - 1
+    budget = 2.0 * min(s, F - s) - 1.0
+    t0 = time.perf_counter()
+
+    # Variables [z (n) | t (n)] with t >= |z|, 1^T t <= budget, 1^T z = 1, |z| <= 1.
+    A_ub = np.vstack([np.hstack([np.eye(n), -np.eye(n)]),
+                      np.hstack([-np.eye(n), -np.eye(n)]),
+                      np.concatenate([np.zeros(n), np.ones(n)])[None, :]])
+    b_ub = np.concatenate([np.zeros(2 * n), [budget]])
+    A_eq = np.concatenate([np.ones(n), np.zeros(n)])[None, :]
+
+    def obj(x):
+        r = P @ x[:n] - phi
+        return float(r @ r)
+
+    def jac(x):
+        g = np.zeros(2 * n)
+        g[:n] = 2.0 * (P.T @ (P @ x[:n] - phi))
+        return g
+
+    x0 = np.zeros(2 * n)
+    x0[0] = x0[n] = 1.0
+    res = minimize(obj, x0, jac=jac, method="SLSQP",
+                   constraints=[{"type": "ineq", "fun": lambda x: b_ub - A_ub @ x,
+                                 "jac": lambda x: -A_ub},
+                                {"type": "eq", "fun": lambda x: A_eq @ x - 1.0,
+                                 "jac": lambda x: A_eq}],
+                   bounds=[(-1.0, 1.0)] * n + [(0.0, None)] * n,
+                   options={"maxiter": 2000, "ftol": 1e-14})
+    dist = float(np.sqrt(max(res.fun, 0.0))) if res.success else float("nan")
+    return {"feature": i, "sparsity": s, "budget": budget, "delta": dist,
+            "margin_from_delta": dist / 2.0, "success": bool(res.success),
+            "runtime_s": time.perf_counter() - t0}
 
 
 def separable_from_rho(rho: float, s: int, F: int) -> bool:

@@ -15,6 +15,8 @@ __all__ = [
     "harmonic_tight_frame",
     "tight_frame_residual",
     "coherence",
+    "duplicated_basis_code",
+    "basis_hadamard_code",
 ]
 
 
@@ -87,3 +89,30 @@ def coherence(Phi: np.ndarray) -> float:
     G = Phi.T @ Phi
     np.fill_diagonal(G, 0.0)
     return float(np.abs(G).max())
+
+
+def duplicated_basis_code(d: int) -> np.ndarray:
+    """``[I, I]``: an orthonormal basis repeated. Unit-norm columns, frame operator ``2 I``."""
+    I = np.eye(d)
+    return np.hstack([I, I])
+
+
+def basis_hadamard_code(d: int) -> np.ndarray:
+    """``[I, H/sqrt(d)]`` with ``H`` a Hadamard matrix. Requires ``d`` a power of two.
+
+    Paired with :func:`duplicated_basis_code` this is the separation that shows the affine level
+    of the hierarchy is not a function of the analog level. Both codes are ``d x 2d``, both have
+    unit-norm columns, and both have frame operator ``2 I`` -- since ``(H/sqrt d)(H/sqrt d)^T =
+    I`` -- so both have every leverage score equal to ``1/2``, the same code-specific analog
+    optimum and the same Welch ratio. Nothing at the analog level can tell them apart.
+
+    Their affine frontiers could not differ more. ``[I, I]`` repeats every column, so features
+    ``j`` and ``j + d`` are indistinguishable and the frontier is ``0``: not even a single active
+    feature can be recovered. ``[I, H/sqrt d]`` has coherence ``1/sqrt(d)``, so by the coherence
+    bound on the collision radius its frontier grows like ``sqrt(d)``.
+    """
+    from scipy.linalg import hadamard
+
+    if d < 1 or (d & (d - 1)) != 0:
+        raise ValueError(f"basis_hadamard_code needs d a power of two, got {d}")
+    return np.hstack([np.eye(d), hadamard(d) / np.sqrt(d)])

@@ -204,3 +204,31 @@ route's margin lower-bounded the exact one because it optimised a different obje
 because the formulations differ; the margin is now checked for equality against the definition
 — the minimum-norm solution over every `(A, B)` constraint — rather than against another
 reformulation.
+
+---
+
+## D10 — 2026-08-10 — Theory is closed
+
+**Status:** binding. Supersedes the scope in D4 only by adding the consequence package below;
+nothing new is opened.
+
+The consequence package is derived, implemented and validated (41 tests in
+`tests/test_frontier_consequences.py`, 225 in the suite):
+
+| Item | Result | Novelty |
+|---|---|---|
+| C1 | `rho_i >= 1/mu_i`; `mu_i < 1/(2s-1)` suffices, refining the classical `mu < 1/(2s)` | none as mathematics; places the classical condition as a corollary |
+| C2 | `rho_min <= q - 1 <= d + 1`, hence `s_aff,robust <= ceil(d/2)` | the form is the classical spark condition, transported to the affine case: `q = spark([Phi; 1^T])` |
+| C3 | `[I,I]` vs `[I,H]`: identical frame operator, leverage and analog optimum; `s_aff` 0 vs `Omega(sqrt d)` | elementary construction; earns the hierarchy its place |
+| C4 | `delta_i(s)` is the hull distance and `gamma_i(s) = delta_i(s)/2`, with a certified noise tolerance | none — hard-margin SVM duality; fixes the factor of two |
+| C5 | strict-integer `s_max` with tolerance; monotonicity restricted to `s <= floor(F/2)` | correction, not a result |
+
+**Verdict unchanged: A — STRONG GO.** The collision radius is the single mathematical novelty.
+The consequences are worth stating for interpretability and for the connection to spark and
+coherence, and are claimed at that size.
+
+**Closed.** No sign-rank, no random-code asymptotics, no further theoretical project before the
+Stage A campaign. The one remaining literature debt is quantitative group testing, which stays
+on the pre-submission checklist rather than the critical path.
+
+**Next, in order:** `probes.py`, the G1 reanalysis of existing results, then J0 on the Spark.
