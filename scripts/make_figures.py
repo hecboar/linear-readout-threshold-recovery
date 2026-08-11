@@ -258,8 +258,10 @@ def figure_scaling() -> None:
     if fit:
         ax.plot(grid, fit["c"] * grid / np.log(grid), color=PALETTE[0], ls="-",
                 label=fr"fit $c\,d/\ln d$, $c={fit['c']:.3f}$")
-    ax.plot(grid, grid / (16 * np.log(grid)), color="k", ls=":",
-            label=r"union bound $d/(16\ln d)$")
+    # The d/(16 ln d) reference curve was withdrawn (decision D7): its constant is inherited
+    # from the earlier literature and is derived nowhere in this work, and it sat above the
+    # measured thresholds at every width, so it was not the conservative reference its form
+    # suggests. Corollary 6.5 fixes only the shape, for an unspecified universal constant.
     ax.set_xscale("log", base=2)
     ax.set_xlabel(r"width $d$")
     ax.set_ylabel(r"$s_{95}(d)$")

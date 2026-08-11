@@ -1,10 +1,10 @@
 Highlights (Elsevier: 3-5 bullets, each <= 85 characters including spaces)
 
-- A Welch-type floor bounds the interference-to-gain ratio of any linear readout.   [79]
-- We turn it into a runnable diagnostic of a code's decoding interface.             [69]
-- Gradient-optimised codes reach the floor; the tied variant becomes a tight frame. [81]
-- A trained toy model reaches the floor and extends the usable sparsity range.   [76]
-- Threshold recovery scales to width 1024, about one million features, on CPU.      [76]
+- A Welch-type floor bounds the interference-to-gain ratio of any linear readout.
+- We also compute a given code's own floor, splitting geometry from decoder quality.
+- One linear programme gives a feature's largest affinely detectable sparsity.
+- Low leverage forces that limit down; the converse fails, so the hierarchy is strict.
+- Gradient-optimised codes reach the floor; the tied variant becomes a tight frame.
 
-Character counts are in brackets and must be re-checked after any edit:
-  python -c "import sys;[print(len(l.split(']')[0].split('- ')[1].strip()),l) for l in open('highlights.txt') if l.startswith('- ')]"
+Character counts must be re-checked after any edit:
+  python -c "print(*((len(l[2:].rstrip()), l[2:].rstrip()) for l in open('highlights.txt') if l.startswith('- ')), sep='\n')"

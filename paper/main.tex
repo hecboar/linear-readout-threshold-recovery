@@ -73,25 +73,25 @@
     Universitat Polit\`ecnica de Val\`encia}, city={Valencia}, country={Spain}}
 
 \begin{abstract}
-Overcomplete neural representations encode more latent features than activation dimensions,
-but are useful for computation only when that information can be decoded and composed. Which
-decoding interface a network maintains is decided informally today, and recent work disagrees
-about whether trained models compute in superposition at all. We propose the
-\emph{Interface Diagnostic}, a computable procedure that takes a code or a trained network and
-returns how close its gain-normalised linear readout sits to a Welch-type floor, the sparsity
-range over which a threshold decoder recovers Boolean states exactly, and a witness separating
-\emph{analog reconstruction} from \emph{support recovery}. Its mean-square statistics run in
-$O(Fd^2)$ time and $O(d^2)$ memory without forming the $F\times F$ interface, so it applies at
-$F\approx10^6$ features on a laptop. It rests on a rank--trace
-bound: any rank-$d$ unit-diagonal readout has average squared off-diagonal cross-talk at least
-$(F-d)/(d(F-1))$, in a gain-normalised form bounding the interference-to-gain ratio.
-Six CPU experiments validate it. Gradient-optimised codes reach the floor, the tied variant
-converging to a tight frame. A trained toy model reaches it too: under an $L^4$ loss it sits
-within \EfiveLfourRatioPinvMean{} of the bound against \EfiveLtwoRatioPinvMean{} for $L^2$
-under the same readout, and its thresholded output keeps recovering supports beyond a crossover
-sparsity --- below which the affine readout leads. The $L^2$ baseline keeps an effectively
-linear interface. Recovery scales to $d=\EsixDmax$. The analysis also recasts the H\"{a}nni
-template's $d^{3/2}$ scale as a compatibility threshold, not a universal bound.
+Overcomplete neural representations encode more latent features than activation dimensions, but
+are useful only when that information can be decoded. Which interface a network
+maintains is decided informally today, and recent work disagrees about whether trained models
+compute in superposition at all. We give two computable criteria for a code, and prove
+that one implies the other. The first is analog reconstruction: a rank--trace bound makes any
+rank-$d$ unit-diagonal readout carry average squared off-diagonal cross-talk at least
+$(F-d)/(d(F-1))$, in a gain-normalised form bounding the interference-to-gain ratio. Since that
+constrains an ensemble rather than a code, we also compute a given code's own floor in closed
+form, factoring any attainment ratio into a geometry term and a decoder term and showing that
+ratios reported under the pseudoinverse measure only the first. The second is support recovery,
+as a per-feature capacity: one linear programme returns the largest sparsity at which any affine
+probe can detect a chosen feature, with a certified noise margin when it succeeds and a
+checkable certificate when it fails. Low leverage then forces that frontier down,
+with no decoder in the argument, while an explicit code refutes the converse --- so the
+hierarchy is strict and one-way. The statistics need $O(Fd^2)$ time and $O(d^2)$ memory,
+never the $F\times F$ interface, reaching $F\approx10^6$ features. Six CPU
+experiments validate the procedure; in a trained toy model the $L^4$ code's near-attainment
+(\EfiveLfourRatioPinvMean{} against \EfiveLtwoRatioPinvMean{} for $L^2$) proves to be a property
+of its leverage profile rather than of its decoder.
 \end{abstract}
 
 \begin{keyword}
@@ -1849,8 +1849,13 @@ that this code loses affine separability at $s=2$ --- from a single leverage sco
 decoder and no probe in the argument. Whether that prediction survives at other widths is the
 question Section~\ref{sec:limitations} flags as open.
 
-\subsection{E6: how the recovery threshold scales}
+\subsection{E6: a scalability stress test, not a scaling law}
 \label{sec:res-e6}
+
+This campaign was designed to measure how the recovery threshold scales, and it does not have
+the resolution to do that. We report it for what it does establish --- that the measurement
+itself runs at a width and feature count where the code cannot be materialised --- and withdraw
+the scaling-law reading.
 
 Scaling to $d=\EsixDmax$ at $F=\EsixFmax$ features lets the recovery threshold be traced over
 a factor of eight in width (Table~\ref{tab:e6}, Fig.~\ref{fig:e6}). On the grid, $s_{95}$ grows
@@ -1865,22 +1870,19 @@ headline: growth over the sweep falls from \EsixGrowthGrid{} to \EsixGrowthInter
 growth by roughly a third, purely as an artefact of the grid, and we quote the interpolated
 values from here on.
 
-On the interpolated crossings a one-parameter fit of $s_{95}=c\,d/\ln d$ gives
-$c=\EsixInterpC$ with $R^2=\EsixInterpRsqLog$ over \EsixFitPoints{} points. This is consistent
-with the predicted shape but does not establish it: a plain linear law $c\,d$ reaches
-$R^2=\EsixInterpRsqLin$ and $c\,d/\ln^2 d$ reaches $R^2=\EsixInterpRsqLogSq$ on the same four
-points. Four widths cannot separate these, and the base of the logarithm is not identifiable at
-all. We report the fit as a consistency check on a shape the theory predicts, not as evidence
-for it over the alternatives.
+Four widths then cannot identify a law. On the interpolated crossings a one-parameter fit of
+$s_{95}=c\,d/\ln d$ gives $c=\EsixInterpC$ with $R^2=\EsixInterpRsqLog$ over
+\EsixFitPoints{} points, but a plain linear law $c\,d$ reaches $R^2=\EsixInterpRsqLin$ and
+$c\,d/\ln^2 d$ reaches $R^2=\EsixInterpRsqLogSq$ on the same four points. The three are
+indistinguishable on this evidence, the base of the logarithm is not identifiable at all, and we
+therefore claim no scaling law --- neither for $d/\ln d$ nor against it. A previous version of
+this work drew a $d/(16\ln d)$ reference curve here; it has been withdrawn, because its constant
+is inherited from the earlier literature rather than derived anywhere in this work, and because
+it sat \emph{above} the measured thresholds at every width and so was not the conservative
+reference its form suggests. Corollary~\ref{cor:separation} fixes only the shape
+$s\le c\,d/\log d$, for an unspecified universal $c$.
 
-Two further qualifications. The reference curve $d/(16\ln d)$ drawn in
-Fig.~\ref{fig:e6}b sits \emph{above} the measured thresholds at every width
-(\EsixOneZeroTwoFourReference{} against \EsixOneZeroTwoFourSNF{} at $d=\EsixDmax$): recovery
-fails somewhat earlier than that curve suggests, so it is not the conservative lower reference
-its form implies. The constant $16$ is inherited from the earlier literature and is not derived
-anywhere here --- Corollary~\ref{cor:separation} fixes only the shape $s\le c\,d/\log d$ for an
-unspecified universal $c$ --- so the curve should be read as a visual landmark, nothing more.
-And $s_{95}$ is a point estimate: at $d=\EsixDmax$ the campaign runs
+A second qualification. $s_{95}$ is a point estimate: at $d=\EsixDmax$ the campaign runs
 \EsixOneZeroTwoFourTrials{} trials, so even a flawless \EsixOneZeroTwoFourTrials{}-for-%
 \EsixOneZeroTwoFourTrials{} result gives a Wilson lower bound of only
 \EsixTopBestWilsonLow. No sparsity at that width can be certified at the 95\% level with 95\%
@@ -1897,8 +1899,9 @@ Algorithm~\ref{alg:ensemble} keeps the peak footprint proportional to $Bd$.
 \includegraphics[width=\linewidth]{figures/fig4_scaling.pdf}
 \caption{\textbf{Threshold recovery at quadratic feature load, up to $d=\EsixDmax$}
 ($F=\EsixFmax$). (a) Empirical exact-recovery probability with Wilson $95\%$ intervals; a fresh
-random code is drawn per trial. (b) The empirical threshold $s_{95}(d)$ against the fitted
-$c\,d/\ln d$ law and the conservative union-bound reference $d/(16\ln d)$. Generated by
+random code is drawn per trial. (b) The empirical threshold $s_{95}(d)$ with the fitted
+$c\,d/\ln d$ curve shown as a fit only: four widths do not distinguish it from $c\,d$ or from
+$c\,d/\ln^2d$, and no scaling law is claimed. Generated by
 \code{scripts/make\_figures.py} from \code{results/e6}.}
 \label{fig:e6}
 \end{figure}

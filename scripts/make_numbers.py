@@ -313,7 +313,8 @@ def build() -> Macros:
         m.integer(tag + "SNF", e["s95"])
         if e is per_d[-1]:
             m.integer(tag + "Trials", e["trials"])
-            m.num(tag + "Reference", e["reference_union_bound"], 2)
+            # The d/(16 ln d) reference value is no longer quoted: decision D7 withdrew the
+            # curve, its constant being inherited rather than derived here.
             m.num(tag + "DurationMin", e["duration_seconds"] / 60.0, 1)
     if e6["fit"]:
         # The grid fit is superseded by the interpolated one below; only the point count is
