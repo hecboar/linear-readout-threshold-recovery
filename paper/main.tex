@@ -792,6 +792,109 @@ code, not about whether the code is a good representation for any task; a code c
 perfectly equalised leverage and still be useless. We use this to scope the empirical claims of
 Section~\ref{sec:res-e5}.
 
+\subsection{The floor of the code itself}
+\label{sec:codefloor}
+
+Theorem~\ref{thm:floor} bounds every rank-$d$ unit-diagonal interface, so it is a statement
+about the \emph{ensemble} of codes: no particular $\Phi$ need be able to attain it. That makes a
+measured ratio hard to read. If a trained code sits $0.06\%$ above $W(F,d)$, is the readout
+excellent, or is the floor simply unreachable for this code and the readout merely adequate? The
+question is answered by computing the floor of the code itself, which is available in closed
+form.
+
+\begin{theorem}[Code-specific analog optimum]
+\label{thm:codefloor}
+Let $\Phi\in\R^{d\times F}$ have full row rank, let $\Sigma=\Phi\Phi^{\top}\succ0$ be its frame
+operator, and let $h_i=\phi_i^{\top}\Sigma^{-1}\phi_i$ be the leverage of feature $i$. Then for
+every $i$
+\begin{equation}
+  \min_{g\in\R^d}\Big\{\sum_{j\neq i}(g^{\top}\phi_j)^2 \;:\; g^{\top}\phi_i=1\Big\}
+  \;=\;\frac{1}{h_i}-1,
+  \label{eq:capon}
+\end{equation}
+attained uniquely at $g_i^{\star}=\Sigma^{-1}\phi_i/h_i$. Stacking the $F$ minimisers as rows
+gives exactly the gain-calibrated pseudoinverse, so the row-wise optimum and the algebraic
+pseudoinverse coincide. Consequently the smallest mean-square off-diagonal cross-talk this code
+admits is
+\begin{equation}
+  W_{\star}(\Phi)\;:=\;\frac{1}{F(F-1)}\sum_{i=1}^{F}\Big(\frac1{h_i}-1\Big)
+  \;=\;\frac{\sum_i h_i^{-1}-F}{F(F-1)}\;\ge\;W(F,d),
+  \label{eq:codefloor}
+\end{equation}
+with equality if and only if $h_i=d/F$ for every $i$.
+\end{theorem}
+
+\begin{proof}
+Since $\sum_{j}(g^{\top}\phi_j)^2=g^{\top}\Sigma g$, the constraint $g^{\top}\phi_i=1$ turns the
+objective into $g^{\top}\Sigma g-1$. Minimising a positive-definite quadratic under one linear
+equality is classical: the Lagrange conditions give $g=\lambda\Sigma^{-1}\phi_i$, the constraint
+fixes $\lambda=1/h_i$, and the value is $\phi_i^{\top}\Sigma^{-1}\phi_i/h_i^2=1/h_i$. Subtracting
+the constrained direction's contribution, which is exactly $1$, gives~\eqref{eq:capon}; strict
+convexity gives uniqueness. Summing over $i$ and dividing by $F(F-1)$
+gives~\eqref{eq:codefloor}. Finally $\sum_ih_i=\operatorname{tr}(\Sigma^{-1}\Phi\Phi^{\top})=d$,
+so Cauchy--Schwarz gives $\sum_ih_i^{-1}\ge F^2/d$ with equality iff the $h_i$ are all equal,
+and $(F^2/d-F)/(F(F-1))=W(F,d)$.
+\end{proof}
+
+\begin{remark}[Provenance]
+\label{rem:capon}
+Equation~\eqref{eq:capon} is the minimum-variance distortionless-response (Capon) beamformer with
+the frame operator in place of a covariance~\cite{capon1969}, and $g_i^{\star}$ is the canonical
+dual frame vector rescaled to unit gain; both are classical. We claim no
+novelty in the optimisation. What the diagnostic uses is the reading of $h_i$ as a leverage
+score, the resulting per-code floor~\eqref{eq:codefloor}, and the exact attribution of the gap
+in Proposition~\ref{prop:excess}.
+\end{remark}
+
+\begin{proposition}[The excess is leverage dispersion, exactly]
+\label{prop:excess}
+With $c=d/F$ the mean leverage,
+\[
+  \sum_{i=1}^{F}\frac1{h_i}-\frac{F^2}{d}\;=\;\sum_{i=1}^{F}\frac{(h_i-c)^2}{c^{2}h_i}\;\ge\;0 .
+\]
+Hence $W_{\star}(\Phi)$ exceeds $W(F,d)$ by a weighted dispersion of the leverage scores, which
+vanishes precisely when leverage is uniform.
+\end{proposition}
+
+\begin{proof}
+Expand the right-hand side: $c^{-2}\sum_i(h_i^2-2ch_i+c^2)/h_i
+=c^{-2}\sum_ih_i-2c^{-1}F+\sum_ih_i^{-1}$. Substituting $\sum_ih_i=d$ and $c=d/F$ turns the
+first two terms into $F^2/d-2F^2/d=-F^2/d$.
+\end{proof}
+
+This separates two questions that a single ratio against $W(F,d)$ conflates. Writing
+$W(G,\Phi)$ for the mean-square off-diagonal cross-talk actually achieved by a readout $G$,
+\begin{equation}
+  \underbrace{\frac{W(G,\Phi)}{W(F,d)}}_{\text{what is usually reported}}
+  \;=\;\underbrace{\frac{W_{\star}(\Phi)}{W(F,d)}}_{R_{\mathrm{geom}}:\ \text{the code}}
+  \times
+  \underbrace{\frac{W(G,\Phi)}{W_{\star}(\Phi)}}_{R_{\mathrm{readout}}:\ \text{the decoder}} ,
+  \label{eq:decomposition}
+\end{equation}
+and the two factors answer different questions. $R_{\mathrm{geom}}$ asks whether the code's
+leverage is spread evenly; $R_{\mathrm{readout}}\ge1$ asks whether the decoder is the best one
+\emph{for that code}. In particular Proposition~\ref{prop:leverage} says that the calibrated
+pseudoinverse has $R_{\mathrm{readout}}=1$ identically, so a published attainment ratio computed
+with $G=\Phi^{+}$ measures $R_{\mathrm{geom}}$ and nothing else. Section~\ref{sec:res-e5} reports
+both factors.
+
+Finally, the analog level reads a state distribution through one object only, which is what lets
+Section~\ref{sec:hierarchy} compare it with the affine level under a single state model.
+
+\begin{proposition}[Distribution-weighted reconstruction error]
+\label{prop:secondmoment}
+Let $M=G\Phi$ have unit diagonal, let $A=M-I_F$, and let the state $b\in\R^F$ be drawn from any
+law with finite second moment $C=\E[bb^{\top}]$. Then
+$\E\norm{Ab}_2^2=\operatorname{tr}(A^{\top}A\,C)$. The analog level therefore depends on the
+state law only through $C$: two laws with the same second moment impose the same reconstruction
+error on every readout.
+\end{proposition}
+
+\begin{proof}
+$\E\norm{Ab}_2^2=\E\operatorname{tr}(A^{\top}Abb^{\top})=\operatorname{tr}(A^{\top}A\,C)$ by
+linearity.
+\end{proof}
+
 \begin{corollary}[No better-than-floor $\varepsilon$-linear readout]
 \label{cor:impossible}
 Let $F>d$ and suppose $G$ satisfies $\norm{G y_i-e_i}_\infty\le\delta$ for singleton states
@@ -953,6 +1056,308 @@ exactly and the other is provably not, in the same regime --- which is precisely
 Algorithm~\ref{alg:two} reports. Corollary~\ref{cor:separation} is stated for uniform supports;
 the Bernoulli variant, with the same conclusion, is in Appendix~\ref{app:proofs}.
 \end{remark}
+
+% ============================================================================
+\section{The affine level: a per-feature collision frontier}
+\label{sec:frontier}
+% ============================================================================
+
+Sections~\ref{sec:floor} and~\ref{sec:threshold} bound two criteria on random ensembles. Neither
+answers the question an interpretability practitioner actually asks about a \emph{particular}
+trained code: for this feature, in this network, up to what sparsity can a linear probe read the
+feature's presence off the representation at all? This section gives that quantity exactly, as
+the value of one linear programme per feature.
+
+\begin{definition}[Affine separability of a feature]
+\label{def:affsep}
+Fix $\Phi\in\R^{d\times F}$, a feature $i$ and a sparsity $s$. Write $\mathcal A_i(s)$ for the
+set of states $\Phi b$ with $i\in\operatorname{supp}(b)$, $|\operatorname{supp}(b)|\le s$ and
+entries in $[0,1]$, and $\mathcal B_i(s)$ for the same with $i\notin\operatorname{supp}(b)$.
+Feature $i$ is \emph{affinely separable at sparsity $s$} if there exist $w\in\R^d$ and
+$\theta\in\R$ with $w^{\top}x>\theta$ for every $x\in\mathcal A_i(s)$ and $w^{\top}x<\theta$ for
+every $x\in\mathcal B_i(s)$.
+\end{definition}
+
+Because affine functionals separate a pair of sets exactly when they separate their convex hulls,
+separability fails precisely when the two hulls meet. That collision is what the programme below
+detects.
+
+\begin{theorem}[The collision frontier]
+\label{thm:frontier}
+For $z\in\R^{F-1}$, indexed by the features other than $i$, let $z^{+}_j=\max(z_j,0)$ and
+$z^{-}_j=\max(-z_j,0)$, so that both parts are non-negative and $z=z^{+}-z^{-}$. Let
+$\Phi_{-i}$ be $\Phi$ with column $i$ deleted. Put
+\begin{equation}
+  \kappa_i\;:=\;\min_{z}\Big\{\max\big(\textstyle\sum_j z^{+}_j,\;1+\sum_j z^{-}_j\big)
+  \;:\;\Phi_{-i}z=\phi_i,\;\norm{z}_\infty\le1\Big\}.
+  \label{eq:kappa}
+\end{equation}
+Then feature $i$ is affinely separable at every sparsity $s'\le s$ if and only if
+$\kappa_i>s$. The largest sparsity at which feature $i$ is separable is
+$\lceil\kappa_i\rceil-1$.
+\end{theorem}
+
+\begin{proof}
+A collision is a pair of states $\Phi b^{+}=\Phi b^{-}$ with $b^{+},b^{-}\in[0,1]^F$,
+$i\in\operatorname{supp}(b^{+})$, $i\notin\operatorname{supp}(b^{-})$, and both support sizes at
+most $s$; taking hulls replaces the integrality of the supports by the constraint that the
+coordinate sums be at most $s$, and by Proposition~\ref{prop:knapsack} below this relaxation is
+exact. Normalising the active state so that its $i$th coordinate is $1$, write $b^{+}=e_i+u$ and
+$b^{-}=v$ with $u,v\ge0$ supported off $i$; we may take $u$ and $v$ to have disjoint supports,
+since a common component cancels from both sides and only relaxes the two sum constraints. Then
+$\Phi(e_i+u)=\Phi v$ reads $\Phi_{-i}(v-u)=\phi_i$, so with $z=v-u$ we have $z^{+}=v$ and
+$z^{-}=u$. The budget on the inactive state is $\sum_j v_j\le s$, that on the active state is
+$1+\sum_j u_j\le s$, and the entries lie in $[0,1]$, giving $\norm{z}_\infty\le1$. The two
+budgets are exactly $\sum_jz^{+}_j\le s$ and $1+\sum_jz^{-}_j\le s$, so a collision at some
+sparsity at most $s$ exists if and only if the objective in~\eqref{eq:kappa} can be brought to
+$s$ or below, that is, if and only if $\kappa_i\le s$.
+\end{proof}
+
+Three things improve on the corresponding exactly-$s$ statement, which we record because the
+earlier formulation of this work used it. The threshold is $s$ itself rather than
+$2\min(s,F-s)-1$; the admissible sets nest in $s$, so monotonicity of the frontier holds by
+construction rather than needing a proof and a restriction to $s\le F/2$; and $\kappa_i=7.4$ now
+reads directly as ``separable up to $7$, lost at $8$'', which is what a capacity ought to mean.
+Computationally~\eqref{eq:kappa} is a single linear programme --- the $\max$ of two linear forms
+is handled by one auxiliary scalar --- and it settles every sparsity at once, rather than one
+feasibility problem per $s$.
+
+\subsection{What the state distribution contributes}
+\label{sec:frontier-amplitudes}
+
+Definition~\ref{def:affsep} allowed graded activations in $[0,1]$. It is natural to ask what
+happens under a genuine state law, and the answer is unusually clean: almost nothing survives.
+
+\begin{proposition}[Amplitudes wash out of the hulls]
+\label{prop:knapsack}
+For $\alpha\in(0,1]$ and $k\in\mathbb N$ let
+$\mathcal U_k^{\alpha}=\{u\in\R_{\ge0}^{F}:u_j\in\{0\}\cup[\alpha,1],\;
+|\operatorname{supp}(u)|\le k\}$. Then
+$\operatorname{conv}\mathcal U_k^{\alpha}=\{u\in[0,1]^F:\mathbf 1^{\top}u\le k\}$ for every
+$\alpha$.
+\end{proposition}
+
+\begin{proof}
+The right-hand side is the unit-weight knapsack polytope, which is integral: its vertices are the
+$0/1$ vectors with at most $k$ ones. Each such vertex lies in $\mathcal U_k^{\alpha}$ for every
+$\alpha\le1$, so the right-hand side is contained in the hull; the reverse inclusion is immediate
+since $\mathcal U_k^{\alpha}$ satisfies both constraints.
+\end{proof}
+
+\begin{corollary}[The frontier under a minimum amplitude]
+\label{cor:kappa-alpha}
+If active amplitudes lie in $[\alpha,1]$ then feature $i$ is separable at every sparsity
+$s'\le s$ iff $\kappa_i(\alpha)>s$, where
+\[
+  \kappa_i(\alpha)=\min_z\Big\{\max\big(\alpha\textstyle\sum_jz^{+}_j,\;
+  1+\alpha\sum_jz^{-}_j\big)\;:\;\Phi_{-i}z=\phi_i,\;\norm{z}_\infty\le1/\alpha\Big\},
+\]
+and $\kappa_i(\alpha)$ is non-decreasing in $\alpha$. As $\alpha\to0$ an active state converges
+to an inactive one, the hulls touch, and no uniform margin exists.
+\end{corollary}
+
+\begin{remark}[The affine level is a support-level worst case, not a weighted average]
+\label{rem:notdistributional}
+It would be convenient to call Corollary~\ref{cor:kappa-alpha} a distribution-aware frontier. It
+is not, and the distinction matters. By Proposition~\ref{prop:knapsack} two state laws with the
+same support family and the same minimum amplitude give the \emph{same} $\kappa_i(\alpha)$,
+however differently they weight the states in between. The affine level therefore reads exactly
+one scalar off the state law --- the smallest detectable amplitude --- whereas by
+Proposition~\ref{prop:secondmoment} the analog level reads the full second moment $C$. That
+asymmetry is a property of the two criteria, not an artefact of our formulation: separability is
+a statement about a worst case over a support family, and a worst case cannot be reweighted. A
+genuinely probabilistic version, guaranteeing separability for all but a $\delta$ fraction of
+states, is possible but needs machinery we do not open here.
+\end{remark}
+
+\subsection{Margin, certificate, and a dimensional ceiling}
+\label{sec:frontier-margin}
+
+The verdict of Theorem~\ref{thm:frontier} is binary. Two further quantities say how comfortably
+it holds and how it fails, and one says that no code can do well beyond a certain sparsity. The
+first two are stated for the exactly-$s$ parameterisation in which they were derived and
+verified, where the admissible set carries the affine constraint $\mathbf 1^{\top}z=1$ and an
+$\ell_1$ budget; we flag that rather than restate them without proof.
+
+\begin{proposition}[The robust margin is half the hull distance]
+\label{prop:margin}
+Let $\delta_i(s)=\operatorname{dist}(\mathcal A_i(s),\mathcal B_i(s))$ be the Euclidean distance
+between the two hulls. The maximum-margin affine decoder for feature $i$ has
+$\norm{w^{\star}}=1/\delta_i(s)$ and margin $\gamma_i(s)=1/(2\norm{w^{\star}})=\delta_i(s)/2$.
+Consequently, with the optimal unit-norm $w$ and its centred bias, every perturbed input
+$x+\eta$ with $\norm{\eta}_2<\gamma_i(s)$ still receives the correct label on every admissible
+support.
+\end{proposition}
+
+\begin{proof}
+The margin programme is $\min\norm{w}$ subject to $\min_{u\in D}w^{\top}u\ge1$ with
+$D=\mathcal A_i(s)-\mathcal B_i(s)$. Support-function duality gives
+$\max_{\norm{w}\le1}\min_{u\in D}w^{\top}u=\operatorname{dist}(0,D)=\delta_i(s)$, whence
+$\norm{w^{\star}}=1/\delta_i(s)$. For the perturbation claim, the score moves by at most
+$\norm{w}\norm{\eta}$.
+\end{proof}
+
+The margin is therefore a certified noise tolerance in the units of the representation, not
+merely a scale, and $\delta_i(s)=0$ holds exactly when the feature is not separable --- the
+verdict and the margin are two readings of one object.
+
+\begin{proposition}[Failure comes with a finite, independently checkable certificate]
+\label{prop:farkas}
+If feature $i$ is not separable at sparsity $s$, there are states
+$x^{+}_1,\dots,x^{+}_m\in\mathcal A_i(s)$, states $x^{-}_1,\dots,x^{-}_n\in\mathcal B_i(s)$ and
+convex weights $\lambda,\mu$ with
+\begin{equation}
+  \sum_{k}\lambda_kx^{+}_k\;=\;\sum_{l}\mu_lx^{-}_l .
+  \label{eq:farkas}
+\end{equation}
+No affine rule can label all of them correctly, since affinity would force the same point to lie
+strictly on both sides of $\theta$. By Radon's theorem the obstruction can be compressed to at
+most $d+2$ states.
+\end{proposition}
+
+\begin{remark}[What the certificate is, and what it is not]
+\label{rem:cert}
+Equation~\eqref{eq:farkas} is a convex combination of active states equal to a convex combination
+of inactive ones. It is \emph{not} a single pair of colliding supports, and describing it as one
+would be wrong: the obstruction is generically spread over several states on each side. This
+matters practically, because the certificate is what makes the negative verdict auditable. ``The
+solver reported infeasible'' is not evidence; a list of supports from which any third party can
+rebuild the states from $\Phi$ and recompute~\eqref{eq:farkas} is. Our implementation stores the
+supports rather than the cut vectors for exactly that reason, and re-verifies them in a process
+that never sees the solver.
+\end{remark}
+
+\begin{proposition}[A dimensional ceiling on the affine level]
+\label{prop:circuit}
+Call a set $C$ of columns an \emph{affine circuit} if it is minimally affinely dependent:
+$\sum_{j\in C}l_j\phi_j=0$ with $\sum_{j\in C}l_j=0$ and every $l_j\neq0$. Let $q$ be the
+smallest size of an affine circuit of $\Phi$. Since any $d+2$ points in $\R^d$ are affinely
+dependent, $q\le d+2$ whenever $F>d+1$. Moreover the exactly-$s$ collision radius satisfies
+$\rho_{\min}\le q-1\le d+1$, and hence no code supports featurewise affine support recovery
+beyond sparsity $\lceil d/2\rceil$.
+\end{proposition}
+
+\begin{proof}
+Given a circuit $C$, pick $i\in C$ with $|l_i|$ largest and set $z_j=-l_j/l_i$ for
+$j\in C\setminus\{i\}$ and $z_j=0$ otherwise. Then $\Phi_{-i}z=\phi_i$; the affine constraint
+$\mathbf 1^{\top}z=1$ holds automatically, because $\sum_{j\in C}l_j=0$ forces
+$\sum_{j\neq i}l_j=-l_i$; $\norm{z}_\infty\le1$ by the choice of $i$; and
+$\norm{z}_1\le q-1$. Hence $\rho_i\le q-1$. The sparsity bound follows from the threshold
+$2\min(s,F-s)-1$ of the exactly-$s$ rule.
+\end{proof}
+
+This is the affine counterpart of Theorem~\ref{thm:floor}: one bounds error from below, the other
+bounds sparsity from above, and both follow from the ambient dimension alone.
+
+% ============================================================================
+\section{The hierarchy is an implication, and only one way}
+\label{sec:hierarchy}
+% ============================================================================
+
+We now have three criteria on the same code: analog reconstruction
+(Section~\ref{sec:codefloor}), affine support recovery (Section~\ref{sec:frontier}), and whatever
+a trained nonlinear decoder achieves. Calling them a hierarchy is only justified if one implies
+another. It does, in one direction, and the implication runs through leverage --- the same
+statistic that Theorem~\ref{thm:codefloor} showed governs the analog level.
+
+\begin{lemma}[Leverage is redundancy, exactly]
+\label{lem:sm}
+If $\Phi$ has full row rank and $h_i<1$ then
+$\min\{\norm{z}_2^2:\Phi_{-i}z=\phi_i\}=h_i/(1-h_i)$.
+\end{lemma}
+
+\begin{proof}
+The minimum-norm solution gives
+$\min\norm{z}_2^2=\phi_i^{\top}(\Phi_{-i}\Phi_{-i}^{\top})^{-1}\phi_i$, and
+$\Phi_{-i}\Phi_{-i}^{\top}=\Sigma-\phi_i\phi_i^{\top}$. Sherman--Morrison gives
+$(\Sigma-\phi_i\phi_i^{\top})^{-1}=\Sigma^{-1}+\Sigma^{-1}\phi_i\phi_i^{\top}\Sigma^{-1}/(1-h_i)$,
+so the value is $h_i+h_i^2/(1-h_i)=h_i/(1-h_i)$.
+\end{proof}
+
+So a feature with low leverage is reproducible by the others with small coefficients, with no
+detour through coherence. That is the missing step: it converts a statement about the analog
+geometry into a bound on the affine frontier.
+
+\begin{theorem}[Low leverage forces the frontier down]
+\label{thm:arrow}
+For every $i$ with $h_i<1$,
+\begin{equation}
+  \kappa_i\;\le\;1+\sqrt{\frac{(F-1)\,h_i}{1-h_i}} .
+  \label{eq:arrow}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Take the $z$ of Lemma~\ref{lem:sm}, so $\Phi_{-i}z=\phi_i$ and
+$\norm{z}_2=\sqrt{h_i/(1-h_i)}$. Then $\norm{z}_1\le\sqrt{F-1}\,\norm{z}_2$ and
+$\max(\sum_jz^{+}_j,1+\sum_jz^{-}_j)\le1+\norm{z}_1$, so this $z$ is a witness for the
+right-hand side. The box constraint is satisfied wherever the bound is informative: $h_i\le1/2$
+gives $\norm{z}_2\le1$ and hence $\norm{z}_\infty\le1$.
+\end{proof}
+
+\begin{corollary}[A failure threshold with no decoder in it]
+\label{cor:failthresh}
+If
+\[
+  h_i\;\le\;\frac{(s-1)^2}{(F-1)+(s-1)^2}
+\]
+then feature $i$ is \emph{not} affinely separable at sparsity $s$.
+\end{corollary}
+
+\begin{proof}
+Solve $1+\sqrt{(F-1)h/(1-h)}\le s$ for $h$ and apply Theorem~\ref{thm:frontier}.
+\end{proof}
+
+Corollary~\ref{cor:failthresh} is a statement about the code alone: no training, no decoder, no
+probe. It predicts affine collapse from a single leverage score. Its cost is looseness --- the
+$\sqrt{F-1}$ step is lossy, and Section~\ref{sec:res-e5} reports a case where it predicts
+failure at $s=11$ against a measured frontier of $4$. It is a sufficient condition for collapse,
+not an estimate of the frontier.
+
+\begin{proposition}[The converse is false]
+\label{prop:oneway}
+Let $\Phi=[\,I_d\;\;I_d\,]\in\R^{d\times2d}$. Then $h_i=1/2$ for every $i$, so leverage is
+perfectly uniform and $W_{\star}(\Phi)=W(F,d)$: the analog geometry is optimal. Yet
+$\kappa_i=1$ for every $i$, the worst possible value, so no feature is separable beyond $s=1$.
+\end{proposition}
+
+\begin{proof}
+$\Sigma=2I_d$, so $h_i=\phi_i^{\top}\phi_i/2=1/2$ and Theorem~\ref{thm:codefloor} gives equality.
+Each column $i$ has a duplicate $j$ with $\phi_j=\phi_i$; taking $z=e_j$ gives
+$\Phi_{-i}z=\phi_i$ with $\sum_jz^{+}_j=1$, $\sum_jz^{-}_j=0$ and $\norm{z}_\infty=1$, so
+$\kappa_i\le\max(1,1)=1$. The reverse holds for every code and every feature, since
+$z^{-}\ge0$ forces the objective to be at least $1+\sum_jz^{-}_j\ge1$. Hence $\kappa_i=1$, and
+by Theorem~\ref{thm:frontier} feature $i$ is separable at $s=1$ and at no larger sparsity.
+\end{proof}
+
+Together, Theorem~\ref{thm:arrow} and Proposition~\ref{prop:oneway} say:
+
+\begin{quote}
+Bad analog geometry \emph{implies} a bad affine frontier. Good analog geometry does \emph{not}
+imply a good one.
+\end{quote}
+
+That is a strict one-way hierarchy, with the forward arrow proved and the converse refuted by an
+explicit code, and it is what makes the word ``hierarchy'' literally true here rather than a
+label attached to three separate measurements.
+
+\subsection{The nonlinear level: a witness, not a frontier}
+\label{sec:witness}
+
+The third level has no frontier to compute. ``All nonlinear decoders'' has no capacity without a
+restricted class, and restricting it leads to sign-rank, which we do not open. What it does have
+is a finite certificate, and it comes free from Proposition~\ref{prop:farkas}: the states
+appearing in~\eqref{eq:farkas} are at most $d+2$ explicit vectors that \emph{no} affine rule can
+label correctly. A trained network either resolves them or does not, with margin
+\[
+  \gamma_{\mathrm{net}}
+  =\min\Big(\min_k N_i(x^{+}_k)-\theta,\;\min_l\theta-N_i(x^{-}_l)\Big),
+\]
+and that is a sharper report than a recovery curve: not ``a solver says the hulls intersect
+somewhere among millions of states'' but ``these eleven states cannot all be labelled by any
+affine rule, and the learned decoder resolves all eleven with margin $0.21$''. The chain is then
+one theory rather than three metrics, each level consuming the previous. Extracting the witnesses
+is implementation we have not yet done, and we say so in Section~\ref{sec:limitations}.
 
 % ============================================================================
 \section{Application: two frameworks, two invariants}
