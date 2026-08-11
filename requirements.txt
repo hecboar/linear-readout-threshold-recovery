@@ -1,4 +1,4 @@
-# Exact versions used for the results reported in the Neurocomputing manuscript.
+# Exact versions used for the results reported in the manuscript.
 # Everything runs on CPU; no CUDA build is required.
 numpy==2.4.4
 scipy==1.17.1

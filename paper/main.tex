@@ -1,0 +1,1776 @@
+% ============================================================================
+% Linear-Readout Reconstruction Floors and Support Recovery in Computation in Superposition
+% Elsevier `elsarticle' -- Full Length Article. Target journal not yet fixed.
+%
+% Build:  latexmk -pdf main.tex
+% Every measured number is a macro defined in generated/numbers.tex, which is
+% produced from results/ by scripts/make_numbers.py.
+% ============================================================================
+\documentclass[preprint,12pt]{elsarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[expansion=false]{microtype}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{enumitem}
+\usepackage{placeins}
+
+\hypersetup{colorlinks=true, linkcolor=blue!65!black,
+            citecolor=blue!65!black, urlcolor=blue!65!black}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\newcommand{\Otilde}{\widetilde{O}}
+\newcommand{\Omegatilde}{\widetilde{\Omega}}
+\newcommand{\Thetatilde}{\widetilde{\Theta}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\nucnorm}[1]{\left\lVert #1 \right\rVert_*}
+\newcommand{\FrecAS}{F_{\mathrm{rec}}^{\mathrm{AS}}}
+\newcommand{\ecomp}{\varepsilon_{\mathrm{comp}}}
+\newcommand{\ecorr}{\varepsilon_{\mathrm{corr,max}}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+
+% Measured quantities, generated from results/ -- never edited by hand.
+\input{generated/numbers}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Linear-Readout Reconstruction Floors and Support Recovery\\ in Computation in Superposition}
+
+\author[inst1]{Hector Borobia\corref{cor1}}
+\ead{hecboar@doctor.upv.es}
+\author[inst2]{Elies Segu\'i-Mas}
+\author[inst3]{Guillermina Tormo-Carb\'o}
+\cortext[cor1]{Corresponding author.}
+
+\affiliation[inst1]{organization={VRAIN -- Valencian Research Institute for Artificial
+    Intelligence, Universitat Polit\`ecnica de Val\`encia},
+    city={Valencia}, country={Spain}}
+\affiliation[inst2]{organization={Department of Economics and Social Sciences,
+    Universitat Polit\`ecnica de Val\`encia}, city={Valencia}, country={Spain}}
+\affiliation[inst3]{organization={Department of Business Organisation,
+    Universitat Polit\`ecnica de Val\`encia}, city={Valencia}, country={Spain}}
+
+\begin{abstract}
+Overcomplete neural representations encode more latent features than activation dimensions,
+but are useful for computation only when that information can be decoded and composed. Which
+decoding interface a network maintains is decided informally today, and recent work disagrees
+about whether trained models compute in superposition at all. We propose the
+\emph{Interface Diagnostic}, a computable procedure that takes a code or a trained network and
+returns how close its gain-normalised linear readout sits to a Welch-type floor, the sparsity
+range over which a threshold decoder recovers Boolean states exactly, and a witness separating
+\emph{analog reconstruction} from \emph{support recovery}. Its mean-square statistics run in
+$O(Fd^2)$ time and $O(d^2)$ memory without forming the $F\times F$ interface, so it applies at
+$F\approx10^6$ features on a laptop. It rests on a rank--trace
+bound: any rank-$d$ unit-diagonal readout has average squared off-diagonal cross-talk at least
+$(F-d)/(d(F-1))$, in a gain-normalised form bounding the interference-to-gain ratio.
+Six CPU experiments validate it. Gradient-optimised codes reach the floor, the tied variant
+converging to a tight frame. A trained toy model reaches it too: under an $L^4$ loss it sits
+within \EfiveLfourRatioPinvMean{} of the bound against \EfiveLtwoRatioPinvMean{} for $L^2$
+under the same readout, and its thresholded output keeps recovering supports beyond a crossover
+sparsity --- below which the affine readout leads. The $L^2$ baseline keeps an effectively
+linear interface. Recovery scales to $d=\EsixDmax$. The analysis also recasts the H\"{a}nni
+template's $d^{3/2}$ scale as a compatibility threshold, not a universal bound.
+\end{abstract}
+
+\begin{keyword}
+overcomplete representations \sep computation in superposition \sep linear readout \sep
+Welch bound \sep sparse recovery \sep neural network capacity
+\end{keyword}
+
+\end{frontmatter}
+
+% ============================================================================
+\section{Introduction}
+\label{sec:intro}
+% ============================================================================
+
+Modern neural networks use high-dimensional activation spaces to encode many latent
+variables. In many settings the number of relevant latent features exceeds the ambient
+dimension, which motivates the study of \emph{overcomplete representations}: a state in
+$\R^d$ carrying information about $F\gg d$ features.
+
+For such representations the central issue is not storage. A code may passively embed many
+states, but a network must also decode what it needs and compose it across layers. Different
+decoding interfaces impose different constraints. A \emph{linear readout} interface asks for
+a matrix $G$ whose coordinates approximately recover the features. A \emph{threshold}
+interface asks only that active and inactive coordinates be separated by a margin, so that a
+nonlinearity can recover a sparse Boolean state. These criteria are related but not
+equivalent, and the difference is not cosmetic: it decides which capacity results apply.
+
+\subsection{The concrete limitation}
+
+The distinction is currently drawn informally, and that has a cost. H\"{a}nni et
+al.~\cite{hanni2024superposition} give an approximate-linear recursive template certifying
+$\Otilde(d^{3/2})$ computable features in width $d$, while Adler and
+Shavit~\cite{adler2024superposition} reach a near-quadratic regime using thresholded Boolean
+recovery. The two are routinely read as competing capacity claims. In parallel, an active
+empirical line disagrees about whether trained toy models compute in superposition at all:
+Bhagat et al.~\cite{bhagat2026cc} argue that the standard $L^2$-trained compressed-computation
+model largely exploits a mixing term, whereas Ferreira da Silva and
+Heimersheim~\cite{ferreiradasilva2026l4} show that training under an $L^4$ loss elicits a
+solution that does compute in superposition. The disagreement turns precisely on which
+decoding interface the trained network maintains --- and there is no standard, computable way
+to answer that question about a given network.
+
+That is the gap this paper addresses. What is missing is not another capacity bound but an
+\emph{operational test}: given a code or a trained model, decide which interface it supports
+and quantify how far it is from the best possible one.
+
+\subsection{The proposed method}
+
+We propose the \textbf{Interface Diagnostic} (ID), a procedure with a precise input, output
+and cost. Its input is an overcomplete code $\Phi\in\R^{d\times F}$ --- hand-built, optimised,
+or read off a trained network --- together with a sparse-state model and a decoding threshold.
+Its output is a triple:
+
+\begin{enumerate}[leftmargin=*,itemsep=1pt]
+\item the \emph{attainment ratio} $\widehat W/W(F,d)$, where $\widehat W$ is the mean squared
+  off-diagonal cross-talk of the calibrated readout interface and $W(F,d)=(F-d)/(d(F-1))$ is
+  a floor no readout can beat (Theorem~\ref{thm:floor});
+\item the \emph{recovery profile} $p_{\mathrm{rec}}(s)$ of the threshold decoder together with
+  the exact per-coordinate reconstruction error that any linear readout must retain at the
+  same $s$;
+\item a \emph{criterion-separation witness}: the largest sparsity at which the support is
+  recovered exactly with high probability while no rank-$d$ linear readout can reconstruct the
+  state's real-valued coordinates to better than $\Omega(\sqrt{s/d})$ per coordinate.
+\end{enumerate}
+
+A word on what the two criteria are, because the natural shorthand is misleading. The contrast
+is \emph{analog reconstruction} against \emph{support recovery}, not linear against nonlinear.
+Thresholding a linear score is itself a linear-threshold rule, and we evaluate exactly that
+rule alongside the network's own output; the floor does not forbid it from recovering supports.
+What the floor forbids is small real-valued error. The two criteria therefore come apart
+because they ask different questions of the same map --- ``what is the value of coordinate
+$i$?'' versus ``is coordinate $i$ on?'' --- and a code can serve the second long after it has
+stopped serving the first.
+
+Algorithms~\ref{alg:one} and~\ref{alg:two} state the procedure; Section~\ref{sec:method}
+gives its cost, its applicability conditions and its failure cases, and
+Table~\ref{tab:codemap} maps each step to the function that implements it.
+
+We are explicit about what is and is not new. The rank--trace mechanism behind the floor is
+standard in frame theory, and the recovery arguments are standard compressed sensing. The
+contribution is the packaging of these facts into a criterion that can be \emph{run} on a
+network, together with the gain-normalised form that makes it scale-invariant, the
+$O(Fd^2)$ streaming implementation that makes it feasible at $F\approx10^6$, and the
+experimental demonstration that the criterion discriminates between trained models whose
+interface status is currently under debate.
+
+\subsection{Contributions}
+
+\begin{enumerate}[leftmargin=*]
+
+\item \textbf{The Interface Diagnostic.} A computable interface criterion for overcomplete
+codes and trained networks, with pseudocode, hyperparameters, complexity, applicability
+conditions, edge cases and failure modes (Section~\ref{sec:method}), and a reference
+implementation whose every step is traceable to a numbered equation
+(Table~\ref{tab:codemap}). The diagnostic proper (Algorithm~\ref{alg:two}) is stated for a
+\emph{fixed} code and readout; the random-code ensemble used for the scaling study
+(Algorithm~\ref{alg:ensemble}) is a separate procedure and is not a diagnosis of any code.
+
+\item \textbf{A gain-normalised floor, computable in $O(Fd^2)$.} For any $G,\Phi$ with
+$(G\Phi)_{ii}=1$ the average squared off-diagonal cross-talk is at least $(F-d)/(d(F-1))$
+(Theorem~\ref{thm:floor}); Corollary~\ref{cor:calibfree} removes the normalisation and bounds
+the \emph{interference-to-gain ratio} $\max_{i\neq j}|M_{ij}|/|M_{ii}|$, making the diagnostic
+invariant to readout rescaling. Lemma~\ref{lem:suffstat} then reduces the mean-square statistic
+to $d\times d$ sufficient statistics, exactly and with no approximation, which is what lets the
+attainment ratio be evaluated at $F\approx10^6$; the maximum form admits no such reduction and
+we state its $O(F^2d)$ cost rather than conflate the two. Proposition~\ref{prop:leverage}
+identifies what a ratio near one means under the pseudoinverse readout --- equalised leverage
+scores, a property of the code's geometry and not of its usefulness.
+
+\item \textbf{A separation between two decoding questions, under one sparse-state model.}
+Proposition~\ref{prop:uniform-energy} gives the average analog-reconstruction floor under
+uniformly random supports, so that both sides of Corollary~\ref{cor:separation} use the same
+distribution. At $F=d^2$, thresholding recovers a uniformly random size-$s$ support for
+$s=O(d/\log d)$ with high probability, while every unit-diagonal rank-$d$ linear readout
+retains average per-coordinate squared \emph{reconstruction} error $\Omega(s/d)$ on that same
+distribution. The separation is between reconstructing values and identifying the support; it
+is not a claim that nonlinearity is required, and the thresholded linear readout is measured
+throughout as the appropriate control.
+
+\item \textbf{Validation on learned codes and a trained network.} Codes optimised under the
+unit-diagonal constraint converge to the floor, and the tied variant converges to a unit-norm
+tight frame. In a trained toy model of computation in superposition, the $L^4$ solution comes
+within a few parts in a thousand of the floor under the pseudoinverse readout --- which by
+Proposition~\ref{prop:leverage} says its features carry near-equal leverage --- and its
+thresholded output keeps recovering supports past the sparsity at which the thresholded linear
+readouts of its own code stop doing so. Below that crossover the best linear readout is the
+stronger decoder, and it wins on the $s_{95}$ statistic. The $L^2$ solution is shown by direct
+measurement to maintain an effectively linear
+interface, an independent and quantitative corroboration of the reading
+in~\cite{bhagat2026cc}.
+
+\item \textbf{Application to computation in superposition.} Matching the floor against the
+published tolerance of the H\"{a}nni correction layer gives a $d^{3/2}$ compatibility scale
+for that proof template, not a universal upper bound; the Adler--Shavit framework maintains
+the threshold invariant and is therefore not obstructed by the same criterion.
+
+\end{enumerate}
+
+\subsection{Scope of claims}
+\label{sec:scope}
+
+Four caveats apply throughout, and we state them once here rather than repeating them.
+
+First, Theorem~\ref{thm:floor} is a rank--trace, unit-diagonal cross-Gramian inequality
+closely related to known Welch and dual-frame Welch bounds
+\cite{welch1974lower,strohmer2003grassmannian,waldron2003generalized,datta2012geometry,aceska2022crossframe,christensen2020welch};
+its role here is the application to readout interfaces, not a new frame-theoretic theorem.
+Second, the threshold-recovery results are standard coherence-based and random-dictionary
+support-recovery arguments; we claim no novelty in compressed sensing. Third, the $d^{3/2}$
+scale we derive for the H\"{a}nni template is a compatibility threshold certified by that
+specific proof pipeline, not a universal upper bound on computation in superposition. Fourth,
+the experiments cover random codes, gradient-optimised codes and one trained toy model; none
+of them is a claim about large trained language models.
+
+% ============================================================================
+\section{Background and related work}
+\label{sec:background}
+% ============================================================================
+
+\subsection{Computation in superposition}
+
+A network of hidden width $d$ \emph{represents $F\gg d$ features in superposition} if its
+activation $a(x)\in\R^d$ is approximately $\Phi b$ for a feature-encoding matrix
+$\Phi\in\R^{d\times F}$ and a sparse Boolean $b$. Following~\cite{hanni2024superposition},
+features $f_1,\dots,f_F$ are \emph{$\varepsilon$-linearly represented} by $a$ if there is a
+readout $R\in\R^{F\times d}$ with $|r_k\cdot a(x)-f_k(x)|<\varepsilon$ for all $k$ and $x$.
+
+H\"{a}nni et al.\ construct an approximate-linear recursive template for sparse Boolean
+circuits, alternating a targeted superpositional AND layer with an error-correction layer, and
+certify emulation of circuits of width $\Otilde(d^{3/2})$. Adler and
+Shavit~\cite{adler2024superposition} give parameter-description lower bounds and explicit
+constructions for computing in superposition, obtaining a near-quadratic capacity by
+thresholding after each stage. Adler et al.~\cite{adler2025combinatorial} reframe superposition
+combinatorially through feature channel coding, and Kong et al.~\cite{kong2025expand} show
+empirically that reducing inter-feature interference at fixed parameter count improves
+performance. This paper reproves none of these constructions; it identifies the interface-level
+reason the two regimes coexist.
+
+\subsection{Trained toy models of computation in superposition}
+
+A recent empirical line studies whether small trained networks actually compute in
+superposition. Braun et al.~\cite{braun2025apd} introduced the compressed-computation task ---
+a width-$50$ network asked to compute $100$ sparse ReLU features --- as a testbed. Bhagat et
+al.~\cite{bhagat2026cc} argued that the standard $L^2$-trained model largely exploits a mixing
+term rather than genuinely computing in superposition, and Ferreira da Silva and
+Heimersheim~\cite{ferreiradasilva2026l4} showed that training under an $L^4$ loss elicits a
+solution that does compute in superposition, assigning each feature a sparse codeword over
+neurons and decoding it with a pseudoinverse of the encoder --- that is, a linear readout
+interface in the sense studied here. In parallel,
+\cite{ferreiradasilva2026errcorr} report perturbation-based evidence for feature-specific
+error correction in large language models, the mechanism whose certified tolerance drives the
+$d^{3/2}$ compatibility scale of the H\"{a}nni template. This debate is about which decoding
+interface a trained network maintains; the diagnostic proposed here is a direct instrument for
+it, and Section~\ref{sec:res-e5} applies it to exactly the models under dispute.
+
+\subsection{Frame theory, Welch bounds and cross-Gramians}
+\label{sec:frames}
+
+Classical Welch bounds~\cite{welch1974lower} lower-bound the correlations of overcomplete
+unit-norm systems; the maximum-correlation form we use,
+$\max_{i\neq j}|\langle\phi_i,\phi_j\rangle|\ge\sqrt{(F-d)/(d(F-1))}$, appears for instance as
+Theorem~2.3 of Strohmer and Heath~\cite{strohmer2003grassmannian} in the study of Grassmannian
+frames. Waldron~\cite{waldron2003generalized} showed that generalised Welch-bound-equality
+sequences are exactly tight frames, and Datta, Howard and Cochran~\cite{datta2012geometry}
+derived the entire family of higher-order Welch bounds from a geometric rank/Grammian
+argument, of which the rank--trace computation behind Theorem~\ref{thm:floor} is the
+first-order instance; see also~\cite{klappenecker2005mub} for the design-theoretic view. For
+pairs of sequences, Aceska and Kaczanowski~\cite{aceska2022crossframe} introduced the
+cross-frame potential, and Christensen, Datta and Kim~\cite{christensen2020welch} proved
+Welch-type bounds for the maximum coherence of dual frame pairs, characterising equality via
+equiangular tight frames.
+
+Theorem~\ref{thm:floor} sits in this lineage: it is a unit-diagonal cross-Gramian formulation
+assuming only $\operatorname{rank}(M)\le d$ and $M_{ii}=1$ --- in particular, no duality
+relation between the two sequences, which, as finite sequences, are of course frames for their
+spans. We include its short rank--trace proof only to keep the paper self-contained; the proof
+mechanism is standard in this literature, cf.~\cite{datta2012geometry}. The contribution here
+is the application to readout interfaces, the gain-normalised form
+(Corollary~\ref{cor:calibfree}), and the diagnostic built on top of them.
+
+\subsection{Compressed sensing and sparse recovery}
+
+The threshold-recovery results used below are standard coherence-based and random-dictionary
+support-recovery arguments. Their role is to make explicit a distinction relevant to neural
+computation: small-error linear readout requires uniformly small coordinate error, whereas
+threshold recovery only requires the aggregate interference from the active support to remain
+below a margin.
+
+\subsection{Sparse autoencoders}
+
+Sparse autoencoder work scales dictionary learning to millions of
+latents~\cite{cunningham2023sparse,gao2024scaling,lieberum2024gemma} and studies
+reconstruction--sparsity trade-offs~\cite{michaud2025manifolds}. Such results motivate the
+importance of overcomplete internal representations, but dictionary size is a reconstructive
+quantity and does not measure the recursive Boolean interface capacities studied here. This
+paper answers one of the open questions listed by Sharkey et al.~\cite{sharkey2025open}
+concerning what theoretical insight can be gleaned from computation performed natively in
+superposition.
+
+% ============================================================================
+\section{Problem setting and notation}
+\label{sec:setting}
+% ============================================================================
+
+We write $\Otilde(\cdot),\Omegatilde(\cdot),\Thetatilde(\cdot)$ to hide factors polynomial in
+$\log d$. Table~\ref{tab:notation} fixes the notation used throughout.
+
+\begin{table}[t]
+\centering
+\caption{Notation.}
+\label{tab:notation}
+\small
+\begin{tabular}{ll}
+\toprule
+symbol & meaning \\
+\midrule
+$d$ & activation width (number of neurons) \\
+$F$ & number of features, $F>d$ \\
+$\Phi\in\R^{d\times F}$ & code; column $\phi_i$ is the direction of feature $i$ \\
+$G\in\R^{F\times d}$ & linear readout \\
+$M=G\Phi\in\R^{F\times F}$ & readout interface, $\operatorname{rank}(M)\le d$ \\
+$D=\operatorname{diag}(M_{11},\dots,M_{FF})$ & diagonal gains; $D^{-1}M$ is the calibrated interface \\
+$A=M-I_F$ & cross-talk matrix (zero diagonal after calibration) \\
+$b\in\{0,1\}^F$ & sparse Boolean state; $S=\operatorname{supp}(b)$, $s=|S|$ \\
+$\mu=\max_{i\ne j}|\langle\phi_i,\phi_j\rangle|$ & coherence of a unit-norm code \\
+$W(F,d)=\frac{F-d}{d(F-1)}$ & mean-square Welch-type floor \\
+$\widehat W$ & measured mean squared off-diagonal cross-talk \\
+$\theta$ & decoding threshold (default $1/2$) \\
+$p_{\mathrm{rec}}(s)$ & probability of exact threshold recovery at sparsity $s$ \\
+$s_{95}$ & largest $s$ such that $p_{\mathrm{rec}}\ge0.95$ for \emph{every} tested $s'\le s$ \\
+$m,m'$ & feature counts \emph{inside imported statements}; $m'$ plays the role of $F$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two decoding questions are compared throughout. \emph{Analog reconstruction} asks that the
+scores $z=Mb$ approximate $b$ in a norm; \emph{support recovery} asks only that
+$\mathbf 1\{z_i\ge\theta\}=b_i$ for every $i$. The first is a statement about magnitudes and is
+never exactly satisfiable when $F>d$; the second is a statement about a decision boundary and
+can be satisfied exactly --- by a thresholded linear score as much as by anything else, which
+is why that rule is measured here too rather than treating support recovery as the preserve of
+nonlinearity. Everything below is an elaboration of that asymmetry.
+
+% ============================================================================
+\section{The Interface Diagnostic}
+\label{sec:method}
+% ============================================================================
+
+\subsection{Problem statement}
+
+\begin{problem}[Interface diagnosis]
+\label{prob:main}
+\textbf{Input:} a code $\Phi\in\R^{d\times F}$ with $F>d$ (or a trained network from which an
+effective code is read off); a readout family $\mathcal G$; a sparse-state model, here
+uniformly random supports of size $s$ drawn from a grid $\mathcal S$; a threshold $\theta$; a
+trial budget $T$; a confidence level $1-\alpha$.
+
+\textbf{Output:} (i) the attainment ratio $r=\widehat W/W(F,d)\ge1$ and the maximum-form ratio
+$r_{\max}$; (ii) for each $s\in\mathcal S$, the empirical $p_{\mathrm{rec}}(s)$ with a Wilson
+interval and the exact per-coordinate RMS error $\rho_{\mathrm{lin}}(s)$ of the calibrated
+linear interface; (iii) the criterion-separation witness $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$.
+\end{problem}
+
+The output is a diagnosis, not a score to be optimised. A code with $r$ close to $1$ is
+Welch-optimal in the mean-square sense; a large $s_{95}$ with $\rho_{\mathrm{lin}}(s_{95})$
+well above $d^{-1/2}$ says the code supports support recovery in a regime where analog
+reconstruction from the same map is useless.
+
+\subsection{Algorithm 1: floor attainment}
+
+\begin{algorithm}[t]
+\caption{\textsc{FloorAttainment} --- how close the readout interface sits to the floor}
+\label{alg:one}
+\begin{algorithmic}[1]
+\Require code $\Phi\in\R^{d\times F}$, $F>d$; readout $G\in\R^{F\times d}$ or a rule in
+  $\{\textsc{tied},\textsc{pinv},\textsc{lsq}\}$
+\Ensure attainment ratio $r$ (and $r_{\max}$ if requested), or \textsc{Degenerate}
+\State $G\gets\Phi^{\top}$, $\Phi^{+}$, or the least-squares fit, per the rule
+\State $D_{ii}\gets\langle g_i,\phi_i\rangle$ for $i=1,\dots,F$
+  \Comment{the diagonal of $M=G\Phi$, in $O(Fd)$; $M$ itself is not formed}
+\If{$\min_i|D_{ii}|<\epsilon_{\mathrm{gain}}$} \Return \textsc{Degenerate}
+  \Comment{some feature is read out with vanishing gain}
+\EndIf
+\State $\bar G\gets D^{-1}G$ \Comment{gain normalisation; see Corollary~\ref{cor:calibfree}}
+\State $H\gets\bar G^{\top}\bar G$;\quad $\Sigma\gets\Phi\Phi^{\top}$
+  \Comment{both $d\times d$; $O(Fd^2)$}
+\State $\widehat W\gets\dfrac{\operatorname{tr}(H\Sigma)-F}{F(F-1)}$
+  \Comment{exact, by Lemma~\ref{lem:suffstat}}
+\State $W\gets(F-d)/(d(F-1))$ \Comment{Theorem~\ref{thm:floor}}
+\If{the maximum form is requested}
+  \State form $\widetilde M\gets\bar G\Phi$ and set
+    $\widehat\mu\gets\max_{i\neq j}|\widetilde M_{ij}|$
+    \Comment{$O(F^2d)$ time, $O(F^2)$ memory}
+\EndIf
+\State \Return $r\gets\widehat W/W$ \ (and $r_{\max}\gets\widehat\mu/\sqrt{W}$ if computed)
+\end{algorithmic}
+\end{algorithm}
+
+Step~3 is not a numerical guard but a semantic one: without it, an interface can be made to
+look arbitrarily good by shrinking $G$, which is exactly the confusion that
+Remark~\ref{rem:calib} dispels. By Theorem~\ref{thm:floor}, a correct implementation always
+returns $r\ge1$; we use that as a runtime assertion, and no violation was observed in
+\EoneMeasurements{} gain-normalised interfaces (Section~\ref{sec:res-e1}).
+
+The mean-square statistic that the theorem actually constrains never requires the interface to
+be built. The maximum statistic does, and we say so rather than folding it into the same cost.
+
+\begin{lemma}[Mean-square cross-talk from $d\times d$ statistics]
+\label{lem:suffstat}
+Let $\bar G=D^{-1}G$ with $D_{ii}=\langle g_i,\phi_i\rangle\neq0$, let
+$\widetilde M=\bar G\Phi$, and set $H=\bar G^{\top}\bar G$ and $\Sigma=\Phi\Phi^{\top}$, both
+in $\R^{d\times d}$. Then
+\[
+  \sum_{i\neq j}\widetilde M_{ij}^{2}
+  \;=\;\norm{\bar G\Phi}_F^{2}-F
+  \;=\;\operatorname{tr}(H\Sigma)-F .
+\]
+\end{lemma}
+
+\begin{proof}
+$\widetilde M$ has unit diagonal by construction, so the $F$ diagonal entries contribute
+exactly $F$ to $\norm{\widetilde M}_F^2$ and the remainder is the off-diagonal sum. Cyclicity
+of the trace gives $\norm{\bar G\Phi}_F^2=\operatorname{tr}(\Phi^{\top}\bar G^{\top}\bar
+G\Phi)=\operatorname{tr}(\bar G^{\top}\bar G\,\Phi\Phi^{\top})=\operatorname{tr}(H\Sigma)$.
+\end{proof}
+
+Forming $H$ and $\Sigma$ costs $O(Fd^2)$ time and $O(d^2)$ memory, against $O(F^2d)$ and
+$O(F^2)$ for the direct route --- a reduction of a factor $F/d$ in time and $F^2/d^2$ in
+memory, with no approximation whatever. The identity is verified against the dense computation
+to relative accuracy $10^{-10}$ in the accompanying tests.
+
+\subsection{Algorithm 2: separation profile of a given code}
+
+Algorithm~\ref{alg:two} is the diagnostic proper: it takes a code and a readout that already
+exist --- a designed code, an optimised one, or the effective code of a trained network --- and
+holds them fixed while the support varies. This is the only version that says anything about a
+particular object, and it is the one applied to trained networks in
+Section~\ref{sec:res-e5}.
+
+\begin{algorithm}[t]
+\caption{\textsc{SeparationProfile} --- support recovery versus irreducible analog error, on a
+fixed code}
+\label{alg:two}
+\begin{algorithmic}[1]
+\Require code $\Phi\in\R^{d\times F}$ and readout $G\in\R^{F\times d}$; sparsity grid
+  $\mathcal S$; trials $T$; threshold $\theta$; seed $\sigma$
+\Ensure $\{(s,p_{\mathrm{rec}}(s),\text{CI},\rho_{\mathrm{lin}}(s))\}_{s\in\mathcal S}$ and the
+  separation witness $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$
+\State $s_{\max}\gets\max\mathcal S$;\quad $\bar G\gets D^{-1}G$ as in
+  Algorithm~\ref{alg:one}
+\State $\norm{A}_F^2\gets\operatorname{tr}(H\Sigma)-F$;\quad
+       $\norm{A\mathbf 1}^2\gets\norm{\bar G\Phi\mathbf 1}^2
+       -2\,\mathbf 1^{\top}\bar G\Phi\mathbf 1+F$
+  \Comment{Lemma~\ref{lem:moments}; $O(Fd^2)$}
+\State $e_s\gets\frac1F\!\left[(p-q)\norm{A}_F^2+q\norm{A\mathbf 1}^2\right]$,
+  $p=\tfrac sF$, $q=\tfrac{s(s-1)}{F(F-1)}$, for each $s\in\mathcal S$
+  \Comment{exact; Prop.~\ref{prop:uniform-energy}}
+\For{$t=1$ \textbf{to} $T$}
+  \State draw nested supports $S_1\subset\cdots\subset S_{s_{\max}}$ from seed $(\sigma,t)$
+  \State $Z\gets\bar G\,[\,x_1,\dots,x_{s_{\max}}\,]$, $x_s=\sum_{j\in S_s}\phi_j$
+    \Comment{$O(Fd\,s_{\max})$}
+  \State $k_s\mathrel{+}=1$ for each $s$ with $\mathbf 1\{Z_{\cdot s}\ge\theta\}=\mathbf 1_{S_s}$
+\EndFor
+\State $p_{\mathrm{rec}}(s)\gets k_s/T$ with Wilson interval;\quad
+       $\rho_{\mathrm{lin}}(s)\gets\sqrt{e_s}$
+\State $s_{95}\gets\max\{s:\ p_{\mathrm{rec}}(s')\ge0.95\ \forall s'\le s\}$
+\State \Return the profile and $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$
+\end{algorithmic}
+\end{algorithm}
+
+The support-recovery side of Algorithm~\ref{alg:two} is Monte Carlo over supports; the analog
+side is \emph{exact} for the given code, computed once before the loop rather than estimated
+inside it. Total cost is $O(Fd^2+TFd\,s_{\max})$ time and $O(Fd+d^2)$ memory: the $F\times F$
+interface is never formed.
+
+\subsection{A scaling experiment on the random-code ensemble}
+\label{sec:alg-ensemble}
+
+Algorithm~\ref{alg:ensemble} is a different object and we keep it named apart. It redraws a
+fresh code at every trial, so what it characterises is the $(d,F)$ random-code \emph{ensemble},
+not any individual code; it is the vehicle for the width-scaling study of
+Sections~\ref{sec:res-e1} and~\ref{sec:res-e6}, and it is not a diagnosis of anything. Because
+the code is regenerated block by block from a counted seed and never stored, it reaches widths
+at which the code would not fit in memory.
+
+\begin{algorithm}[t]
+\caption{\textsc{EnsembleScaling} --- the same two criteria, averaged over random codes}
+\label{alg:ensemble}
+\begin{algorithmic}[1]
+\Require $d$, $F$, sparsity grid $\mathcal S$, trials $T$, threshold $\theta$, seed $\sigma$,
+  block size $B$
+\Ensure the ensemble-averaged profile and $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$
+\State $s_{\max}\gets\max\mathcal S$;\quad $k_s\gets0$ for all $s$;\quad $e_s\gets0$ for all $s$
+\For{$t=1$ \textbf{to} $T$}
+  \State draw nested supports $S_1\subset\cdots\subset S_{s_{\max}}$ from seed $(\sigma,t)$
+  \State $X\gets$ partial sums $[\,x_1,\dots,x_{s_{\max}}\,]$, $x_s=\sum_{j\in S_s}\phi_j$
+    \Comment{$d\times s_{\max}$}
+  \State $\Sigma\gets 0_{d\times d}$,\ $v\gets 0_d$
+  \For{each block $\beta$ of $B$ columns of $\Phi$}
+    \State regenerate $\Phi_\beta$ from seed $(\sigma,t,\beta)$ \Comment{$\Phi$ is never stored}
+    \State $Z\gets\Phi_\beta^{\top}X$; mark $s$ as failed if
+      $\mathbf 1\{Z_{\cdot s}\ge\theta\}$ disagrees with $\mathbf 1_{S_s}$ on this block
+    \State $\Sigma\mathrel{+}=\Phi_\beta\Phi_\beta^{\top}$;\quad
+           $v\mathrel{+}=\Phi_\beta\mathbf 1$
+  \EndFor
+  \State $k_s\mathrel{+}=1$ for each surviving $s$
+  \State $\norm{A}_F^2\gets\norm{\Sigma}_F^2-F$;\quad
+         $\norm{A\mathbf 1}^2\gets v^{\top}\Sigma v-2\norm{v}^2+F$
+    \Comment{Lemma~\ref{lem:moments}}
+  \State $e_s\mathrel{+}=\frac1F\!\left[(p-q)\norm{A}_F^2+q\norm{A\mathbf 1}^2\right]$,
+    $p=\tfrac sF$, $q=\tfrac{s(s-1)}{F(F-1)}$ \Comment{Prop.~\ref{prop:uniform-energy}}
+\EndFor
+\State $p_{\mathrm{rec}}(s)\gets k_s/T$ with Wilson interval;\quad
+       $\rho_{\mathrm{lin}}(s)\gets\sqrt{e_s/T}$
+\State $s_{95}\gets\max\{s:\ p_{\mathrm{rec}}(s')\ge0.95\ \forall s'\le s\}$
+\State \Return the profile and $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$
+\end{algorithmic}
+\end{algorithm}
+
+Both algorithms share the same asymmetry: the support-recovery side is estimated, the analog
+side is computed. That is what makes the comparison a witness rather than two noisy curves ---
+the analog error carries no Monte Carlo uncertainty, so any gap at $s_{95}$ is attributable to
+the recovery side alone.
+
+\begin{lemma}[Sufficient statistics of the tied interface]
+\label{lem:moments}
+Let $\Phi$ have unit-norm columns, $M=\Phi^{\top}\Phi$, $A=M-I_F$,
+$\Sigma=\Phi\Phi^{\top}\in\R^{d\times d}$ and $v=\Phi\mathbf 1\in\R^d$. Then
+\[
+  \norm{A}_F^2=\norm{\Sigma}_F^2-F,
+  \qquad
+  \norm{A\mathbf 1}_2^2=v^{\top}\Sigma v-2\norm{v}_2^2+F .
+\]
+\end{lemma}
+
+\begin{proof}
+By cyclicity of the trace, $\norm{\Phi^{\top}\Phi}_F^2=\operatorname{tr}((\Phi^{\top}\Phi)^2)
+=\operatorname{tr}((\Phi\Phi^{\top})^2)=\norm{\Sigma}_F^2$; the diagonal of $M$ is all ones and
+contributes $F$, so subtracting $F$ leaves the off-diagonal energy, which is $\norm{A}_F^2$.
+For the second identity, $A\mathbf 1=\Phi^{\top}\Phi\mathbf 1-\mathbf 1=\Phi^{\top}v-\mathbf 1$,
+hence $\norm{A\mathbf 1}^2=v^{\top}\Phi\Phi^{\top}v-2\mathbf 1^{\top}\Phi^{\top}v+F
+=v^{\top}\Sigma v-2\norm{v}^2+F$, using $\mathbf 1^{\top}\Phi^{\top}v=v^{\top}v$.
+\end{proof}
+
+Lemma~\ref{lem:moments} is the reason the diagnostic scales: it replaces an $F\times F$ object
+by a $d\times d$ one, and combined with Proposition~\ref{prop:uniform-energy} it yields the
+average linear error at every sparsity without a single Monte Carlo draw.
+
+\subsection{Hyperparameters, complexity and cost}
+
+The diagnostic has five hyperparameters: the readout rule, the threshold $\theta$ (default
+$1/2$, the natural midpoint for unit-norm codes and Boolean states), the sparsity grid
+$\mathcal S$, the trial budget $T$, and the block size $B$, which trades memory for the number
+of regeneration passes. Only $T$ affects the statistical resolution;
+Section~\ref{sec:res-e1} reports the threshold sensitivity of the conclusions.
+
+Algorithm~\ref{alg:one} costs $O(Fd^2)$ time and $O(d^2)$ memory for the ratio $r$, by
+Lemma~\ref{lem:suffstat}. The maximum-form ratio $r_{\max}$ is the one exception in the whole
+method: no $d\times d$ reduction of a maximum is available to us, so obtaining it exactly costs
+$O(F^2d)$ time and $O(F^2)$ memory, and it is computed only when asked for. Since the floor of
+Theorem~\ref{thm:floor} is a statement about the mean square, nothing about the floor
+comparison is lost by omitting it; we report $r_{\max}$ at the moderate widths where it is
+affordable and drop it beyond. Algorithm~\ref{alg:two} costs $O(Fd^2+T\,F\,d\,s_{\max})$ time
+and $O(Fd+d^2)$ memory. Algorithm~\ref{alg:ensemble} costs $O(T\,F\,d\,
+s_{\max})$ time --- one pass of code regeneration and one $B\times d\times s_{\max}$ product
+per block --- and $O(Bd+d^2)$ memory, independent of $F$. At $d=\EsixDmax$ and
+$F=\EsixFmax$ the code would occupy $4$~GB in single precision; the streaming implementation
+peaks near $B\,d\cdot4$ bytes. Measured wall-clock times are in Table~\ref{tab:cost}.
+
+\subsection{Applicability, edge cases and failure modes}
+
+\paragraph{Conditions of applicability.} The diagnostic assumes (i) $F>d$, otherwise the floor
+is vacuous and Algorithm~\ref{alg:one} refuses to run; (ii) unit-norm code columns, or a
+declared normalisation, since the threshold $\theta=1/2$ is calibrated to unit gain;
+(iii) a sparse-state model that is exchangeable across coordinates, which is what makes the
+closed form of step~3 valid.
+
+\paragraph{Edge cases.} At $s=1$ the linear error is still non-zero while threshold recovery
+succeeds whenever $\mu<\theta$; this is the smallest instance of the separation. When
+$F/d\to1$ the floor tends to zero and the diagnosis becomes uninformative --- correctly so,
+since a nearly complete code has no interference to speak of.
+
+\paragraph{Failure modes.} Three are worth naming. (a) \emph{Degenerate gain}: if some
+$|M_{ii}|$ is numerically zero the calibration is undefined and Algorithm~\ref{alg:one}
+returns \textsc{Degenerate} rather than a number; this is not a corner case but the expected
+outcome when a readout is fitted without the diagonal constraint
+(Section~\ref{sec:res-e4}). (b) \emph{Uncovered feature}: a least-squares readout fitted on
+states in which some feature never appears has an identically zero row, which triggers (a);
+the implementation therefore enforces coverage of the fitting set. (c) \emph{Vacuous profile}:
+if the coherence of the code exceeds $\theta$, $p_{\mathrm{rec}}(1)$ is already below $0.95$
+and $s_{95}=0$; the certificate is then empty, and the diagnostic reports that rather than
+extrapolating.
+
+\subsection{Implementation and traceability}
+
+\begin{table}[t]
+\centering
+\caption{Each step of the method and the function that implements it. Paths are relative to
+the repository root.}
+\label{tab:codemap}
+\small
+\begin{tabular}{lll}
+\toprule
+quantity & where defined & implementation \\
+\midrule
+$W(F,d)$ & Eq.~\eqref{eq:floor} & \code{lrtr/codes.py:welch\_floor} \\
+$D^{-1}M$ & Cor.~\ref{cor:calibfree} & \code{lrtr/interface.py:unit\_diagonal} \\
+$\widehat W,\widehat\mu,r,r_{\max}$ & Alg.~\ref{alg:one} & \code{lrtr/interface.py:crosstalk\_stats} \\
+Algorithm~\ref{alg:one} & Sec.~\ref{sec:method} & \code{lrtr/diagnostic.py:interface\_floor\_diagnostic} \\
+$\Sigma,v\mapsto\norm{A}_F^2,\norm{A\mathbf 1}^2$ & Lem.~\ref{lem:moments} & \code{lrtr/diagnostic.py:tied\_energy\_moments} \\
+$\frac1F\E_S\norm{A\mathbf 1_S}^2$ & Prop.~\ref{prop:uniform-energy} & \code{lrtr/interface.py:linear\_energy\_uniform} \\
+energy floor & Eq.~\eqref{eq:energyfloor} & \code{lrtr/interface.py:energy\_floor\_uniform} \\
+threshold decoder $Q$ & Thm.~\ref{thm:coherence} & \code{lrtr/threshold.py:threshold\_decode} \\
+fixed-code trial & Alg.~
+ef{alg:two}, l.~5--7 & \code{lrtr/threshold.py:recovery\_trial\_fixed} \\
+streaming trial & Alg.~
+ef{alg:ensemble}, l.~6--10 & \code{lrtr/threshold.py:recovery\_trial\_streaming} \\
+Algorithm~
+ef{alg:two} & Sec.~
+ef{sec:method} & \code{lrtr/diagnostic.py:fixed\_code\_separation\_profile} \\
+Algorithm~
+ef{alg:ensemble} & Sec.~
+ef{sec:alg-ensemble} & \code{lrtr/diagnostic.py:random\_code\_scaling\_experiment} \\
+$\operatorname{tr}(H\Sigma)-F$ & Lem.~
+ef{lem:suffstat} & \code{lrtr/interface.py:crosstalk\_mean\_sq} \\
+leverage form of $r$ & Prop.~
+ef{prop:leverage} & \code{lrtr/interface.py:crosstalk\_mean\_sq\_pinv} \\
+$s_{95}$ & Alg.~
+ef{alg:two}, l.~9 & \code{lrtr/threshold.py:s95\_from\_curve} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:codemap} maps every quantity in Problem~\ref{prob:main} to the function that
+computes it. The correctness of the implementation is checked by a test suite that verifies the
+theorems numerically --- equality for tight frames, no violations for random interfaces, the
+closed forms against Monte Carlo, and the streaming trial against an explicit dense evaluation
+of the same code.
+
+% ============================================================================
+\section{The linear-readout floor}
+\label{sec:floor}
+% ============================================================================
+
+\begin{theorem}[Unit-diagonal cross-Gramian Welch floor]
+\label{thm:floor}
+Let $F\ge2$, let $\Phi\in\R^{d\times F}$ and $G\in\R^{F\times d}$, and set $M=G\Phi$. Suppose
+$M_{ii}=1$ for all $i\in[F]$. Then
+\begin{equation}
+  \sum_{i\neq j}|M_{ij}|^2\;\ge\;\frac{F(F-d)}{d}.
+  \label{eq:floorsum}
+\end{equation}
+Consequently, if $F>d$,
+\begin{equation}
+  \frac{1}{F(F-1)}\sum_{i\neq j}|M_{ij}|^2\;\ge\;W(F,d):=\frac{F-d}{d(F-1)},
+  \label{eq:floor}
+\end{equation}
+and hence $\max_{i\neq j}|M_{ij}|\ge\sqrt{W(F,d)}$. In particular, if $F/d\to\infty$ then
+$\max_{i\neq j}|M_{ij}|\ge(1-o(1))\,d^{-1/2}$.
+\end{theorem}
+
+\begin{proof}
+Since $M=G\Phi$ with $G\in\R^{F\times d}$ and $\Phi\in\R^{d\times F}$ we have
+$\operatorname{rank}(M)\le d$, and the unit diagonal gives $\operatorname{tr}(M)=F$. For any
+matrix of rank at most $d$, $|\operatorname{tr}(M)|\le\nucnorm{M}\le\sqrt d\,\norm{M}_F$
+(Appendix~\ref{app:nuclear}), so $F^2\le d\,\norm{M}_F^2$. Expanding
+$\norm{M}_F^2=F+\sum_{i\neq j}|M_{ij}|^2$ gives~\eqref{eq:floorsum}, and dividing by $F(F-1)$
+gives~\eqref{eq:floor}. For the maximum, note that
+$\max_{i\neq j}|M_{ij}|^2\ge\frac{1}{F(F-1)}\sum_{i\neq j}|M_{ij}|^2$, and take square roots.
+\end{proof}
+
+The argument is the standard rank--trace mechanism, cf.~\cite{datta2012geometry}; we give it
+in full only for self-containedness. The next corollary is what the diagnostic actually uses,
+because it removes the normalisation hypothesis.
+
+\begin{corollary}[Gain-normalised form]
+\label{cor:calibfree}
+Let $F>d$ and let $M=G\Phi$ satisfy $\operatorname{rank}(M)\le d$ and $M_{ii}\neq0$ for all
+$i$. Then
+\[
+  \max_{i\neq j}\frac{|M_{ij}|}{|M_{ii}|}\;\ge\;\sqrt{\frac{F-d}{d(F-1)}}.
+\]
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{thm:floor} to $D^{-1}M$ with $D=\operatorname{diag}(M_{11},\dots,M_{FF})$:
+this matrix has rank at most $d$, unit diagonal, and entries $M_{ij}/M_{ii}$.
+\end{proof}
+
+\begin{remark}[Why the gain normalisation is essential]
+\label{rem:calib}
+Without a diagonal normalisation the absolute off-diagonal entries of $G\Phi$ can be made
+arbitrarily small by shrinking $G$, and the floor appears to fail. A concrete instance: take
+$\Phi$ to be the three unit vectors at $120^{\circ}$ in $\R^2$ --- an equiangular tight frame
+--- and $G=D\Phi^{\top}$ with $D=\operatorname{diag}(1/10,1/20,1/20)$. Then $G\Phi$ has
+diagonal $(1/10,1/20,1/20)$ and maximum off-diagonal entry $1/20$, ten times \emph{below}
+$\sqrt{(F-d)/(d(F-1))}=1/2$. There is no contradiction: this interface reads out its own
+coordinates with gains far below one, and after recalibrating each row to unit gain the
+maximum off-diagonal entry becomes exactly $1/2$ --- the floor, attained with equality.
+Corollary~\ref{cor:calibfree} isolates the scale-invariant content: what is bounded below is
+the interference-to-gain ratio. This example is verified in the test suite, and
+Section~\ref{sec:res-e4} shows that a gradient optimiser left free of the constraint exploits
+exactly this degree of freedom.
+\end{remark}
+
+\begin{proposition}[Equality within the tied family]
+\label{prop:tight}
+Let $\Phi\in\R^{d\times F}$ have unit-norm columns and let $G=\Phi^{\top}$, so that
+$M=\Phi^{\top}\Phi$ has unit diagonal. Then $\sum_{i\neq j}|M_{ij}|^2\ge F(F-d)/d$, with
+equality \emph{if and only if} $\Phi\Phi^{\top}=(F/d)I_d$, that is, iff $\Phi$ is a unit-norm
+tight frame.
+\end{proposition}
+
+\begin{proof}
+The diagonal entries are $\norm{\phi_i}^2=1$. By cyclicity,
+$\norm{M}_F^2=\operatorname{tr}((\Phi\Phi^{\top})^2)=\norm{\Sigma}_F^2$ with
+$\Sigma=\Phi\Phi^{\top}\succeq0$ and $\operatorname{tr}\Sigma=F$. Cauchy--Schwarz on the
+eigenvalues of $\Sigma$ gives $\norm{\Sigma}_F^2\ge(\operatorname{tr}\Sigma)^2/d=F^2/d$, with
+equality iff all $d$ eigenvalues coincide, i.e.\ $\Sigma=(F/d)I_d$. Subtracting the diagonal
+contribution $F$ gives the claim.
+\end{proof}
+
+Within this family --- unit-norm columns read out by their own transpose --- equality therefore
+characterises tight frames, consistent
+with~\cite{waldron2003generalized,datta2012geometry}. We stress the scope: it is a statement
+about the tied Gram matrix, not about every rank-$d$ unit-diagonal interface. Other readouts
+attain the same floor under different conditions, and the next proposition identifies the
+condition for the pseudoinverse. Whether learned codes find such configurations is an empirical
+question, answered in Section~\ref{sec:res-e4}.
+
+\begin{proposition}[The pseudoinverse ratio is a leverage statistic]
+\label{prop:leverage}
+Let $\Phi\in\R^{d\times F}$ have full row rank, let $G=\Phi^{+}$, and write
+$P=\Phi^{+}\Phi$ for the orthogonal projector onto the row space, with leverage scores
+$h_i=P_{ii}\in(0,1]$. Then the gain-normalised interface $\widetilde M=D^{-1}P$ satisfies
+\[
+  \sum_{i\neq j}\widetilde M_{ij}^{2}\;=\;\sum_{i=1}^{F}\frac1{h_i}-F ,
+  \qquad\text{so}\qquad
+  r=\frac{d}{F(F-d)}\left(\sum_{i=1}^{F}\frac1{h_i}-F\right).
+\]
+Since $\sum_i h_i=\operatorname{tr}P=d$, Cauchy--Schwarz gives $\sum_i h_i^{-1}\ge F^2/d$ with
+equality iff $h_i=d/F$ for every $i$. Hence $r\ge1$, and $r=1$ exactly when leverage is
+equalised across features.
+\end{proposition}
+
+\begin{proof}
+$P$ is symmetric idempotent, so row $i$ obeys $\sum_j P_{ij}^2=P_{ii}=h_i$ and $D_{ii}=h_i$.
+Dividing row $i$ by $h_i$ and removing the unit diagonal entry leaves
+$(h_i-h_i^2)/h_i^2=h_i^{-1}-1$; summing over $i$ gives the identity. The inequality is
+Cauchy--Schwarz applied to $\sum_i h_i\cdot\sum_i h_i^{-1}\ge F^2$, and dividing by $F(F-1)$
+and by $W(F,d)=(F-d)/(d(F-1))$ turns it into $r\ge1$.
+\end{proof}
+
+This is worth stating because it deflates a natural over-reading of a ratio close to one under
+the pseudoinverse readout. Attaining the floor with $G=\Phi^{+}$ says that the code spreads its
+features evenly over the row space --- nothing more. It is a statement about the geometry of the
+code, not about whether the code is a good representation for any task; a code can have
+perfectly equalised leverage and still be useless. We use this to scope the empirical claims of
+Section~\ref{sec:res-e5}.
+
+\begin{corollary}[No better-than-floor $\varepsilon$-linear readout]
+\label{cor:impossible}
+Let $F>d$ and suppose $G$ satisfies $\norm{G y_i-e_i}_\infty\le\delta$ for singleton states
+$y_i$, with $\delta<1/2$. Then $\delta/(1-\delta)\ge\sqrt{(F-d)/(d(F-1))}$; in particular
+$\delta=\Omega(d^{-1/2})$ when $F/d\to\infty$.
+\end{corollary}
+
+\begin{proof}
+Let $M=G[y_1,\dots,y_F]$. The hypothesis gives $|M_{ii}-1|\le\delta$ and $|M_{ji}|\le\delta$
+for $j\neq i$. Calibrating, $|\widetilde M_{ij}|\le\delta/(1-\delta)$, and
+Theorem~\ref{thm:floor} applies to $\widetilde M$.
+\end{proof}
+
+% ============================================================================
+\section{Threshold recovery and the separation}
+\label{sec:threshold}
+% ============================================================================
+
+The floor rules out small-error $\varepsilon$-linear readout with $\varepsilon=o(d^{-1/2})$
+when $F\gg d$. It does not rule out thresholded Boolean recovery, because thresholding does
+not require every inactive score to be small --- only that the aggregate interference stay
+below the margin.
+
+\begin{theorem}[Threshold recovery under coherent superposition]
+\label{thm:coherence}
+Let $\Phi$ have unit-norm columns with coherence $\mu$, let $b$ be $s$-sparse, let
+$x=\Phi b+\eta$ with $\norm{\Phi^{\top}\eta}_\infty\le\nu$, and let $Q(z)_i=\mathbf
+1\{z_i\ge1/2\}$. If $s\mu+\nu<1/2$ then $Q(\Phi^{\top}x)=b$, with margin
+$\tau=\tfrac12-(s\mu+\nu)>0$.
+\end{theorem}
+
+\begin{proof}
+For $i\in S=\operatorname{supp}(b)$ we have
+$z_i=1+\sum_{j\in S,\,j\neq i}\langle\phi_i,\phi_j\rangle+\langle\phi_i,\eta\rangle
+\ge1-(s-1)\mu-\nu\ge\tfrac12+\tau$. For $i\notin S$,
+$z_i\le s\mu+\nu=\tfrac12-\tau$.
+\end{proof}
+
+\begin{corollary}[Random codes at quadratic load]
+\label{cor:randomcode}
+Let $F=\lfloor d^2\rfloor$ and let $\phi_1,\dots,\phi_F$ be independent uniform unit vectors in
+$\R^d$. Then $\mu\le6\sqrt{\log d/d}$ with probability at least $1-d^{-5}$ for all
+sufficiently large $d$, and on that event the threshold decoder recovers every $s$-sparse
+Boolean state whenever $\norm{\Phi^{\top}\eta}_\infty<\tfrac12-6s\sqrt{\log d/d}$.
+\end{corollary}
+
+\begin{proof}
+For independent uniform unit vectors $u,v$, the inner product $\langle u,v\rangle$ has the law
+of the first coordinate of a uniform point on $S^{d-1}$, whose tail satisfies
+$\Pr\{|\langle u,v\rangle|>t\}\le2\exp(-(d-1)t^2/2)$ for $0<t<1$
+(see e.g.~\cite[Thm.~3.4.6]{vershynin2018hdp}). Taking a union bound over the
+$\binom{F}{2}$ unordered pairs and using $2\binom F2\le F^2\le d^4$,
+\[
+  \Pr\{\mu>t\}\;\le\;d^4\exp\!\left(-\tfrac{(d-1)t^2}{2}\right).
+\]
+With $t=6\sqrt{\log d/d}$ we have $\tfrac{(d-1)t^2}{2}=18(1-1/d)\log d\ge9\log d$ for $d\ge2$,
+so $\Pr\{\mu>t\}\le d^4 e^{-9\log d}=d^{-5}$. The recovery claim is then
+Theorem~\ref{thm:coherence} with $\mu\le t$.
+\end{proof}
+
+The worst-case coherence bound is pessimistic for a \emph{random} support, which is the case
+the diagnostic measures. The following average-case statement is the one used in
+Algorithms~\ref{alg:two} and~\ref{alg:ensemble}.
+
+\begin{theorem}[Random-support threshold recovery]
+\label{thm:randomsupport}
+Let $\Phi$ have independent uniform unit-vector columns and let $S$ be a uniformly random
+support of size $s$, independent of $\Phi$. For $\delta\in(0,1)$ there is a universal $C>0$
+such that, with probability at least $1-\delta$,
+\[
+  \max_{i\in[F]}\Big|\sum_{j\in S,\,j\neq i}\langle\phi_i,\phi_j\rangle\Big|
+  \;\le\;C\sqrt{\frac{s\log(F/\delta)}{d}},
+\]
+and on that event thresholding $\Phi^{\top}(\Phi\mathbf 1_S+\eta)$ at $1/2$ recovers
+$\mathbf 1_S$ whenever $\norm{\Phi^{\top}\eta}_\infty+C\sqrt{s\log(F/\delta)/d}<1/2$.
+\end{theorem}
+
+\begin{proof}
+Conditionally on $S$ and on $\phi_i$, the summands are independent and each is distributed as
+the first coordinate of a uniform point on $S^{d-1}$, hence sub-Gaussian with variance proxy
+$O(1/d)$~\cite[Thm.~3.4.6]{vershynin2018hdp}. The sum of at most $s$ of them is sub-Gaussian
+with proxy $O(s/d)$, so $\Pr\{|I_i|>t\mid S\}\le2\exp(-c_0dt^2/s)$. A union bound over
+$i\in[F]$ and the stated choice of $t$ give the claim; the recovery statement follows as in
+Theorem~\ref{thm:coherence}. Full details are in Appendix~\ref{app:proofs}.
+\end{proof}
+
+\begin{remark}[Which randomness the probability is over]
+\label{rem:annealed}
+The guarantee of Theorem~\ref{thm:randomsupport} is \emph{annealed}: the probability is taken
+over the joint draw of the code $\Phi$ and the support $S$. It is therefore the right statement
+for Algorithm~\ref{alg:ensemble}, which redraws the code at every trial, and it is not directly
+the statement for Algorithm~\ref{alg:two}, which holds one code fixed. A quenched version ---
+$\Phi$ fixed, probability over $S$ alone --- follows from concentration for sampling without
+replacement, but it is not free: it needs hypotheses on the particular $\Phi$ (bounded
+coherence and bounded row sums of $|\Phi^{\top}\Phi|-I$), which a given trained code may or may
+not satisfy. We do not assume them. What the fixed-code diagnostic reports is therefore an
+empirical recovery rate with a Wilson interval, and the theorem is quoted as the ensemble-level
+expectation it is, not as a guarantee about the code in hand. The analog side has no such
+caveat: Proposition~\ref{prop:uniform-energy} is exact for every fixed $\Phi$.
+\end{remark}
+
+We now give the average linear-readout error under the \emph{same} distribution, which is what
+allows the two criteria to be compared without a distributional mismatch.
+
+\begin{proposition}[Average linear energy floor, uniform random supports]
+\label{prop:uniform-energy}
+Let $F>d$, let $M=G\Phi\in\R^{F\times F}$ satisfy $\operatorname{rank}(M)\le d$ and $M_{ii}=1$
+for all $i$, and set $A=M-I_F$. Let $S\subseteq[F]$ be a uniformly random support of size $s$
+with $1\le s\le F/2$ and let $b=\mathbf 1_S$. Then
+\begin{equation}
+  \E_S\norm{Ab}_2^2
+  \;\ge\;\frac{s(F-s)}{F(F-1)}\norm{A}_F^2
+  \;\ge\;\frac{s(F-s)(F-d)}{d(F-1)} .
+  \label{eq:energyfloor}
+\end{equation}
+In particular $\frac1F\E_S\norm{Ab}_2^2\ge\frac{s(F-d)}{2d(F-1)}$, which is $\Omega(s/d)$
+whenever $F/d\to\infty$.
+\end{proposition}
+
+\begin{proof}
+For a uniformly random size-$s$ support, $\E[b_i]=s/F$ and $\E[b_ib_j]=\frac{s(s-1)}{F(F-1)}$
+for $i\neq j$. Hence $\E[bb^{\top}]=(p-q)I_F+q\,\mathbf 1\mathbf 1^{\top}$ with $p=s/F$ and
+$q=\frac{s(s-1)}{F(F-1)}$, and
+\[
+  p-q=\frac{s(F-1)-s(s-1)}{F(F-1)}=\frac{s(F-s)}{F(F-1)} .
+\]
+Therefore
+$\E_S\norm{Ab}_2^2=\operatorname{tr}(A^{\top}A\,\E[bb^{\top}])
+=(p-q)\norm{A}_F^2+q\norm{A\mathbf 1}_2^2\ge(p-q)\norm{A}_F^2$.
+Since $A$ has zero diagonal and $\operatorname{rank}(M)\le d$ with unit diagonal,
+Theorem~\ref{thm:floor} gives $\norm{A}_F^2\ge F(F-d)/d$, which yields the second inequality.
+For $s\le F/2$ we have $F-s\ge F/2$, and dividing by $F$ gives the per-coordinate form.
+\end{proof}
+
+\begin{corollary}[Separation at quadratic load, one sparse-state model]
+\label{cor:separation}
+Let $F=d^2$ and let $\Phi$ have independent uniform unit-vector columns. There is a universal
+$c>0$ such that, for $1\le s\le c\,d/\log d$ and a uniformly random support $S$ of size $s$,
+thresholding $\Phi^{\top}\Phi\mathbf 1_S$ at $1/2$ recovers $\mathbf 1_S$ exactly with
+probability at least $1-d^{-10}$ for all sufficiently large $d$. For the \emph{same} sparse-state
+model, every unit-diagonal rank-$d$ linear readout has average per-coordinate squared error at
+least $\frac{s(F-d)}{2d(F-1)}=\Omega(s/d)$, and hence RMS error $\Omega(\sqrt{s/d})$.
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{thm:randomsupport} with $\delta=d^{-10}$, so $\log(F/\delta)=12\log d$; the
+interference bound is $C\sqrt{12s\log d/d}$, which is below $1/2$ as soon as
+$s\le c\,d/\log d$ with $c<1/(48C^2)$. The second statement is
+Proposition~\ref{prop:uniform-energy} with $F=d^2$.
+\end{proof}
+
+\begin{remark}[What the separation compares]
+\label{rem:criteria}
+The two sides compare different \emph{interface criteria} on the same input distribution:
+expected squared linear readout error versus exact-recovery probability of a threshold
+decoder. Neither criterion dominates the other in general. The content of
+Corollary~\ref{cor:separation} is that at quadratic feature load one of them is attainable
+exactly and the other is provably not, in the same regime --- which is precisely the quantity
+Algorithm~\ref{alg:two} reports. Corollary~\ref{cor:separation} is stated for uniform supports;
+the Bernoulli variant, with the same conclusion, is in Appendix~\ref{app:proofs}.
+\end{remark}
+
+% ============================================================================
+\section{Application: two frameworks, two invariants}
+\label{sec:application}
+% ============================================================================
+
+We now apply the interface distinction to the two frameworks whose apparent tension motivated
+this work. All statements imported from the source papers were checked against
+arXiv:2408.05451v1 and arXiv:2409.15318v3; the audit is recorded in
+Appendix~\ref{app:imported}.
+
+\begin{lemma}[Computation-layer interface; restated from {\cite[Thm.~11]{hanni2024superposition}}]
+\label{lem:comp}
+Fix $s=O(1)$ and suppose the targeted superpositional AND primitive of H\"{a}nni et al.\ is
+applied in a regime satisfying its stated graph-balancing, sparsity, norm and
+incoming-interference hypotheses. Then the computation layer produces outgoing readout error
+$\ecomp(d)=\Otilde(\sqrt{s^2/d})=\Otilde(d^{-1/2})$.
+\end{lemma}
+
+\begin{lemma}[Correction-layer tolerance; restated from {\cite[Thm.~21]{hanni2024superposition}}]
+\label{lem:corr}
+The correction layer admits incoming error
+$\varepsilon_{\mathrm{in}}<K(d)\,d^{1/4}/(F^{1/2}s^{1/4})$ with $K(d)=\mathrm{polylog}(d)$, and
+produces $\varepsilon_{\mathrm{out}}=O((\log d)\sqrt{s/d})$ and
+$\mu_{\mathrm{out}}=\Otilde(\sqrt{s/d})$.
+\end{lemma}
+
+\begin{proposition}[Template compatibility threshold; derived from Lemmas~\ref{lem:comp}--\ref{lem:corr}]
+\label{prop:hanni}
+Fix $s=O(1)$. The published H\"{a}nni computation--correction template is certified in the
+regime $F\lesssim\Otilde(d^{3/2})$, and its recursive construction emulates circuits of width
+$m$ using width $d=\Otilde(m^{2/3}s^2)$, giving a matching certified scale
+$\Thetatilde(d^{3/2})$. This is a template-specific certificate, not an impossibility result
+for other implementations.
+\end{proposition}
+
+\begin{proof}
+The correction theorem applies after the computation layer when $\ecomp(d)\lesssim
+\ecorr(F,d,s)$, i.e.\ $\Otilde(d^{-1/2})\lesssim K(d)\,d^{1/4}/F^{1/2}$ for $s=O(1)$.
+Suppressing polylogarithmic factors, $F^{1/2}\lesssim d^{3/4}$, hence
+$F\lesssim\Otilde(d^{3/2})$. Conversely, inverting $d=\Otilde(m^{2/3}s^2)$ at $s=O(1)$ gives
+$m=\Omegatilde(d^{3/2})$.
+\end{proof}
+
+In the Adler--Shavit framework, exact Boolean state is restored by thresholding after every
+stage. Their parameter-description lower bound $\Omega(m'\log m')$, converted to neurons under
+their architectural assumption of $\Theta(n^2)$ parameters with $O(1)$ average description
+length each, gives $\FrecAS(n)\le O(n^2/\log n)$; their explicit construction uses
+$n=O(\sqrt{m'}\log m')$ neurons, giving $\FrecAS(n)\ge\Omega(n^2/\log^2 n)$. The remaining
+logarithmic gap is open.
+
+The two regimes do not contradict each other, and the reason is now precise. The H\"{a}nni
+template maintains an approximate $\varepsilon$-linear interface, so it must feed its residual
+error into a correction theorem whose tolerance is $\Otilde(d^{1/4}/F^{1/2})$; matching that
+tolerance to the unavoidable $d^{-1/2}$ cross-talk scale of Theorem~\ref{thm:floor} gives the
+$d^{3/2}$ threshold. Adler--Shavit instead threshold, leaving the small-error class entirely,
+so Corollary~\ref{cor:impossible} does not apply to them. In the vocabulary of
+Section~\ref{sec:method}: the first framework operates where the diagnostic's attainment ratio
+matters, the second where its criterion-separation witness does.
+
+% ============================================================================
+\section{Experimental setup}
+\label{sec:setup}
+% ============================================================================
+
+Six campaigns validate the diagnostic, from controlled random codes to a trained network.
+E1--E3 establish that the implementation measures what the theory describes; E4 tests whether
+\emph{learned} codes attain the floor; E5 applies the diagnostic to trained models; E6 tests
+how the recovery threshold scales.
+
+\paragraph{Environment.} All experiments run on CPU only, with no CUDA device.
+Python~\EnvPython, NumPy~\EnvNumpy, SciPy~\EnvScipy, PyTorch~\EnvTorch{} on a
+\EnvCpuCount-core machine; thread counts are pinned and two cores are reserved for the system.
+Every campaign writes a run record with the exact command, seeds, configuration, environment,
+wall-clock duration and exit status. Total measured compute is \DurTotalMin{} minutes
+(Table~\ref{tab:cost}).
+
+\paragraph{E1 --- floor on random codes.} $d\in\{16,32,64,128\}$, $F/d\in\{2,4,8,16\}$,
+\EoneTrials{} independent codes per configuration, three readouts (tied, pseudoinverse and an
+i.i.d.\ Gaussian readout as an adversarial control), and a harmonic tight frame at each
+$(d,F)$ as the equality witness.
+
+\paragraph{E2 --- recovery and separation at $F=d^2$.} $d\in\{64,128,256\}$,
+\EtwoTrials{} trials per configuration, thresholds
+$\theta\in\{0.4,0.5,0.6\}$ (\EtwoThetaCount{} values) as a sensitivity ablation.
+
+\paragraph{E3 --- average linear energy.} $d\in\{32,64,128\}$ at $F=8d$, sparsities
+$s\in\{1,2,4,8,16,32,64,128\}$, energies computed in closed form under both the Bernoulli and
+the uniform-support model, with a \EthreeMcTrials-draw Monte Carlo cross-check of the closed
+form.
+
+\paragraph{E4 --- optimised codes.} $d\in\{16,32,64\}$, $F/d\in\{2,4,8,16\}$
+(\EfourConfigs{} configurations), Adam at learning rate $10^{-2}$ for \EfourSteps{} steps,
+\EfourRuns{} runs in total across four variants: \emph{free} ($G$ and $\Phi$ independent),
+\emph{tied} ($G=\Phi^{\top}$), \emph{smooth-max}, and the \emph{uncalibrated} ablation in
+which the diagonal constraint is removed.
+
+\paragraph{E5 --- trained toy model.} The compressed-computation task
+of~\cite{braun2025apd}: $d=\EfiveD$, $F=\EfiveF$, inputs with each coordinate active with
+probability $p\in\{0.01,0.02\}$ and value $\sim U[-1,1]$, target $\mathrm{ReLU}(x)$,
+$\hat y=W_{\mathrm{out}}\mathrm{ReLU}(W_{\mathrm{in}}x)$ trained by Adam for \EfiveSteps{} steps
+under an $L^2$ and an $L^4$ loss, \EfiveSeeds{} seeds each, plus an i.i.d.\ random-code control
+at the same $(d,F)$. Diagnosis uses \EfiveEvalTrials{} evaluation trials per sparsity and three
+linear readouts, including a least-squares readout fitted on the evaluation distribution ---
+deliberately the strongest linear baseline we can give the competing criterion.
+
+\paragraph{E6 --- scaling.} $d\in\{128,256,512,1024\}$ at $F=d^2$, up to
+$F=\EsixFmax$ features. The code is never materialised: each trial regenerates it in blocks
+from a counted seed sequence and evaluates every sparsity in one pass using nested supports.
+
+\paragraph{Statistics.} Recovery probabilities carry Wilson $95\%$ intervals. Group
+comparisons in E5 use a two-sided exact Mann--Whitney $U$ test with Cliff's $\delta$ as effect
+size. The scaling law in E6 is a one-parameter least-squares fit of $s_{95}=c\,d/\ln d$, the
+shape being predicted by the theory and only the constant free; with \EsixFitPoints{} points
+the fit is reported as a consistency check, not as an estimate with inferential force.
+
+\paragraph{Reproducibility.} Every figure and table in this paper is generated from the raw
+result files by a script, and every measured number in the text is a macro emitted from those
+same files; a checker regenerates the macros, compares them against the file on disk, and fails
+the build on any mismatch, on a macro the text uses but does not define, and on a macro defined
+but never used. We are explicit about the limit of that guarantee: it certifies that the
+\emph{values} match the saved results, not that the sentences around them draw the right
+conclusion. Prose claims still need a reader. Commands are in Appendix~\ref{app:repro}.
+
+\paragraph{A note on E6's linear side.} To keep the cost of the largest widths manageable, the
+exact linear-energy statistic is computed on every fifth trial rather than every trial, so its
+averages rest on fewer samples than the recovery curves (\EsixEnergyTrialsTop{} trials against
+\EsixOneZeroTwoFourTrials{} at $d=\EsixDmax$). The recovery probabilities use the full budget.
+
+% ============================================================================
+\section{Results}
+\label{sec:results}
+% ============================================================================
+
+\subsection{E1--E3: the diagnostic measures what the theory describes}
+\label{sec:res-e1}
+
+Across \EoneConfigs{} configurations, \EoneTrials{} trials each and three readouts ---
+\EoneMeasurements{} calibrated interfaces in total --- the floor was violated
+\EoneViolations{} times. This is a correctness check on the implementation rather than
+evidence for Theorem~\ref{thm:floor}, and we report it as such.
+
+The attainment ratio of the tied readout falls from \EoneTiedRatioMax{} at the lowest feature
+load to \EoneTiedRatioMin{} at the highest (Table~\ref{tab:e1}, Fig.~\ref{fig:overview}a): a
+random code is close to Welch-optimal in the mean-square sense once $F/d$ is large, since
+$\E\langle\phi_i,\phi_j\rangle^2=1/d$ while $W(F,d)\to1/d$ from below. At $d=\EoneTopD$,
+$F=\EoneTopF$ the tied ratio is \EoneTopTiedRatio{} and the pseudoinverse ratio is
+\EoneTopPinvRatio, the latter being the closer of the two at high load. In all
+\EoneTightFrameConfigs{} configurations the harmonic tight frame attains the floor to within
+\EoneTightFrameDev{} of exact equality, confirming Proposition~\ref{prop:tight} at machine
+precision. The Gaussian control, by contrast, reaches ratios as large as
+\EoneGaussianRatioMax: the bound holds for it too, but nothing forces an arbitrary readout to
+be anywhere near the floor, and the diagnostic's attainment ratio is therefore informative
+across seven orders of magnitude rather than a formality.
+
+Fig.~\ref{fig:overview}b shows threshold recovery at $F=d^2$. The transition moves right with
+$d$, from $s_{95}=\EtwoSixFourSNF$ at $d=64$ to $s_{95}=\EtwoTwoFiveSixSNF$ at $d=256$. At
+$d=256$ and $s=s_{95}$, thresholding is exact in at least $95\%$ of trials while the calibrated
+linear interface retains a per-coordinate RMS error of \EtwoTwoFiveSixLinRms, which is
+\EtwoTwoFiveSixLinRmsOverRoot{} times the $d^{-1/2}$ scale and above its own theoretical floor
+of \EtwoTwoFiveSixLinRmsFloor. That pair of numbers is the criterion-separation witness of
+Problem~\ref{prob:main}, measured.
+
+The threshold is a hyperparameter, and $\theta=1/2$ is not a privileged choice. At
+$d=\EtwoThetaDmax$ the recovery threshold moves from $s_{95}=\EtwoThetaZeroPFourSNF$ at
+$\theta=0.4$ to $s_{95}=\EtwoThetaZeroPFiveSNF$ at $\theta=0.5$ and
+$s_{95}=\EtwoThetaZeroPSixSNF$ at $\theta=0.6$. Raising it helps here because, with unit-norm codes and Boolean
+states, active scores concentrate near one while inactive scores concentrate near zero, so a
+higher cut trades false positives for false negatives favourably in this regime; the individual
+interference terms are of course signed. Two limits on how far this ablation goes: the three thresholds re-decode
+the \emph{same} trials rather than independent replications, so they show the sensitivity of the
+decision rule and not of the sampling; and at the smallest width the effect is not merely
+numerical --- at $d=64$, $\theta=0.4$ no sparsity reaches the $95\%$ level at all, so no
+certificate exists there.
+
+E3 confirms the energy scale (Fig.~\ref{fig:overview}c). Over \EthreeConfigs{} configurations
+the ratio $E/(s/d)$ lies in $[\EthreeRatioMin,\EthreeRatioMax]$ --- the $s/d$ reference scale is
+essentially exact for random codes --- with \EthreeViolations{} violations of either energy
+floor, and the closed forms agree with a \EthreeMcTrials-draw Monte Carlo estimate to within a
+relative \EthreeMcMaxRelDiff.
+
+Measured against the \emph{proved} uniform-support floor of
+Proposition~\ref{prop:uniform-energy}, however, the ratio lies in
+$[\EthreeUniformOverFloorMin,\EthreeUniformOverFloorMax]$: the bound is correct but conservative
+by a factor between one and two in this regime. That is expected and worth stating plainly,
+since it bounds what the diagnostic can certify. Two steps of the proof give the slack: the
+non-negative $q\norm{A\mathbf 1}^2$ term is discarded, and $\norm{A}_F^2$ is replaced by its
+worst case $F(F-d)/d$ rather than the value realised by the code at hand. The looser the
+feature load, the larger the second effect --- here $F=8d$, so $(F-d)/F=7/8$ alone accounts for
+part of the gap. Algorithm~\ref{alg:two} therefore reports the \emph{exact} energy computed
+from the code's own frame operator, and uses the floor only as the guarantee that the quantity
+can never be zero.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig1_diagnostic_overview.pdf}
+\caption{\textbf{The Interface Diagnostic on random codes.} (a) Attainment ratio
+$\widehat W/W(F,d)$ of the calibrated tied readout versus feature load; shaded bands are the
+min--max range over trials, the dashed line is the floor of Theorem~\ref{thm:floor}.
+(b) Exact threshold recovery at $F=d^2$ with Wilson $95\%$ intervals; the dotted line marks the
+$0.95$ level defining $s_{95}$. (c) Average per-coordinate linear energy under uniformly random
+supports against the $s/d$ reference. Generated by \code{scripts/make\_figures.py} from
+\code{results/e1}, \code{results/e2} and \code{results/e3}.}
+\label{fig:overview}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{E1: attainment ratio $\widehat W/W(F,d)$ of the calibrated tied readout for random
+unit-norm codes, averaged over \EoneTrials{} trials. Values above one are required by
+Theorem~\ref{thm:floor}; the approach to one with growing feature load is the content of the
+measurement.}
+\label{tab:e1}
+\small
+\input{tables/tab_e1_floor}
+\end{table}
+
+\subsection{E4: learned codes attain the floor}
+\label{sec:res-e4}
+
+Gradient descent under the unit-diagonal constraint drives the interface to the floor
+(Table~\ref{tab:e4}, Fig.~\ref{fig:e4}). Over
+\EfourFreeRuns{} runs of the free variant, spanning all \EfourConfigs{} configurations, the
+attainment ratio reaches a mean of \EfourFreeRatioMean{} and never exceeds
+\EfourFreeRatioMax, with \EfourFreeBelowFloor{} runs below the floor. The tied variant is
+sharper still: over \EfourTiedRuns{} runs, mean ratio \EfourTiedRatioMean{} with a maximum of
+\EfourTiedRatioMax{} (\EfourTiedBelowFloor{} below the floor), and a relative tight-frame
+residual of \EfourTiedFrameResidualMean{} on average (worst case
+\EfourTiedFrameResidualMax). In other words, the optimiser recovers the equality case of
+Proposition~\ref{prop:tight}: a unit-norm tight frame emerges from gradient descent rather than
+being constructed.
+
+The smooth-max variant is the one that does \emph{not} reach its target, and the reason is
+structural rather than a tuning failure. Over \EfourSoftmaxRuns{} runs it attains a mean
+mean-square ratio of \EfourSoftmaxRatioMean{} (worst case \EfourSoftmaxRatioMax,
+\EfourSoftmaxBelowFloor{} below the floor) and drives the maximum off-diagonal entry only to
+\EfourSoftmaxRatioMaxMean{} times $\sqrt{W(F,d)}$. Equality in the maximum form requires an
+equiangular tight frame, and those exist only for special $(d,F)$ --- none of our
+\EfourConfigs{} configurations is guaranteed to admit one. The maximum form of the bound is
+therefore approached but not attained here, which is the expected outcome and not evidence
+against the bound.
+
+The uncalibrated ablation is the most informative of the four, and its outcome is more extreme
+than we expected. Removing the diagonal constraint does not lead the optimiser to a code with
+low interference: it leads it to the trivial solution. Across all \EfourUncalRuns{} runs the
+\emph{raw} off-diagonal energy collapses to \EfourUncalRawRatioMean{} --- the readout is driven
+to zero --- and with it the diagonal gains, whose smallest absolute value reaches
+\EfourUncalGainMin{} in single precision. In \EfourUncalDegenerate{} of the
+\EfourUncalRuns{} runs the calibration is therefore undefined and Algorithm~\ref{alg:one}
+returns \textsc{Degenerate}; in the remaining runs the calibrated interface still respects the
+floor, and in no run did it fall below (\EfourUncalBelowFloor{} violations). An unconstrained
+optimiser reports spectacular apparent cross-talk while destroying the interface it was
+supposed to build. This is Remark~\ref{rem:calib} as an experiment, and it is the reason
+step~4 of Algorithm~\ref{alg:one} exists and reports a status rather than a number.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig2_optimized_codes.pdf}
+\caption{\textbf{Optimised codes attain the Welch floor.} (a) Attainment ratio during
+optimisation of the free variant; bands are min--max over configurations and seeds.
+(b) Final cross-talk against the floor across every configuration and variant; the dashed line
+is equality. Generated by \code{scripts/make\_figures.py} from \code{results/e4}.}
+\label{fig:e4}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{E4: attainment of the floor by gradient-optimised codes, \EfourRuns{} runs over
+\EfourConfigs{} configurations. ``Below floor'' counts runs whose calibrated interface fell
+under the theoretical bound; it must be zero. The uncalibrated ablation has no meaningful
+calibrated ratio by construction.}
+\label{tab:e4}
+\small
+\input{tables/tab_e4_variants}
+\end{table}
+
+\subsection{E5: the separation inside a trained network}
+\label{sec:res-e5}
+
+Table~\ref{tab:e5} and Fig.~\ref{fig:e5} report the diagnostic applied to the
+compressed-computation models. Three findings stand out; one of them we did not anticipate, and
+one prediction we had made was not borne out.
+
+\paragraph{The $L^4$-trained network attains the floor.} Its calibrated linear interface has
+attainment ratio \EfiveLfourRatioPinvMean{} under the pseudoinverse readout (range
+$[\EfiveLfourRatioPinvMin,\EfiveLfourRatioPinvMax]$ over \EfiveSeeds{} seeds) and
+\EfiveLfourRatioLsMean{} under the fitted least-squares readout (range
+$[\EfiveLfourRatioLsMin,\EfiveLfourRatioLsMax]$), against a floor of $W=\EfiveWelchFloor$. The
+$L^2$ baseline sits at \EfiveLtwoRatioLsMean{} and the random-code control at
+\EfiveRandRatioLsMean. E4 had shown the floor to be reachable by direct optimisation of the
+cross-talk; here it is approached by a network optimising a task loss that never mentions
+interference.
+
+Two caveats on the statistics, both cutting against reading too much into them. First, the
+comparison with the random code is readout-dependent: $L^4$ is closer to the floor than an
+i.i.d.\ code of the same shape under the pseudoinverse (\EfiveLfourRatioPinvMean{} versus
+\EfiveRandRatioPinvMean) and under least squares, but its own trained decoder is
+\emph{farther} from the floor (\EfiveLfourRatioWoutMean) than either. That last figure has no
+counterpart in the control and we do not pair it with one: the random code has no trained
+decoder, so its $W_{\mathrm{out}}$ column is by construction the pseudoinverse and would be
+compared against a different object. Across the readouts that do admit a matched comparison,
+the trained code is comparable to a random one on this axis, not better. Second, every pairwise test returns
+$p=\EfiveMwPLfourLtwo$ with $|\delta|=1$, which is exactly the smallest two-sided $p$ an exact
+Mann--Whitney can produce at $n=\EfiveSeeds$ per group: within-group variance is negligible, so
+the test reports ``no overlap'' and nothing more. The effect sizes are what separate the cases,
+and they differ by orders of magnitude --- \EfiveLtwoRatioLsMean{} versus
+\EfiveLfourRatioLsMean{} for $L^2$ against $L^4$, a few percent for $L^4$ against random. No
+multiplicity correction is applied across the nine tests, and at this $n$ none would survive
+one.
+
+\paragraph{The separation is real but much narrower than we predicted, and the $s_{95}$
+statistic runs against us.} Our pre-registered expectation was that the network's thresholded
+output would remain exact over a strictly wider sparsity range than its best linear readout.
+The measurement contradicts that at the sparsities where both work. Ranking the three linear
+readouts by exact-recovery rate at each $s$ and taking the best of them, the network is behind
+up to $s=4$: at $s=3$ both are exact, and at $s=4$ the network recovers in
+\EfiveLfourPmodelFour{} of trials while the calibrated $W_{\mathrm{out}}$ interface recovers in
+\EfiveLfourPlinFour. On the $s_{95}$ statistic the linear readout is strictly ahead --
+$s_{95}=\EfiveLfourSlinBestMax$ against the network's \EfiveLfourSmodelMax{} on all
+\EfiveSeeds{} seeds at $p=\EfivePrimaryP$, and ahead on
+\EfiveLfourSlinAheadSecondary{} of \EfiveSeeds{} seeds (tied on the remainder) at
+$p=\EfiveSecondaryP$ (Table~\ref{tab:e5}). The preregistered comparison is not supported.
+
+The network only leads further out, where both decoders are already unreliable: at $s=5$,
+\EfiveLfourPmodelFive{} versus \EfiveLfourPlinFive, and at $s=6$, \EfiveLfourPmodelSix{} versus
+\EfiveLfourPlinSix. E5 therefore shows the network extending the usable sparsity range past the point where the
+thresholded linear readouts of its own code have collapsed, not dominating them everywhere.
+
+The floor statement is on firmer ground, but it is worth being exact about what it is. At every
+sparsity analog reconstruction carries irreducible error: at $s=3$, where the network is exact in
+\EfiveLfourPmodelThree{} of trials, the best linear readout still has per-coordinate RMS error
+\EfiveLfourRmsThree{} against its floor of \EfiveLfourFloorThree. That non-zero error is
+Theorem~\ref{thm:floor} restated for this code, not an independent measurement --- any
+rank-$d$ unit-diagonal interface has it by construction. What E5 measures is its \emph{size} for
+a code that gradient descent actually produced, and how far the thresholded decoder gets before
+that error stops it.
+
+\paragraph{The $L^2$ model is maintaining a linear interface.} This is the finding we did not
+plan for. In the $L^2$ models the ReLU is active on only \EfiveLtwoNegPre\% of preactivations,
+the learned decoder sits at relative distance \EfiveLtwoWoutPinvDist{} from the pseudoinverse of
+the encoder, and the network's thresholded decision agrees with that of a plain linear readout
+on \EfiveLtwoAgreeLinear\% of evaluation states. The $L^4$ models are elsewhere: ReLU active on
+\EfiveLfourNegPre\% of preactivations, decoder at relative distance \EfiveLfourWoutPinvDist,
+and agreement with the linear readout down to \EfiveLfourAgreeLinear\%. The diagnostic thus
+reproduces, from interface measurements alone and without any mechanistic reverse-engineering,
+the distinction that~\cite{bhagat2026cc} and~\cite{ferreiradasilva2026l4} reached by other
+means. It also explains why the $L^2$ model is bound by Theorem~\ref{thm:floor} at all: a
+network that keeps an effectively linear readout \emph{is} a linear readout for these inputs,
+and its measured ratio of \EfiveLtwoRatioLsMean{} says how far from optimal that readout is.
+Its thresholded output recovers even a single active feature only \EfiveLtwoPmodelOne{} of the
+time.
+
+\paragraph{The finding replicates at a second training sparsity.} Everything above is measured
+at $p=\EfivePrimaryP$. Repeating the whole campaign at $p=\EfiveSecondaryP$ (ablation A5,
+\EfiveSeeds{} fresh seeds per condition) reproduces both halves: the $L^4$ models sit at
+\EfiveLfourSecRatioLsMean{} against the floor and agree with a linear readout on only
+\EfiveLfourSecAgreeLinear\% of states, while the $L^2$ models sit at
+\EfiveLtwoSecRatioLsMean{} and agree \EfiveLtwoSecAgreeLinear\% of the time. The interface
+distinction is therefore not an artefact of one input sparsity.
+
+\paragraph{What does not favour our hypothesis.} Three things. The $L^4$ models have a
+\emph{worse} mean squared error on the training task than the $L^2$ models (\EfiveLfourMse{}
+versus \EfiveLtwoMse), as expected since they optimise a different objective: the interface
+advantage is not a task-performance advantage, and we do not claim it is. The $s_{95}$
+prediction above failed. And the random-code control is a reminder that a good interface is not
+by itself evidence of computation: its \emph{linear} readout recovers exactly with probability
+\EfiveRandPlinThree{} at $s=3$, better than the $L^2$ network, simply because an i.i.d.\ code is
+already near-Welch-optimal (ratio \EfiveRandRatioLsMean). What the random control lacks is the
+nonlinear stage; the ``network'' column for that row is not meaningful and is reported only for
+completeness.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig3_trained_model.pdf}
+\caption{\textbf{Interface separation inside a trained toy model of computation in
+superposition.} A width-\EfiveD{} network trained to compute \EfiveF{} sparse ReLU features
+(setup of~\cite{braun2025apd}; $L^4$ variant of~\cite{ferreiradasilva2026l4}); one point per
+seed. (a) Attainment ratio of the learned calibrated interface against the floor of
+Theorem~\ref{thm:floor}. (b) Exact recovery by the network's thresholded output (solid) versus
+the best linear readout of the same code (dotted). (c) Per-coordinate RMS error of the best
+linear readout against the energy floor of Proposition~\ref{prop:uniform-energy}. Generated by
+\code{scripts/make\_figures.py} from \code{results/e5}.}
+\label{fig:e5}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{E5: the diagnostic applied to trained models, averaged over \EfiveSeeds{} seeds at
+training sparsity $p=\EfivePrimaryP$. ``Agrees with linear'' is the fraction of evaluation
+states on which the network's thresholded decision coincides with that of a plain linear
+readout --- the quantity that identifies which interface the model maintains.}
+\label{tab:e5}
+\small
+\input{tables/tab_e5_interface}
+\end{table}
+
+\subsection{E6: how the recovery threshold scales}
+\label{sec:res-e6}
+
+Scaling to $d=\EsixDmax$ at $F=\EsixFmax$ features lets the recovery threshold be traced over
+a factor of eight in width (Table~\ref{tab:e6}, Fig.~\ref{fig:e6}). On the grid, $s_{95}$ grows
+from \EsixOneTwoEightSNF{} at $d=128$ to \EsixOneZeroTwoFourSNF{} at $d=\EsixDmax$.
+
+That grid statistic needs care, because it floors the crossing and floors it unevenly. The
+true 95\% crossing lies between grid points, and the gap is proportionally largest where the
+transition is sharp relative to the spacing --- at $d=128$ the interpolated crossing is
+\EsixInterpOneTwoEight{} against a reported 1. Interpolating instead of flooring changes the
+headline: growth over the sweep falls from \EsixGrowthGrid{} to \EsixGrowthInterp, against
+\EsixGrowthPredicted{} for an exact $d/\ln d$ law. The floored figure therefore overstates the
+growth by roughly a third, purely as an artefact of the grid, and we quote the interpolated
+values from here on.
+
+On the interpolated crossings a one-parameter fit of $s_{95}=c\,d/\ln d$ gives
+$c=\EsixInterpC$ with $R^2=\EsixInterpRsqLog$ over \EsixFitPoints{} points. This is consistent
+with the predicted shape but does not establish it: a plain linear law $c\,d$ reaches
+$R^2=\EsixInterpRsqLin$ and $c\,d/\ln^2 d$ reaches $R^2=\EsixInterpRsqLogSq$ on the same four
+points. Four widths cannot separate these, and the base of the logarithm is not identifiable at
+all. We report the fit as a consistency check on a shape the theory predicts, not as evidence
+for it over the alternatives.
+
+Two further qualifications. The reference curve $d/(16\ln d)$ drawn in
+Fig.~\ref{fig:e6}b sits \emph{above} the measured thresholds at every width
+(\EsixOneZeroTwoFourReference{} against \EsixOneZeroTwoFourSNF{} at $d=\EsixDmax$): recovery
+fails somewhat earlier than that curve suggests, so it is not the conservative lower reference
+its form implies. The constant $16$ is inherited from the earlier literature and is not derived
+anywhere here --- Corollary~\ref{cor:separation} fixes only the shape $s\le c\,d/\log d$ for an
+unspecified universal $c$ --- so the curve should be read as a visual landmark, nothing more.
+And $s_{95}$ is a point estimate: at $d=\EsixDmax$ the campaign runs
+\EsixOneZeroTwoFourTrials{} trials, so even a flawless \EsixOneZeroTwoFourTrials{}-for-%
+\EsixOneZeroTwoFourTrials{} result gives a Wilson lower bound of only
+\EsixTopBestWilsonLow. No sparsity at that width can be certified at the 95\% level with 95\%
+confidence on this budget; the reported thresholds are best estimates, and a claim at
+confidence would need more trials.
+
+The whole campaign took \DurEsixMin{} minutes on CPU, with $d=\EsixDmax$ accounting for
+\EsixOneZeroTwoFourDurationMin{} of them over \EsixOneZeroTwoFourTrials{} trials. Materialising
+the code at that size would have required $4$~GB; the streaming implementation of
+Algorithm~\ref{alg:ensemble} keeps the peak footprint proportional to $Bd$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig4_scaling.pdf}
+\caption{\textbf{Threshold recovery at quadratic feature load, up to $d=\EsixDmax$}
+($F=\EsixFmax$). (a) Empirical exact-recovery probability with Wilson $95\%$ intervals; a fresh
+random code is drawn per trial. (b) The empirical threshold $s_{95}(d)$ against the fitted
+$c\,d/\ln d$ law and the conservative union-bound reference $d/(16\ln d)$. Generated by
+\code{scripts/make\_figures.py} from \code{results/e6}.}
+\label{fig:e6}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{E6: recovery threshold and measured cost by width.}
+\label{tab:e6}
+\small
+\input{tables/tab_e6_scaling}
+\end{table}
+
+\subsection{Cost and traceability}
+
+Every campaign ran on CPU alone; Table~\ref{tab:cost} reports the measured wall clock, which
+totals \DurTotalMin{} minutes across the six. Table~\ref{tab:trace} closes the loop between the
+claims above and the artefacts behind them: for each experimental claim it names the figure or
+table that shows it, the raw result file the numbers come from, and the script and
+configuration that produce that file. Together with the automatic check that every measured
+number in this manuscript matches the saved results (Appendix~\ref{app:repro}), this is what
+makes the reported quantities auditable rather than merely stated.
+
+\begin{table}[t]
+\centering
+\caption{Measured computational cost. All campaigns are CPU-only; no GPU is used anywhere in
+this work.}
+\label{tab:cost}
+\small
+\input{tables/tab_cost}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Traceability: each experimental claim, the figure or table that shows it, the raw
+result file it comes from, and the script and configuration that produce it. Reproduction
+commands are in Appendix~\ref{app:repro}.}
+\label{tab:trace}
+\small
+\input{tables/tab_traceability}
+\end{table}
+
+\FloatBarrier
+
+% ============================================================================
+\section{Discussion}
+\label{sec:discussion}
+% ============================================================================
+
+The results support a simple reading. The floor is not an obstacle that networks struggle
+against; it is a target that both direct optimisation and ordinary task training reach.
+E4 shows that gradient descent under the unit-diagonal constraint converges to a unit-norm
+tight frame, and E5 shows that a network trained on a task, with no interference objective at
+all, lands within \EfiveLfourRatioPinvMean{} of the same bound. What distinguishes models is not
+whether they approach the floor but whether the floor \emph{binds} them --- that is, whether
+they maintain a linear readout interface in the first place. The $L^2$ model does, measurably;
+the $L^4$ model does not, and it is the latter whose thresholded output keeps working past the
+sparsity at which the thresholded linear readouts of its own code have collapsed. The margin is narrow, and
+below that point the linear readout is the better decoder --- so this is evidence that leaving
+the linear class buys headroom at the hard end, not that it dominates.
+
+This gives the debate in~\cite{bhagat2026cc,ferreiradasilva2026l4} an instrument. The question
+``does this network compute in superposition?'' becomes two measurements: how far the network's
+decision function is from a linear readout of its own code, and how far that code is from the
+floor. Neither requires reverse-engineering the mechanism.
+
+For capacity theory, the interface distinction explains why the H\"{a}nni and Adler--Shavit
+results coexist rather than compete (Section~\ref{sec:application}). It also cautions against
+reading sparse-autoencoder dictionary sizes as computation capacities: those are reconstructive
+quantities, and the diagnostic makes explicit that reconstruction and recursive Boolean
+decoding are governed by different criteria.
+
+\subsection{Limitations}
+\label{sec:limitations}
+
+\begin{enumerate}[leftmargin=*,itemsep=1pt]
+\item \textbf{One trained setting.} E5 covers a single toy task at $d=\EfiveD$, $F=\EfiveF$,
+with \EfiveSeeds{} seeds per condition. Nothing here is a claim about large trained language
+models.
+\item \textbf{Out-of-distribution evaluation.} The diagnostic is defined on Boolean sparse
+states, while the toy models are trained on continuous sparse inputs. It therefore measures
+which interface the learned code \emph{supports}, not what the network does on its native
+distribution.
+\item \textbf{Constant sparsity in the application.} The H\"{a}nni-template comparison assumes
+$s=O(1)$, whereas the distributional results allow $s$ up to $O(d/\log d)$; real features are
+continuous with heterogeneous sparsity.
+\item \textbf{The floor bounds linear readouts only.} Nonlinear decoders and
+distribution-specific average-case mechanisms are outside its scope --- which is the point of
+the separation, but also a limit on what the diagnostic can certify.
+\item \textbf{Fit with few points.} The $c\,d/\ln d$ fit in E6 rests on \EsixFitPoints{}
+widths, on which a plain linear law fits nearly as well ($R^2=\EsixInterpRsqLin$ against
+$\EsixInterpRsqLog$). The data are consistent with the predicted shape and do not discriminate
+it from the alternatives; the logarithm's base is not identifiable at all.
+
+\item \textbf{$s_{95}$ is a point estimate, not a certified threshold.} The trial budget shrinks
+with width, and at $d=\EsixDmax$ even a perfect run gives a Wilson lower bound of
+\EsixTopBestWilsonLow --- below the $95\%$ level being estimated. The reported thresholds are
+best estimates; certifying them at confidence would need more trials at the large widths.
+
+\item \textbf{The linear side's non-exactness is the theorem, not a measurement.} Wherever we
+report that a linear readout ``cannot be exact'', that follows from
+Theorem~\ref{thm:floor} by construction for any rank-$d$ unit-diagonal interface. What the
+experiments measure is the \emph{magnitude} of that error for codes that were actually learned,
+and how far a threshold decoder gets before it bites.
+\item \textbf{Correlated curve points.} The nested-support trick makes each point of
+$p_{\mathrm{rec}}(s)$ marginally unbiased but correlates points within a trial; the Wilson
+intervals are per-point and should not be read as a joint confidence band.
+\item \textbf{Open log gap.} The Adler--Shavit capacity bracket retains a single logarithmic
+factor of slack, which is not resolved here.
+\end{enumerate}
+
+\subsection{Open problem}
+\label{sec:open}
+
+Corollary~\ref{cor:impossible} shows that no reset staying inside the small-error
+$\varepsilon$-linear class can improve the worst-case cross-talk scale beyond $d^{-1/2}$ when
+$F\gg d$, while Theorem~\ref{thm:randomsupport} shows thresholded recovery survives to
+$s=O(d/\log d)$ at quadratic load. Any interpolation beyond the H\"{a}nni template must
+therefore leave the small-error linear class. This makes one question concrete.
+
+\begin{conjecture}[Generic robust threshold reset]
+\label{conj:reset}
+Fix $s=O(1)$. There are constants $c,C,K>0$ such that for every $d$ and every
+$F\le c\,d^2/\log^C d$ there exist a code $\Phi\in\R^{d\times F}$, an input readout
+$R_{\mathrm{in}}$, a width-$\Otilde(d)$ reset module $\mathcal R_\Phi:\R^d\to\R^d$ and a
+scoring map $S$ such that, for every $s$-sparse $b$ and every $x$ with
+$\norm{R_{\mathrm{in}}x-b}_\infty\le K\,d^{1/2}/(F^{1/2}s^{1/4})$, the output
+$z=\mathcal R_\Phi(x)$ is composable with the next stage and satisfies
+$b_i=1\Rightarrow(Sz)_i\ge3/4$ and $b_i=0\Rightarrow(Sz)_i\le1/4$.
+\end{conjecture}
+
+The incoming-error tolerance is the essential clause: a reset theorem for clean inputs
+$x=\Phi b$ alone would not support recursive composition. By
+Corollary~\ref{cor:impossible} any proof must use an explicitly nonlinear or thresholded
+decoding mechanism, as Adler--Shavit do.
+
+% ============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% ============================================================================
+
+We proposed the Interface Diagnostic, a computable procedure that decides which decoding
+interface an overcomplete code or a trained network maintains, and how far it is from the best
+possible one. The procedure rests on a rank--trace floor for unit-diagonal linear readouts, in
+a gain-normalised form that bounds the interference-to-gain ratio, and on a separation between
+the linear and threshold criteria proved under one and the same sparse-state model. It runs in
+$O(Fd^2)$ time and $O(d^2)$ memory and scales to $F\approx10^6$ features on a laptop CPU.
+
+Six campaigns validate it. Codes optimised under the unit-diagonal constraint reach the floor,
+with the tied variant converging to a unit-norm tight frame. A network trained on the
+compressed-computation task under an $L^4$ loss attains the floor to within
+\EfiveLfourRatioPinvMean{} and separates the two criteria, while the $L^2$ baseline is shown by
+direct measurement to maintain an effectively linear interface and to sit a factor
+\EfiveLtwoRatioLsMean{} above the floor. Threshold recovery scales to $d=\EsixDmax$ with an
+empirical threshold consistent with a $c\,d/\ln d$ law.
+
+The broader lesson is that capacity questions for overcomplete representations are not settled
+by counting features. They depend on which decoding interface is maintained across
+computation, and that is now something one can measure.
+
+% ============================================================================
+\section*{Acknowledgements}
+The authors thank the VRAIN institute and the Universitat Polit\`ecnica de Val\`encia for
+institutional support, and two frame-theory researchers who, after reading the preprint,
+pointed out prior work containing the proof mechanism of Theorem~\ref{thm:floor} and raised the
+calibration question that became Corollary~\ref{cor:calibfree} and Remark~\ref{rem:calib}.
+
+\section*{Funding}
+H.B.\ acknowledges support from the UPV doctoral programme. No additional external funding was
+received for the submitted work.
+
+\section*{CRediT authorship contribution statement}
+\textbf{Hector Borobia:} Conceptualization, Methodology, Software, Formal analysis,
+Investigation, Validation, Visualization, Writing -- original draft.
+\textbf{Elies Segu\'i-Mas:} Supervision, Methodology, Writing -- review \& editing.
+\textbf{Guillermina Tormo-Carb\'o:} Supervision, Methodology, Writing -- review \& editing.
+
+\section*{Declaration of competing interest}
+The authors declare that they have no known competing financial interests or personal
+relationships that could have appeared to influence the work reported in this paper.
+
+\section*{Data availability}
+No human-subject, biological, clinical or proprietary data were generated or analysed. All
+data underlying the figures and tables are synthetic, generated by the released code from
+recorded seeds, and are included as raw JSON result files in the public repository.
+
+\section*{Code availability}
+All code, configurations, logs, raw results and the sources of this manuscript are publicly
+available at \url{https://github.com/hecboar/linear-readout-threshold-recovery}, together with
+a single entry point that reproduces every experiment, table and figure
+(Appendix~\ref{app:repro}).
+
+\section*{Declaration of generative AI and AI-assisted technologies in the writing process}
+During the preparation of this work the authors used AI-assisted tools for exploratory
+mathematical checking, drafting support, language editing and literature-search assistance.
+After using these tools the authors reviewed and edited the content as needed and take full
+responsibility for the content of the publication. AI tools are not listed as authors and did
+not determine the research questions, proof strategy or final claims. All mathematical
+statements, proofs, citations and comparisons with source papers were verified by the authors.
+
+\bibliographystyle{elsarticle-num}
+\bibliography{refs}
+
+\clearpage
+\appendix
+
+% ============================================================================
+\section{Reproduction}
+\label{app:repro}
+% ============================================================================
+
+From a clean checkout:
+
+\begin{verbatim}
+python -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
+python -m pip install -r requirements.txt
+python -m pytest -q tests/                       # 104 tests
+bash scripts/run_all.sh                          # Windows: scripts\run_all.ps1
+\end{verbatim}
+
+Individual campaigns, each of which writes \code{results/<id>/run\_record.json} with the exact
+command, seeds, environment, duration and exit status:
+
+\begin{verbatim}
+python experiments/e1_welch_floor.py
+python experiments/e2_threshold_recovery.py
+python experiments/e3_linear_energy.py
+python experiments/e4_optimized_codes.py
+python experiments/e5_trained_toy.py
+python experiments/e6_threshold_scaling.py
+\end{verbatim}
+
+Adding \code{--smoke} to any of them runs a reduced configuration end to end in seconds.
+Figures, tables and the generated numbers are rebuilt with
+\code{scripts/make\_figures.py}, \code{scripts/make\_tables.py} and
+\code{scripts/make\_numbers.py}; \code{scripts/check\_manuscript\_numbers.py} verifies that
+every measured number in this manuscript matches the saved results and exits non-zero
+otherwise. E6 writes results per width and per chunk and resumes an interrupted campaign
+without recomputing completed trials.
+
+% ============================================================================
+\section{Verification of imported statements}
+\label{app:imported}
+% ============================================================================
+
+Every statement imported from the two source frameworks was checked against the published
+version. Table~\ref{tab:imported} records the audit.
+
+\begin{table}[h]
+\centering
+\caption{Audit of imported statements.}
+\label{tab:imported}
+\small
+\begin{tabular}{p{3.1cm}p{4.6cm}p{4.6cm}}
+\toprule
+source & as printed there & as used here \\
+\midrule
+\cite[Thm.~11]{hanni2024superposition} &
+targeted superpositional AND, precision $\varepsilon_{\mathrm{in}}\to\varepsilon_{\mathrm{out}}$
+with $\varepsilon_{\mathrm{out}}=\Otilde(\sqrt{s^2/d})$ &
+Lemma~\ref{lem:comp}, $\ecomp(d)=\Otilde(d^{-1/2})$ at $s=O(1)$ \\
+\addlinespace[2pt]
+\cite[Thm.~14]{hanni2024superposition} &
+$\varepsilon^{(1)}=\Otilde(\max\{s\mu,\sqrt{s\varepsilon},\sqrt{s/d}\})$,
+$\mu^{(1)}=\Otilde(\max\{\sqrt{1/d},\mu\})$ &
+quoted in Sec.~\ref{sec:application} only to note it does not by itself preserve the
+$\Otilde(d^{-1/2})$ invariant \\
+\addlinespace[2pt]
+\cite[Cor.~15]{hanni2024superposition} &
+relaxes the near-sphere hypothesis of Thm.~14 at the cost of depth $1\to3$ &
+not used for a capacity claim \\
+\addlinespace[2pt]
+\cite[Thm.~21]{hanni2024superposition} &
+tolerance $\varepsilon<K\,d^{1/4}/(m^{1/2}s^{1/4})$, output
+$\varepsilon^{(1)}=O(\log(d)\sqrt{s}/\sqrt d)$, $\mu^{(1)}=\Otilde(\sqrt s/\sqrt d)$ &
+Lemma~\ref{lem:corr} with $m$ in the role of $F$ \\
+\addlinespace[2pt]
+\cite[Thm.~8]{hanni2024superposition} &
+width $d=\Otilde(m^{2/3}s^2)$, depth $2L$ &
+Proposition~\ref{prop:hanni}, inverted at $s=O(1)$ \\
+\addlinespace[2pt]
+\cite{adler2024superposition} &
+$\Omega(\sqrt{m'}\log m')$ neurons and $\Omega(m'\log m')$ parameters; construction with
+$O(\sqrt{m'}\log m')$ neurons; at most $O(n^2/\log n)$ features with $n$ neurons &
+Sec.~\ref{sec:application}; the parameter-to-neuron conversion is flagged as an architectural
+assumption of that model \\
+\addlinespace[2pt]
+\cite[Thm.~2.3]{strohmer2003grassmannian} &
+$\max_{i\neq j}|\langle\phi_i,\phi_j\rangle|\ge\sqrt{(F-d)/(d(F-1))}$ for unit-norm systems &
+the Gram case of Theorem~\ref{thm:floor}; the reduction is noted in Sec.~\ref{sec:frames} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+\section{Auxiliary proofs}
+\label{app:proofs}
+% ============================================================================
+
+\subsection{Sub-Gaussian interference}
+
+Let $u,u_1,\dots,u_m$ be independent uniform unit vectors in $\R^d$. Conditionally on $u$, each
+$X_j=\langle u,u_j\rangle$ is distributed as the first coordinate of a uniform point on
+$S^{d-1}$, hence has mean zero and is sub-Gaussian with variance proxy $C_0/d$ for a universal
+$C_0$~\cite[Thm.~3.4.6]{vershynin2018hdp}. The $X_j$ are conditionally independent, so their
+sum is sub-Gaussian with proxy $C_0m/d$ and
+$\Pr\{|\sum_j X_j|>t\}\le2\exp(-c_0dt^2/m)$ with $c_0=1/(2C_0)$. This is the estimate used in
+Theorem~\ref{thm:randomsupport}.
+
+\subsection{The Bernoulli variant of the energy floor}
+
+Under $b_i\sim\mathrm{Bernoulli}(p)$ independently,
+$\E[bb^{\top}]=p(1-p)I_F+p^2\mathbf 1\mathbf 1^{\top}$, so
+$\E_b\norm{Ab}^2=p(1-p)\norm{A}_F^2+p^2\norm{A\mathbf 1}^2\ge p(1-p)F(F-d)/d$ by
+Theorem~\ref{thm:floor}. With $p=s/F$ and $s\le F/2$ this gives
+$\frac1F\E_b\norm{Ab}^2\ge\frac{s(F-d)}{2dF}=\Omega(s/d)$, matching
+Proposition~\ref{prop:uniform-energy} up to the $(F-1)$ versus $F$ denominator. Both variants
+are computed by the released code and both are reported in E3.
+
+% ============================================================================
+\section{The nuclear-norm inequality}
+\label{app:nuclear}
+% ============================================================================
+
+For $M\in\R^{F\times F}$ with singular value decomposition
+$M=\sum_{k=1}^{r}\sigma_k u_k v_k^{\top}$,
+\[
+  |\operatorname{tr}(M)|=\Big|\sum_k\sigma_k\,u_k^{\top}v_k\Big|
+  \le\sum_k\sigma_k|u_k^{\top}v_k|\le\sum_k\sigma_k=\nucnorm{M},
+\]
+and by Cauchy--Schwarz on $(\sigma_1,\dots,\sigma_r)$,
+$\nucnorm{M}^2\le r\sum_k\sigma_k^2=r\norm{M}_F^2$. With $r\le d$ this gives
+$|\operatorname{tr}(M)|^2\le d\norm{M}_F^2$, as used in Theorem~\ref{thm:floor}. Note that the
+identity $\operatorname{tr}(M)=\sum_k\sigma_k$ holds only for positive semidefinite matrices and
+is \emph{not} used.
+
+% ============================================================================
+\section{Reference scales}
+\label{app:scales}
+% ============================================================================
+
+The scales appearing in this literature count different objects and should not be read as a
+capacity ordering. Writing $F_{\mathrm{CS}}(d,\alpha)=d\,g(\alpha)$ with
+$g(\alpha)=1/((1-\alpha)\ln(1/(1-\alpha)))$ for compressed-sensing-style linearly decodable
+storage, $F^{\mathrm{H}}_{\mathrm{cert}}(d)=\Thetatilde(d^{3/2})$ for the H\"{a}nni template
+certificate, $L_{\mathrm{AS}}(d)=d^2/\log^2 d$ and $U_{\mathrm{AS}}(d)=d^2/\log d$ for the two
+sides of the Adler--Shavit bracket, and $N_{\mathrm{JL}}(d;\varepsilon)=\exp(\Theta(d
+\varepsilon^2))$ for Johnson--Lindenstrauss packing~\cite{JL1984}, one has
+\[
+  F_{\mathrm{CS}}\ll F^{\mathrm{H}}_{\mathrm{cert}}\ll L_{\mathrm{AS}}
+  \lesssim\FrecAS\lesssim U_{\mathrm{AS}}\ll N_{\mathrm{JL}}
+\]
+as $d\to\infty$. This does not mean that recursive computation beats storage:
+$N_{\mathrm{JL}}$ counts passively packable states, $F_{\mathrm{CS}}$ counts linearly decodable
+features through a compressed bottleneck, and the middle two count recursively computable
+Boolean features under two different published frameworks. Michaud et
+al.~\cite{michaud2025manifolds} give a complementary reason why an observed dictionary size may
+fall below the template scale: if feature manifolds consume capacity, the relevant comparison
+is the effective dimension rather than the raw feature count.
+
+% ============================================================================
+\section{Sparse-autoencoder context}
+\label{app:sae}
+% ============================================================================
+
+As background only, our companion study~\cite{borobia2026pruning} trains TopK sparse
+autoencoders ($k=64$, expansion $8d$) on three language models and observes no dead features at
+$F=8d$, placing those dictionaries well below both the $d^{3/2}$ template scale and the
+near-quadratic Adler--Shavit scale. Sparse-autoencoder dictionary size is a reconstructive
+quantity and is not a measurement of recursive computation capacity; these numbers are not used
+in any proof or experiment of the present paper, and are mentioned only to indicate where
+current empirical dictionaries sit relative to the scales of Appendix~\ref{app:scales}.
+Liu et al.~\cite{liu2025scaling} and Elhage et al.~\cite{elhage2022superposition} provide
+further context on why strong superposition regimes are of interest.
+
+\end{document}

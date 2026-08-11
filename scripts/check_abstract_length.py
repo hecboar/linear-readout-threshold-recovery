@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Count the rendered length of the abstract and the highlights.
 
-Elsevier caps the abstract (commonly 250 words for Neurocomputing) and each highlight bullet
+Elsevier caps the abstract (commonly 250 words) and each highlight bullet
 at 85 characters. Both counts have to be taken *after* the generated numeric macros expand,
 which is why this cannot be eyeballed from the source.
 
 The abstract limit is passed in rather than hard-coded, because the authoritative value lives
-in the journal's Guide for Authors — see PROJECT_PLAN.md item 0.2.
+in the journal's Guide for Authors — see internal/PLAN.md item 0.2.
 
 Run: ``python scripts/check_abstract_length.py [--limit N]``
 """

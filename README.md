@@ -183,10 +183,12 @@ experiments/            one script per campaign (E1-E6 CPU-only; E7 opt-in accel
 configs/                one JSON per campaign, with a `smoke` override block
 results/                raw results, run records and logs (committed)
 scripts/                figures, tables, generated numbers, verification, run_all
-tests/                  104 tests, including numerical verification of the theorems
-paper/   manuscript sources, figures, tables, cover letter, highlights
+tests/                  318 tests, including numerical verification of the theorems
+paper/                  manuscript sources, figures, tables, highlights
+docs/                   decision log and supporting analyses
+internal/               working documents, not part of the release (see internal/README.md)
 superseded-submission/
-                        the earlier, rejected submission, kept unmodified as a record
+                        the earlier version, kept unmodified as a record
 synthetic_illustrations.py, figures/, data/
                         the illustration script and outputs of that earlier submission
 ```
@@ -231,20 +233,21 @@ figures may differ in the last displayed digit on a different platform.
 
 ---
 
-## Relationship to the earlier submission
+## Relationship to the earlier version
 
-An earlier version of this work has been superseded. That
-submission is preserved unmodified in `superseded-submission/`, together with
-the illustration script (`synthetic_illustrations.py`) and figures it shipped.
+This repository supersedes an earlier version of the work, preserved unmodified in
+`superseded-submission/` together with the illustration script
+(`synthetic_illustrations.py`) and figures it shipped.
 
 The present version is not an edit of it. The theory is unchanged and correct, but the
-contribution is now stated as a method, the experiments were rewritten from scratch, and every
-number in the manuscript is generated from saved results. The audit that motivated the rewrite
-— including the specific numerical claims in the earlier appendix that its own published code
-does not reproduce — is documented in `PROJECT_REVISION_REPORT.md`.
+contribution is now stated as a method and the experiments were rewritten from scratch, because
+an audit found that several numerical claims in the earlier appendix are not reproduced by its
+own published code. Every number in the current manuscript is generated from saved results by
+`scripts/make_numbers.py` and checked against the manuscript by
+`scripts/check_manuscript_numbers.py`.
 
-Working documents: `PROJECT_PLAN.md`, `PROJECT_PROGRESS.md`,
-`PROJECT_DECISIONS.md`, `CHANGELOG_PROJECT.md`.
+The analysis plan, including the predictions registered before the results were in, is in
+`docs/decision_log.md`.
 
 ---
 
