@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import multiprocessing as mp
 import os
 import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -123,6 +124,15 @@ def map_trials(fn: Callable[..., Any], jobs: Iterable[tuple], workers: int | Non
     per-worker BLAS thread limit is exported before the pool is created so that spawned
     children inherit it at import time, which is the only moment at which it takes effect.
     Longest jobs are submitted first so that the pool does not end on a long tail.
+
+    **The pool must spawn, not fork.** Exporting the thread limit only works if the child
+    imports NumPy *afterwards*, and a forked child does not import anything -- it inherits the
+    parent's already-initialised BLAS pool, sized for the whole machine. Ten forked workers on a
+    20-core host therefore ran with the parent's 18 threads each, giving a load average of 133
+    and roughly a twentyfold slowdown against the same work run in one process. This is the
+    failure mode :func:`_pin_threads_before_numpy` warns about, in the one code path that had
+    never been exercised. Spawning also avoids inheriting a CUDA context across ``fork``, which
+    is undefined behaviour for a parent that has already used the GPU.
     """
     jobs = list(jobs)
     if not workers or workers <= 1:
@@ -141,7 +151,8 @@ def map_trials(fn: Callable[..., Any], jobs: Iterable[tuple], workers: int | Non
               "NUMEXPR_NUM_THREADS"):
         os.environ[k] = str(threads_per_worker)
     try:
-        with ProcessPoolExecutor(max_workers=workers) as ex:
+        with ProcessPoolExecutor(max_workers=workers,
+                                 mp_context=mp.get_context("spawn")) as ex:
             futures = {ex.submit(fn, *j): i for i, j in enumerate(jobs)}
             results: List[Any] = [None] * len(jobs)
             done = 0
