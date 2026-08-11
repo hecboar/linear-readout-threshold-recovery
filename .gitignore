@@ -23,4 +23,3 @@ configs/e7_pilot.json
 
 # Smoke-test output; the committed results/ are the real campaigns
 results/*_smoke/
-results/e5_weights/

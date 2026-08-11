@@ -1801,6 +1801,54 @@ readout --- the quantity that identifies which interface the model maintains.}
 \input{tables/tab_e5_interface}
 \end{table}
 
+\subsubsection*{What the attainment ratio was measuring}
+\label{sec:res-g1}
+
+The ratios above are referenced to $W(F,d)$, and Section~\ref{sec:codefloor} showed that such a
+ratio conflates two questions. Applying the factorisation~\eqref{eq:decomposition} to the same
+models settles which of the two the reported numbers answered, and the answer is uncomfortable:
+one of them, entirely.
+
+Under the calibrated pseudoinverse the readout factor is $1$ to six decimals in every cell ---
+\GoneLfourRreadoutPinv{} for $L^4$, \GoneLtwoRreadoutPinv{} for $L^2$,
+\GoneRandRreadoutPinv{} for the random control --- which is not a measurement but
+Theorem~\ref{thm:codefloor} restated, since the calibrated pseudoinverse \emph{is} the
+code-specific optimum. The whole ratio is therefore $R_{\mathrm{geom}}$:
+\GoneLfourRgeom{} against a reported \GoneLfourRatio{} for $L^4$, \GoneLtwoRgeom{} against
+\GoneLtwoRatio{} for $L^2$, \GoneRandRgeom{} against \GoneRandRatio{} for the random code. So
+the claim that the $L^4$ model comes ``within a few parts in a thousand of the floor'' is a
+statement about the evenness of its leverage profile, and contains no information about its
+decoder. We restate it that way.
+
+Asking the decoder question separately reverses the ordering. Measured against the best readout
+of its \emph{own} code, the $L^4$ network's trained output layer sits at
+$R_{\mathrm{readout}}=\GoneLfourRreadoutWout{}$ while the $L^2$ network's sits at
+\GoneLtwoRreadoutWout{} --- so on this criterion the $L^2$ model has the better decoder and the
+worse code, the opposite of the reading the single ratio invites. The random control's own
+readout gives exactly \GoneRandRreadoutWout{}, which is a consistency check rather than a
+finding: that baseline sets $W_{\mathrm{out}}=\Phi^{+}$ by construction, so its ``own decoder''
+is the code-specific optimum by definition, and any other value would indicate a bug.
+
+The mechanism is visible in the leverage profiles, and it is the quantity
+Corollary~\ref{cor:failthresh} needs. The $L^4$ code spreads leverage almost uniformly, from
+\GoneLfourLeverageMin{} to \GoneLfourLeverageMax{} with coefficient of variation
+\GoneLfourLeverageCv{}; the random code is comparable at \GoneRandLeverageMin{} to
+\GoneRandLeverageMax{} (coefficient of variation \GoneRandLeverageCv{}); the $L^2$ code is not,
+running from \GoneLtwoLeverageMin{} to \GoneLtwoLeverageMax{} with coefficient of variation
+\GoneLtwoLeverageCv{}. That dispersion is exactly the excess of Proposition~\ref{prop:excess},
+and it grows with the training density: at $p=0.02$ the $L^2$ geometry factor rises to
+\GoneLtwoRgeomDenseP{}.
+
+Two limits on what this licenses. The factorisation is arithmetic on
+Theorem~\ref{thm:codefloor} and needs no new assumption, but it reinterprets an existing
+measurement rather than adding evidence --- five seeds at one width remain five seeds at one
+width. And \GoneLtwoLeverageMin{} is the number Corollary~\ref{cor:failthresh} consumes: with
+$s=2$ the threshold $(s-1)^2/((F-1)+(s-1)^2)$ is exactly $1/F$, so at $F=\EfiveF$ it is $0.01$,
+and the measured minimum leverage of the $L^2$ code falls below it. The theory therefore predicts
+that this code loses affine separability at $s=2$ --- from a single leverage score, with no
+decoder and no probe in the argument. Whether that prediction survives at other widths is the
+question Section~\ref{sec:limitations} flags as open.
+
 \subsection{E6: how the recovery threshold scales}
 \label{sec:res-e6}
 

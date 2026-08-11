@@ -349,6 +349,27 @@ def build() -> Macros:
     top = per_d[-1]
     m.num("EsixTopBestWilsonLow", wilson_interval(top["trials"], top["trials"])[0], 3)
     m.integer("EsixEnergyTrialsTop", top["n_energy_trials"])
+
+    # ---------------- G1: geometry versus readout suboptimality ----------------
+    # The published attainment ratio factors exactly as R_geom x R_readout. Under the
+    # calibrated pseudoinverse R_readout is 1 by construction, so the ratio the manuscript
+    # used to quote is R_geom alone -- a property of the code, not of the decoder.
+    tags = {"L4": "Lfour", "L2": "Ltwo", "random": "Rand"}
+    for c in load("g1/g1_reanalysis.json")["cells"]:
+        if c["p_train"] != 0.01:          # the primary cell; p=0.02 is the robustness check
+            continue
+        t = "Gone" + tags[c["loss_kind"]]
+        m.num(t + "Ratio", c["ratio_vs_welch_pinv"], 4)
+        m.num(t + "Rgeom", c["R_geom"], 4)
+        m.num(t + "RreadoutPinv", c["R_readout_pinv"], 6)
+        m.num(t + "RreadoutWout", c["R_readout_wout"], 4)
+        m.num(t + "LeverageMin", c["leverage_min"], 4)
+        m.num(t + "LeverageMax", c["leverage_max"], 4)
+        m.num(t + "LeverageCv", c["leverage_cv"], 4)
+    # The L2 geometry gap grows with the training sparsity, which is worth one number.
+    hi = [c for c in load("g1/g1_reanalysis.json")["cells"]
+          if c["loss_kind"] == "L2" and c["p_train"] == 0.02][0]
+    m.num("GoneLtwoRgeomDenseP", hi["R_geom"], 4)
     return m
 
 

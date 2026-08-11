@@ -1,0 +1,1051 @@
+{
+  "cells": [
+    {
+      "loss_kind": "L4",
+      "p_train": 0.01,
+      "n": 5,
+      "d": 50,
+      "F": 100,
+      "ratio_vs_welch_pinv": 1.0005720917667527,
+      "R_geom": 1.0005720917667522,
+      "R_readout_pinv": 1.0000000000000002,
+      "R_readout_wout": 1.025444631801648,
+      "leverage_min": 0.4801474731269949,
+      "leverage_max": 0.5192444596081984,
+      "leverage_cv": 0.016897450317838885
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.01,
+      "n": 5,
+      "d": 50,
+      "F": 100,
+      "ratio_vs_welch_pinv": 19.00515447728698,
+      "R_geom": 19.005154477286975,
+      "R_readout_pinv": 1.0,
+      "R_readout_wout": 1.0052886000469432,
+      "leverage_min": 0.009199029719440349,
+      "leverage_max": 0.9942234528516842,
+      "leverage_cv": 0.867330428089527
+    },
+    {
+      "loss_kind": "random",
+      "p_train": 0.01,
+      "n": 5,
+      "d": 50,
+      "F": 100,
+      "ratio_vs_welch_pinv": 1.0170477295575484,
+      "R_geom": 1.017047729557548,
+      "R_readout_pinv": 1.0,
+      "R_readout_wout": 1.0000000000000049,
+      "leverage_min": 0.3926946340883858,
+      "leverage_max": 0.6262759674485341,
+      "leverage_cv": 0.09179676356448614
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.02,
+      "n": 5,
+      "d": 50,
+      "F": 100,
+      "ratio_vs_welch_pinv": 1.0003995570757453,
+      "R_geom": 1.0003995570757453,
+      "R_readout_pinv": 1.0,
+      "R_readout_wout": 1.0249037360920181,
+      "leverage_min": 0.4842479938141507,
+      "leverage_max": 0.518189401098503,
+      "leverage_cv": 0.014121075806072265
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.02,
+      "n": 5,
+      "d": 50,
+      "F": 100,
+      "ratio_vs_welch_pinv": 29.10322234155929,
+      "R_geom": 29.103222341559285,
+      "R_readout_pinv": 1.0,
+      "R_readout_wout": 1.0088551700919435,
+      "leverage_min": 0.009011887374131559,
+      "leverage_max": 0.9923755308860132,
+      "leverage_cv": 0.9518827710486694
+    }
+  ],
+  "runs": [
+    {
+      "loss_kind": "L2",
+      "p_train": 0.01,
+      "seed": 0,
+      "d": 50,
+      "F": 100,
+      "R_geom": 18.357043498961197,
+      "leverage_cv": 0.8666511541155115,
+      "excess": 1735.7043498961198,
+      "leverage_min": 0.008212149490337007,
+      "leverage_max": 0.994807170857434,
+      "ratio_vs_welch": {
+        "pinv": 18.357043498961197,
+        "wout": 18.443093769857622
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.0046875887667475
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.18542468180768887,
+        "floor_code_specific": 0.18542468180768887,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0,
+        "ratio_vs_welch": 18.357043498961197,
+        "code_floor_over_welch": 18.357043498961197,
+        "sum_inv_leverage": 1935.7043498961198,
+        "uniform_value": 200.0,
+        "excess": 1735.7043498961198,
+        "excess_identity": 1735.7043498961198,
+        "leverage_mean": 0.5000000000000001,
+        "leverage_std": 0.4333255770577559,
+        "leverage_min": 0.008212149490337007,
+        "leverage_max": 0.994807170857434
+      }
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.01,
+      "seed": 1,
+      "d": 50,
+      "F": 100,
+      "R_geom": 17.67967704655604,
+      "leverage_cv": 0.8614074603406071,
+      "excess": 1667.9677046556042,
+      "leverage_min": 0.008671586687380505,
+      "leverage_max": 0.9945358075998003,
+      "ratio_vs_welch": {
+        "pinv": 17.67967704655604,
+        "wout": 17.768713933333512
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.0050361150004612
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.17858259642985902,
+        "floor_code_specific": 0.17858259642985902,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0,
+        "ratio_vs_welch": 17.67967704655604,
+        "code_floor_over_welch": 17.67967704655604,
+        "sum_inv_leverage": 1867.9677046556042,
+        "uniform_value": 200.0,
+        "excess": 1667.9677046556042,
+        "excess_identity": 1667.9677046556046,
+        "leverage_mean": 0.5,
+        "leverage_std": 0.43070373017030356,
+        "leverage_min": 0.008671586687380505,
+        "leverage_max": 0.9945358075998003
+      }
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.01,
+      "seed": 2,
+      "d": 50,
+      "F": 100,
+      "R_geom": 16.36455908935436,
+      "leverage_cv": 0.8688509682592884,
+      "excess": 1536.4559089354361,
+      "leverage_min": 0.011353918658663684,
+      "leverage_max": 0.9937513388259565,
+      "ratio_vs_welch": {
+        "pinv": 16.364559089354366,
+        "wout": 16.454297097383044
+      },
+      "R_readout": {
+        "pinv": 1.0000000000000004,
+        "wout": 1.0054836801614204
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.16529857666014505,
+        "floor_code_specific": 0.16529857666014505,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0,
+        "ratio_vs_welch": 16.36455908935436,
+        "code_floor_over_welch": 16.36455908935436,
+        "sum_inv_leverage": 1736.4559089354361,
+        "uniform_value": 200.0,
+        "excess": 1536.4559089354361,
+        "excess_identity": 1536.455908935436,
+        "leverage_mean": 0.49999999999999994,
+        "leverage_std": 0.43442548412964416,
+        "leverage_min": 0.011353918658663684,
+        "leverage_max": 0.9937513388259565
+      }
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.01,
+      "seed": 3,
+      "d": 50,
+      "F": 100,
+      "R_geom": 20.758665350573672,
+      "leverage_cv": 0.8869150821060501,
+      "excess": 1975.8665350573674,
+      "leverage_min": 0.010741173239598875,
+      "leverage_max": 0.993466192879243,
+      "ratio_vs_welch": {
+        "pinv": 20.758665350573672,
+        "wout": 20.8717673135991
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.0054484217128297
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.20968348838963308,
+        "floor_code_specific": 0.20968348838963308,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0,
+        "ratio_vs_welch": 20.758665350573672,
+        "code_floor_over_welch": 20.758665350573672,
+        "sum_inv_leverage": 2175.8665350573674,
+        "uniform_value": 200.0,
+        "excess": 1975.8665350573674,
+        "excess_identity": 1975.8665350573674,
+        "leverage_mean": 0.49999999999999983,
+        "leverage_std": 0.4434575410530249,
+        "leverage_min": 0.010741173239598875,
+        "leverage_max": 0.993466192879243
+      }
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.01,
+      "seed": 4,
+      "d": 50,
+      "F": 100,
+      "R_geom": 21.865827400989623,
+      "leverage_cv": 0.852827475626178,
+      "excess": 2086.5827400989624,
+      "leverage_min": 0.007016320521221677,
+      "leverage_max": 0.994556754095987,
+      "ratio_vs_welch": {
+        "pinv": 21.86582740098962,
+        "wout": 21.992369199101713
+      },
+      "R_readout": {
+        "pinv": 0.9999999999999999,
+        "wout": 1.0057871945932566
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.2208669434443396,
+        "floor_code_specific": 0.22086694344433963,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 0.9999999999999999,
+        "ratio_vs_welch": 21.86582740098962,
+        "code_floor_over_welch": 21.865827400989623,
+        "sum_inv_leverage": 2286.5827400989624,
+        "uniform_value": 200.0,
+        "excess": 2086.5827400989624,
+        "excess_identity": 2086.5827400989624,
+        "leverage_mean": 0.49999999999999994,
+        "leverage_std": 0.42641373781308894,
+        "leverage_min": 0.007016320521221677,
+        "leverage_max": 0.994556754095987
+      }
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.01,
+      "seed": 0,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.000609369993044,
+      "leverage_cv": 0.017506124455447324,
+      "excess": 0.06093699930440266,
+      "leverage_min": 0.4809067253111534,
+      "leverage_max": 0.5230492945004869,
+      "ratio_vs_welch": {
+        "pinv": 1.0006093699930443,
+        "wout": 1.026035329548739
+      },
+      "R_readout": {
+        "pinv": 1.0000000000000002,
+        "wout": 1.0254104751746147
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010107165353465092,
+        "floor_code_specific": 0.010107165353465092,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0,
+        "ratio_vs_welch": 1.000609369993044,
+        "code_floor_over_welch": 1.000609369993044,
+        "sum_inv_leverage": 200.0609369993044,
+        "uniform_value": 200.0,
+        "excess": 0.06093699930440266,
+        "excess_identity": 0.060936999304358176,
+        "leverage_mean": 0.49999999999999983,
+        "leverage_std": 0.008753062227723658,
+        "leverage_min": 0.4809067253111534,
+        "leverage_max": 0.5230492945004869
+      }
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.01,
+      "seed": 1,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0005959436890735,
+      "leverage_cv": 0.017259398754642444,
+      "excess": 0.05959436890734082,
+      "leverage_min": 0.48265939271544445,
+      "leverage_max": 0.5185622777780539,
+      "ratio_vs_welch": {
+        "pinv": 1.0005959436890737,
+        "wout": 1.0265402168480113
+      },
+      "R_readout": {
+        "pinv": 1.0000000000000002,
+        "wout": 1.0259288210416728
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010107029734233062,
+        "floor_code_specific": 0.010107029734233067,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 0.9999999999999994,
+        "ratio_vs_welch": 1.000595943689073,
+        "code_floor_over_welch": 1.0005959436890735,
+        "sum_inv_leverage": 200.05959436890734,
+        "uniform_value": 200.0,
+        "excess": 0.05959436890734082,
+        "excess_identity": 0.059594368907339365,
+        "leverage_mean": 0.49999999999999994,
+        "leverage_std": 0.00862969937732122,
+        "leverage_min": 0.48265939271544445,
+        "leverage_max": 0.5185622777780539
+      }
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.01,
+      "seed": 2,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0005411465249685,
+      "leverage_cv": 0.016393660363854555,
+      "excess": 0.05411465249687808,
+      "leverage_min": 0.4791386510011882,
+      "leverage_max": 0.5158890601196012,
+      "ratio_vs_welch": {
+        "pinv": 1.0005411465249687,
+        "wout": 1.0251520609859868
+      },
+      "R_readout": {
+        "pinv": 1.0000000000000002,
+        "wout": 1.0245976035533328
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010106476227524938,
+        "floor_code_specific": 0.010106476227524936,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0000000000000002,
+        "ratio_vs_welch": 1.0005411465249687,
+        "code_floor_over_welch": 1.0005411465249685,
+        "sum_inv_leverage": 200.05411465249688,
+        "uniform_value": 200.0,
+        "excess": 0.05411465249687808,
+        "excess_identity": 0.05411465249686013,
+        "leverage_mean": 0.49999999999999994,
+        "leverage_std": 0.008196830181927276,
+        "leverage_min": 0.4791386510011882,
+        "leverage_max": 0.5158890601196012
+      }
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.01,
+      "seed": 3,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0005581131873371,
+      "leverage_cv": 0.01667686052901143,
+      "excess": 0.05581131873375966,
+      "leverage_min": 0.47936248955946537,
+      "leverage_max": 0.5205273316603786,
+      "ratio_vs_welch": {
+        "pinv": 1.0005581131873371,
+        "wout": 1.0267993256737316
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.0262265750889785
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.0101066476079529,
+        "floor_code_specific": 0.010106647607952901,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 0.9999999999999998,
+        "ratio_vs_welch": 1.000558113187337,
+        "code_floor_over_welch": 1.0005581131873371,
+        "sum_inv_leverage": 200.05581131873376,
+        "uniform_value": 200.0,
+        "excess": 0.05581131873375966,
+        "excess_identity": 0.05581131873369775,
+        "leverage_mean": 0.49999999999999983,
+        "leverage_std": 0.008338430264505712,
+        "leverage_min": 0.47936248955946537,
+        "leverage_max": 0.5205273316603786
+      }
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.01,
+      "seed": 4,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0005558854393388,
+      "leverage_cv": 0.016651207486238676,
+      "excess": 0.055588543933879464,
+      "leverage_min": 0.4786701070477233,
+      "leverage_max": 0.5181943339824714,
+      "ratio_vs_welch": {
+        "pinv": 1.0005558854393388,
+        "wout": 1.0256294999025126
+      },
+      "R_readout": {
+        "pinv": 0.9999999999999998,
+        "wout": 1.0250596841496404
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010106625105447867,
+        "floor_code_specific": 0.010106625105447868,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 0.9999999999999998,
+        "ratio_vs_welch": 1.0005558854393388,
+        "code_floor_over_welch": 1.0005558854393388,
+        "sum_inv_leverage": 200.05558854393388,
+        "uniform_value": 200.0,
+        "excess": 0.055588543933879464,
+        "excess_identity": 0.05558854393386075,
+        "leverage_mean": 0.49999999999999994,
+        "leverage_std": 0.008325603743119336,
+        "leverage_min": 0.4786701070477233,
+        "leverage_max": 0.5181943339824714
+      }
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.02,
+      "seed": 0,
+      "d": 50,
+      "F": 100,
+      "R_geom": 27.22188472049505,
+      "leverage_cv": 0.9374484291094828,
+      "excess": 2622.188472049505,
+      "leverage_min": 0.00816991137232121,
+      "leverage_max": 0.9923975779711127,
+      "ratio_vs_welch": {
+        "pinv": 27.22188472049505,
+        "wout": 27.449616421853353
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.008365758054469
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.27496853253025305,
+        "floor_code_specific": 0.27496853253025305,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0,
+        "ratio_vs_welch": 27.22188472049505,
+        "code_floor_over_welch": 27.22188472049505,
+        "sum_inv_leverage": 2822.188472049505,
+        "uniform_value": 200.0,
+        "excess": 2622.188472049505,
+        "excess_identity": 2622.1884720495054,
+        "leverage_mean": 0.49999999999999983,
+        "leverage_std": 0.4687242145547412,
+        "leverage_min": 0.00816991137232121,
+        "leverage_max": 0.9923975779711127
+      }
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.02,
+      "seed": 1,
+      "d": 50,
+      "F": 100,
+      "R_geom": 28.63308647410384,
+      "leverage_cv": 0.9478024019363577,
+      "excess": 2763.3086474103843,
+      "leverage_min": 0.008921556164695803,
+      "leverage_max": 0.9926902655704851,
+      "ratio_vs_welch": {
+        "pinv": 28.633086474103848,
+        "wout": 28.904813494733425
+      },
+      "R_readout": {
+        "pinv": 1.0000000000000002,
+        "wout": 1.0094899661227699
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.2892230956980187,
+        "floor_code_specific": 0.28922309569801863,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0000000000000002,
+        "ratio_vs_welch": 28.633086474103848,
+        "code_floor_over_welch": 28.63308647410384,
+        "sum_inv_leverage": 2963.3086474103843,
+        "uniform_value": 200.0,
+        "excess": 2763.3086474103843,
+        "excess_identity": 2763.3086474103848,
+        "leverage_mean": 0.5000000000000001,
+        "leverage_std": 0.47390120096817895,
+        "leverage_min": 0.008921556164695803,
+        "leverage_max": 0.9926902655704851
+      }
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.02,
+      "seed": 2,
+      "d": 50,
+      "F": 100,
+      "R_geom": 27.480869254127512,
+      "leverage_cv": 0.9514430251734541,
+      "excess": 2648.0869254127515,
+      "leverage_min": 0.010072012025014957,
+      "leverage_max": 0.9933430339217048,
+      "ratio_vs_welch": {
+        "pinv": 27.480869254127512,
+        "wout": 27.730401027541834
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.0090801994328051
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.27758453792047993,
+        "floor_code_specific": 0.27758453792047993,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0,
+        "ratio_vs_welch": 27.480869254127512,
+        "code_floor_over_welch": 27.480869254127512,
+        "sum_inv_leverage": 2848.0869254127515,
+        "uniform_value": 200.0,
+        "excess": 2648.0869254127515,
+        "excess_identity": 2648.086925412751,
+        "leverage_mean": 0.49999999999999994,
+        "leverage_std": 0.475721512586727,
+        "leverage_min": 0.010072012025014957,
+        "leverage_max": 0.9933430339217048
+      }
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.02,
+      "seed": 3,
+      "d": 50,
+      "F": 100,
+      "R_geom": 29.387997713417537,
+      "leverage_cv": 0.9564776263831122,
+      "excess": 2838.799771341754,
+      "leverage_min": 0.009984393245633242,
+      "leverage_max": 0.9919546518417969,
+      "ratio_vs_welch": {
+        "pinv": 29.387997713417537,
+        "wout": 29.612647601273327
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.007644273354262
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.2968484617516922,
+        "floor_code_specific": 0.2968484617516923,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 0.9999999999999997,
+        "ratio_vs_welch": 29.387997713417526,
+        "code_floor_over_welch": 29.387997713417537,
+        "sum_inv_leverage": 3038.799771341754,
+        "uniform_value": 200.0,
+        "excess": 2838.799771341754,
+        "excess_identity": 2838.799771341754,
+        "leverage_mean": 0.5,
+        "leverage_std": 0.4782388131915561,
+        "leverage_min": 0.009984393245633242,
+        "leverage_max": 0.9919546518417969
+      }
+    },
+    {
+      "loss_kind": "L2",
+      "p_train": 0.02,
+      "seed": 4,
+      "d": 50,
+      "F": 100,
+      "R_geom": 32.792273545652506,
+      "leverage_cv": 0.9662423726409403,
+      "excess": 3179.227354565251,
+      "leverage_min": 0.007911564062992588,
+      "leverage_max": 0.9914921251249662,
+      "ratio_vs_welch": {
+        "pinv": 32.79227354565251,
+        "wout": 33.11021606727791
+      },
+      "R_readout": {
+        "pinv": 1.0000000000000002,
+        "wout": 1.0096956534954118
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.33123508631972237,
+        "floor_code_specific": 0.3312350863197223,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0000000000000002,
+        "ratio_vs_welch": 32.79227354565251,
+        "code_floor_over_welch": 32.792273545652506,
+        "sum_inv_leverage": 3379.227354565251,
+        "uniform_value": 200.0,
+        "excess": 3179.227354565251,
+        "excess_identity": 3179.2273545652506,
+        "leverage_mean": 0.5000000000000001,
+        "leverage_std": 0.48312118632047024,
+        "leverage_min": 0.007911564062992588,
+        "leverage_max": 0.9914921251249662
+      }
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.02,
+      "seed": 0,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0004198421982966,
+      "leverage_cv": 0.014545869122955798,
+      "excess": 0.04198421982965783,
+      "leverage_min": 0.4821859320592701,
+      "leverage_max": 0.523549702228995,
+      "ratio_vs_welch": {
+        "pinv": 1.0004198421982966,
+        "wout": 1.025301440657307
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.0248711564979922
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010105250931295925,
+        "floor_code_specific": 0.010105250931295925,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0,
+        "ratio_vs_welch": 1.0004198421982966,
+        "code_floor_over_welch": 1.0004198421982966,
+        "sum_inv_leverage": 200.04198421982966,
+        "uniform_value": 200.0,
+        "excess": 0.04198421982965783,
+        "excess_identity": 0.04198421982961805,
+        "leverage_mean": 0.49999999999999994,
+        "leverage_std": 0.007272934561477898,
+        "leverage_min": 0.4821859320592701,
+        "leverage_max": 0.523549702228995
+      }
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.02,
+      "seed": 1,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0004340030979832,
+      "leverage_cv": 0.014723330597698044,
+      "excess": 0.04340030979835774,
+      "leverage_min": 0.4838082929218569,
+      "leverage_max": 0.5182026374931842,
+      "ratio_vs_welch": {
+        "pinv": 1.0004340030979832,
+        "wout": 1.0247472463959737
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.024302695852701
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010105393970686704,
+        "floor_code_specific": 0.0101053939706867,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0000000000000004,
+        "ratio_vs_welch": 1.0004340030979835,
+        "code_floor_over_welch": 1.0004340030979832,
+        "sum_inv_leverage": 200.04340030979836,
+        "uniform_value": 200.0,
+        "excess": 0.04340030979835774,
+        "excess_identity": 0.04340030979830864,
+        "leverage_mean": 0.5,
+        "leverage_std": 0.007361665298849022,
+        "leverage_min": 0.4838082929218569,
+        "leverage_max": 0.5182026374931842
+      }
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.02,
+      "seed": 2,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0003101288130698,
+      "leverage_cv": 0.012440577273662356,
+      "excess": 0.031012881306992313,
+      "leverage_min": 0.48725254942939045,
+      "leverage_max": 0.5122248781024449,
+      "ratio_vs_welch": {
+        "pinv": 1.0003101288130698,
+        "wout": 1.0250363808442489
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.0247185860854156
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010104142715283534,
+        "floor_code_specific": 0.010104142715283534,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0,
+        "ratio_vs_welch": 1.0003101288130698,
+        "code_floor_over_welch": 1.0003101288130698,
+        "sum_inv_leverage": 200.031012881307,
+        "uniform_value": 200.0,
+        "excess": 0.031012881306992313,
+        "excess_identity": 0.031012881306968478,
+        "leverage_mean": 0.5,
+        "leverage_std": 0.006220288636831178,
+        "leverage_min": 0.48725254942939045,
+        "leverage_max": 0.5122248781024449
+      }
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.02,
+      "seed": 3,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.000426961836104,
+      "leverage_cv": 0.01462927269790896,
+      "excess": 0.04269618361041694,
+      "leverage_min": 0.4826130107087017,
+      "leverage_max": 0.5179201325331592,
+      "ratio_vs_welch": {
+        "pinv": 1.000426961836104,
+        "wout": 1.0255581549830524
+      },
+      "R_readout": {
+        "pinv": 0.9999999999999998,
+        "wout": 1.02512046766595
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010105322846829336,
+        "floor_code_specific": 0.010105322846829334,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0000000000000002,
+        "ratio_vs_welch": 1.0004269618361041,
+        "code_floor_over_welch": 1.000426961836104,
+        "sum_inv_leverage": 200.04269618361042,
+        "uniform_value": 200.0,
+        "excess": 0.04269618361041694,
+        "excess_identity": 0.042696183610391215,
+        "leverage_mean": 0.49999999999999994,
+        "leverage_std": 0.007314636348954479,
+        "leverage_min": 0.4826130107087017,
+        "leverage_max": 0.5179201325331592
+      }
+    },
+    {
+      "loss_kind": "L4",
+      "p_train": 0.02,
+      "seed": 4,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.000406849433273,
+      "leverage_cv": 0.014266329338136166,
+      "excess": 0.04068494332733508,
+      "leverage_min": 0.48538018395153426,
+      "leverage_max": 0.5190496551347318,
+      "ratio_vs_welch": {
+        "pinv": 1.000406849433273,
+        "wout": 1.0259230008011475
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.0255057743580318
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010105119691245185,
+        "floor_code_specific": 0.010105119691245182,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0000000000000004,
+        "ratio_vs_welch": 1.0004068494332732,
+        "code_floor_over_welch": 1.000406849433273,
+        "sum_inv_leverage": 200.04068494332734,
+        "uniform_value": 200.0,
+        "excess": 0.04068494332733508,
+        "excess_identity": 0.04068494332726765,
+        "leverage_mean": 0.5,
+        "leverage_std": 0.007133164669068083,
+        "leverage_min": 0.48538018395153426,
+        "leverage_max": 0.5190496551347318
+      }
+    },
+    {
+      "loss_kind": "random",
+      "p_train": 0.01,
+      "seed": 0,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0186112312222455,
+      "leverage_cv": 0.09574199201998729,
+      "excess": 1.8611231222245692,
+      "leverage_min": 0.38717718639618026,
+      "leverage_max": 0.6350943248027129,
+      "ratio_vs_welch": {
+        "pinv": 1.0186112312222455,
+        "wout": 1.0186112312222508
+      },
+      "R_readout": {
+        "pinv": 1.0,
+        "wout": 1.000000000000005
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010289002335578239,
+        "floor_code_specific": 0.010289002335578239,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0,
+        "ratio_vs_welch": 1.0186112312222455,
+        "code_floor_over_welch": 1.0186112312222455,
+        "sum_inv_leverage": 201.86112312222457,
+        "uniform_value": 200.0,
+        "excess": 1.8611231222245692,
+        "excess_identity": 1.8611231222246554,
+        "leverage_mean": 0.5000000000000002,
+        "leverage_std": 0.047870996009993665,
+        "leverage_min": 0.38717718639618026,
+        "leverage_max": 0.6350943248027129
+      }
+    },
+    {
+      "loss_kind": "random",
+      "p_train": 0.01,
+      "seed": 1,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0186917876333024,
+      "leverage_cv": 0.09542159546312451,
+      "excess": 1.8691787633302397,
+      "leverage_min": 0.3826811156110789,
+      "leverage_max": 0.617951148889628,
+      "ratio_vs_welch": {
+        "pinv": 1.0186917876333021,
+        "wout": 1.0186917876333077
+      },
+      "R_readout": {
+        "pinv": 0.9999999999999998,
+        "wout": 1.0000000000000053
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010289816036700027,
+        "floor_code_specific": 0.010289816036700025,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0000000000000002,
+        "ratio_vs_welch": 1.0186917876333026,
+        "code_floor_over_welch": 1.0186917876333024,
+        "sum_inv_leverage": 201.86917876333024,
+        "uniform_value": 200.0,
+        "excess": 1.8691787633302397,
+        "excess_identity": 1.869178763330379,
+        "leverage_mean": 0.5000000000000004,
+        "leverage_std": 0.047710797731562296,
+        "leverage_min": 0.3826811156110789,
+        "leverage_max": 0.617951148889628
+      }
+    },
+    {
+      "loss_kind": "random",
+      "p_train": 0.01,
+      "seed": 2,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0182497142115823,
+      "leverage_cv": 0.09475428058491134,
+      "excess": 1.824971421158267,
+      "leverage_min": 0.39744244273368845,
+      "leverage_max": 0.6293516714984486,
+      "ratio_vs_welch": {
+        "pinv": 1.0182497142115823,
+        "wout": 1.0182497142115876
+      },
+      "R_readout": {
+        "pinv": 1.0000000000000002,
+        "wout": 1.0000000000000053
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.010285350648601843,
+        "floor_code_specific": 0.010285350648601841,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0000000000000002,
+        "ratio_vs_welch": 1.0182497142115823,
+        "code_floor_over_welch": 1.0182497142115823,
+        "sum_inv_leverage": 201.82497142115827,
+        "uniform_value": 200.0,
+        "excess": 1.824971421158267,
+        "excess_identity": 1.8249714211583694,
+        "leverage_mean": 0.5000000000000003,
+        "leverage_std": 0.047377140292455704,
+        "leverage_min": 0.39744244273368845,
+        "leverage_max": 0.6293516714984486
+      }
+    },
+    {
+      "loss_kind": "random",
+      "p_train": 0.01,
+      "seed": 3,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0149740530179066,
+      "leverage_cv": 0.08669848614305875,
+      "excess": 1.49740530179065,
+      "leverage_min": 0.39549381882246143,
+      "leverage_max": 0.6097981152688177,
+      "ratio_vs_welch": {
+        "pinv": 1.0149740530179068,
+        "wout": 1.0149740530179112
+      },
+      "R_readout": {
+        "pinv": 1.0000000000000002,
+        "wout": 1.0000000000000047
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.01025226316179704,
+        "floor_code_specific": 0.010252263161797037,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0000000000000004,
+        "ratio_vs_welch": 1.014974053017907,
+        "code_floor_over_welch": 1.0149740530179066,
+        "sum_inv_leverage": 201.49740530179065,
+        "uniform_value": 200.0,
+        "excess": 1.49740530179065,
+        "excess_identity": 1.4974053017907611,
+        "leverage_mean": 0.5000000000000003,
+        "leverage_std": 0.0433492430715294,
+        "leverage_min": 0.39549381882246143,
+        "leverage_max": 0.6097981152688177
+      }
+    },
+    {
+      "loss_kind": "random",
+      "p_train": 0.01,
+      "seed": 4,
+      "d": 50,
+      "F": 100,
+      "R_geom": 1.0147118617027042,
+      "leverage_cv": 0.08636746361134882,
+      "excess": 1.471186170270471,
+      "leverage_min": 0.4006786068785197,
+      "leverage_max": 0.6391845767830631,
+      "ratio_vs_welch": {
+        "pinv": 1.0147118617027047,
+        "wout": 1.014711861702709
+      },
+      "R_readout": {
+        "pinv": 1.0000000000000004,
+        "wout": 1.0000000000000047
+      },
+      "attainment_pinv": {
+        "d": 50,
+        "F": 100,
+        "readout": "optimal",
+        "mean_sq_offdiag": 0.01024961476467379,
+        "floor_code_specific": 0.010249614764673782,
+        "floor_welch": 0.010101010101010102,
+        "ratio_vs_code": 1.0000000000000009,
+        "ratio_vs_welch": 1.014711861702705,
+        "code_floor_over_welch": 1.0147118617027042,
+        "sum_inv_leverage": 201.47118617027047,
+        "uniform_value": 200.0,
+        "excess": 1.471186170270471,
+        "excess_identity": 1.4711861702705162,
+        "leverage_mean": 0.5000000000000002,
+        "leverage_std": 0.04318373180567443,
+        "leverage_min": 0.4006786068785197,
+        "leverage_max": 0.6391845767830631
+      }
+    }
+  ]
+}

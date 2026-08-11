@@ -52,6 +52,10 @@ from lrtr.interface import crosstalk_mean_sq  # noqa: E402
 WEIGHTS = ROOT / "results" / "e5_weights"
 COMMITTED = ROOT / "results" / "e5" / "raw" / "e5_runs.json"
 OUT = ROOT / "docs" / "g1_reanalysis.md"
+# The manuscript quotes these numbers, and scripts/check_manuscript_numbers.py requires every
+# quoted number to trace to results/. A prose table cannot be checked, so the aggregates are
+# also written as JSON, which scripts/make_numbers.py reads.
+OUT_JSON = ROOT / "results" / "g1" / "g1_reanalysis.json"
 READOUTS = ("pinv", "wout", "ls")
 
 
@@ -289,7 +293,33 @@ def main() -> int:
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(L) + "\n", encoding="utf-8", newline="\n")
-    print(f"wrote {OUT.relative_to(ROOT).as_posix()} from {len(rows)} models")
+
+    def agg(sub: List[Dict[str, Any]], f) -> float:
+        vals = [v for v in (f(r) for r in sub) if v is not None]
+        return float(np.mean(vals)) if vals else float("nan")
+
+    cells = []
+    for p in ps:
+        for kind in kinds:
+            sub = cell(kind, p)
+            if not sub:
+                continue
+            cells.append({
+                "loss_kind": kind, "p_train": p, "n": len(sub),
+                "d": sub[0]["d"], "F": sub[0]["F"],
+                "ratio_vs_welch_pinv": agg(sub, lambda r: r["ratio_vs_welch"]["pinv"]),
+                "R_geom": agg(sub, lambda r: r["R_geom"]),
+                "R_readout_pinv": agg(sub, lambda r: r["R_readout"]["pinv"]),
+                "R_readout_wout": agg(sub, lambda r: r["R_readout"]["wout"]),
+                "leverage_min": agg(sub, lambda r: r["leverage_min"]),
+                "leverage_max": agg(sub, lambda r: r["leverage_max"]),
+                "leverage_cv": agg(sub, lambda r: r["leverage_cv"]),
+            })
+    OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
+    OUT_JSON.write_text(json.dumps({"cells": cells, "runs": rows}, indent=2),
+                        encoding="utf-8", newline="\n")
+    print(f"wrote {OUT.relative_to(ROOT).as_posix()} and "
+          f"{OUT_JSON.relative_to(ROOT).as_posix()} from {len(rows)} models")
     for k, v in geom.items():
         print(f"  R_geom[{k}] = {v:.4f}")
     for k, v in wout.items():
