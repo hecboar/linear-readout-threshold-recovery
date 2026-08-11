@@ -11,9 +11,11 @@ the point where that stops being true.
 Two cost centres are measured, because the campaign has two:
 
 * **training**, which goes on the accelerator -- swept over seed-batch `B` and width;
-* **the robust affine frontier**, which is convex-solver work and stays on the CPU. It is a
+* **the collision frontier**, which is linear-programming work and stays on the CPU. It is a
   budget line of its own (plan §8) and it is measured here rather than assumed, now that the
-  solver exists and is validated.
+  solver exists and is validated. What is timed is the routine the campaign calls, one
+  programme per feature; the margin programme is a different order of cost and is deliberately
+  not swept -- see :func:`time_affine_frontier`.
 
 Outputs
     results/benchmark/spark_benchmark.json
@@ -38,7 +40,7 @@ import numpy as np
 
 from _common import REPO_ROOT, RunRecord, base_parser, log, prepare, write_json
 
-from lrtr.affine_frontier import robust_affine_frontier
+from lrtr.affine_frontier import collision_frontier
 from lrtr.codes import random_unit_code
 from lrtr.runlog import git_provenance
 from lrtr.toymodel import train_toy_models_batched
@@ -158,25 +160,41 @@ def time_training(d: int, F: int, B: int, steps: int, batch: int, device: str,
 
 def time_affine_frontier(d: int, F: int, n_features: int, sparsities: List[int],
                          seed: int) -> Dict[str, Any]:
-    """Solver cost of the exact frontier, per feature. This is the CPU-side budget line."""
+    """Solver cost of the frontier the campaign actually computes. The CPU-side budget line.
+
+    This times :func:`collision_frontier`, which is what ``e7_scaled_toy`` calls: one linear
+    programme per feature, settling every sparsity at once. An earlier version of this benchmark
+    timed :func:`robust_affine_frontier` instead, and that was the wrong budget line twice over.
+    It is not what the campaign runs, and it is a different order of cost -- its margin
+    programme carries a constraint per (active, inactive) support pair, so it grows
+    combinatorially in `F` and `s`. Measured on GB10 it burned 7.5 cores for over ten minutes on
+    `d = 50, F = 100` without finishing the first shape, against milliseconds per feature for
+    the verdict programme. The margin is a per-feature diagnostic to be requested deliberately,
+    not a quantity to sweep over a grid, and pretending otherwise would have mis-sized the
+    campaign by orders of magnitude.
+    """
     Phi = random_unit_code(d, F, np.random.default_rng(seed))
     feats = list(range(min(n_features, F)))
     t0 = time.perf_counter()
-    out = robust_affine_frontier(Phi, sparsities, feature_subset=feats)
+    out = collision_frontier(Phi, feature_subset=feats, model="atmost")
     elapsed = time.perf_counter() - t0
-    n_solves = len(feats) * len(sparsities)
     return {
         "d": d, "F": F, "features_timed": len(feats), "sparsities": sparsities,
         "wall_s": elapsed,
-        "s_per_solve": elapsed / n_solves,
+        "s_per_solve": elapsed / len(feats),
         "projected_all_features_s": elapsed / len(feats) * F,
-        "s_aff_robust": out["s_aff_robust"],
-        "rows": [{k: r[k] for k in ("s", "all_separable", "n_separable", "n_infeasible",
-                                    "n_unresolved", "gamma_min")} for r in out["rows"]],
+        "frontier_min": out["frontier_min"],
     }
 
 
-def write_report(payload: Dict[str, Any], out_dir: Path) -> None:
+def write_report(payload: Dict[str, Any], out_dir: Path, smoke: bool = False) -> None:
+    """Write the capacity report and the selected batching.
+
+    A smoke run keeps both inside ``out_dir``. They must not land on the committed paths: the
+    batching file is *consumed* by the campaign to size its seed batches, so a smoke run
+    silently overwriting it with numbers measured at d=16 for two steps would mis-size the real
+    grid, and the report would claim to describe the machine while describing a toy.
+    """
     tr = payload["training"]
     L: List[str] = []
     L.append("# DGX Spark capacity report")
@@ -237,21 +255,27 @@ def write_report(payload: Dict[str, Any], out_dir: Path) -> None:
     if payload.get("affine_frontier"):
         L.append("## Robust affine frontier (CPU, convex solver)")
         L.append("")
-        L.append("This does not run on the accelerator and is a separate budget line. The")
-        L.append("projection is per model, for all features at the listed sparsities.")
+        L.append("This does not run on the accelerator and is a separate budget line. One")
+        L.append("linear programme per feature settles every sparsity at once, so the")
+        L.append("projection is per model over all features. The *margin* programme is a")
+        L.append("different order of cost and is not swept here; see time_affine_frontier.")
         L.append("")
-        L.append("| d | F | s/solve | all features, projected s |")
-        L.append("|---|---|---|---|")
+        L.append("| d | F | s/feature | all features, projected s | min kappa |")
+        L.append("|---|---|---|---|---|")
         for r in payload["affine_frontier"]:
             L.append(f"| {r['d']} | {r['F']} | {r['s_per_solve']:.3f} | "
-                     f"{r['projected_all_features_s']:.0f} |")
+                     f"{r['projected_all_features_s']:.0f} | {r['frontier_min']:.3f} |")
         L.append("")
 
-    (REPO_ROOT / "docs").mkdir(exist_ok=True)
-    (REPO_ROOT / "docs" / "spark_capacity_report.md").write_text(
-        "\n".join(L) + "\n", encoding="utf-8", newline="\n")
+    if smoke:
+        report_path = out_dir / "spark_capacity_report.md"
+        cfg_dir = out_dir
+    else:
+        report_path = REPO_ROOT / "docs" / "spark_capacity_report.md"
+        cfg_dir = REPO_ROOT / "configs" / "spark"
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text("\n".join(L) + "\n", encoding="utf-8", newline="\n")
 
-    cfg_dir = REPO_ROOT / "configs" / "spark"
     cfg_dir.mkdir(parents=True, exist_ok=True)
     lines = ["# Selected by experiments/e0_benchmark.py from measured throughput.",
              "# Consumed by the campaign to size its seed batches; do not hand-edit.",
@@ -351,17 +375,19 @@ def main() -> None:
                                           cfg.get("frontier_sparsities", [1, 2, 3]), seed=0)
                 frontier.append(fr)
                 log(f"  frontier d={d} F={F}: {fr['s_per_solve']:.3f} s/solve, "
-                    f"s_aff_robust={fr['s_aff_robust']}")
+                    f"min kappa={fr['frontier_min']:.3f}")
 
         payload = {"device": device, "environment": env, "training": training,
                    "selected_batching": selected, "projection": projection,
                    "affine_frontier": frontier}
         write_json(out_dir / "raw" / "spark_benchmark.json", payload)
-        write_report(payload, out_dir)
+        write_report(payload, out_dir, smoke=args.smoke)
         rec.set("projected_training_hours", projection["total_hours"])
         log(f"\nprojected training wall clock for J1+J2+J3: "
             f"{projection['total_hours']:.1f} h ({projection['total_hours'] / 24:.1f} days)")
-        log("wrote docs/spark_capacity_report.md and configs/spark/selected_batching.yaml")
+        where = out_dir if args.smoke else REPO_ROOT
+        log(f"wrote the capacity report and selected batching under "
+            f"{where.relative_to(REPO_ROOT).as_posix() or '.'}")
 
 
 if __name__ == "__main__":
