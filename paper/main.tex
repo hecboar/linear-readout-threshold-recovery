@@ -2010,6 +2010,27 @@ $p_{\mathrm{rec}}(s)$ marginally unbiased but correlates points within a trial; 
 intervals are per-point and should not be read as a joint confidence band.
 \item \textbf{Open log gap.} The Adler--Shavit capacity bracket retains a single logarithmic
 factor of slack, which is not resolved here.
+
+\item \textbf{The leverage prediction is tested at one width.} Corollary~\ref{cor:failthresh}
+correctly predicts the affine collapse of the $L^2$ code in
+Section~\ref{sec:res-g1}, from leverage alone. That is \EfiveSeeds{} seeds at
+$d=\EfiveD$, and a single confirmation of a sufficient condition is weak evidence: the
+implication is proved, but whether trained codes routinely land in the regime where it bites is
+an empirical question this paper does not settle. Replication across widths is the obvious next
+experiment and we have not run it.
+
+\item \textbf{A reported frontier minimum is an upper bound.} Solving~\eqref{eq:kappa} for every
+feature costs one linear programme each, which is affordable at $d=50$ and not at $d=400$. Where
+we report the smallest $\kappa_i$ over a code we compute it on a subset of features --- those of
+lowest leverage, which Theorem~\ref{thm:arrow} identifies as the candidates, plus a fixed random
+sample as a check --- so the value is an upper bound on the true minimum. Theorem~\ref{thm:arrow}
+is sufficient and not necessary, so the subset can miss the true argmin, and we report the
+leverage rank of the minimiser actually found so that a reader can see when it does.
+
+\item \textbf{The nonlinear witness is a derivation, not a measurement.} Section~\ref{sec:witness}
+shows that a failure of affine separability compresses to at most $d+2$ explicit states which no
+affine rule can label. We have not implemented the extractor, so no number in this paper comes
+from it, and the sharper report it would license is not made.
 \end{enumerate}
 
 \subsection{Open problem}
