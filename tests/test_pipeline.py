@@ -1,6 +1,8 @@
 """Smoke-level tests of the optimiser, the toy model and the diagnostic entry points."""
 from __future__ import annotations
 
+import os
+
 import numpy as np
 import pytest
 
@@ -103,3 +105,28 @@ def test_random_code_baseline_is_diagnosable():
     assert diag["loss_kind"] == "random"
     assert diag["s95_linear_ls"] >= 0
     assert diag["s95_model"] >= 0
+
+
+def test_configure_cpu_hides_the_gpu_by_default(monkeypatch):
+    """A published CPU run must not depend on whether the machine happens to have a GPU."""
+    from lrtr import configure_cpu
+    monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
+    configure_cpu(threads=1)
+    assert os.environ["CUDA_VISIBLE_DEVICES"] == ""
+
+
+def test_configure_cpu_can_be_told_to_leave_the_gpu_alone(monkeypatch):
+    """The accelerator campaign opts in, and the opt-in must survive this call.
+
+    configure_cpu imports torch, so hiding the device here would hide it for the rest of the
+    process however the campaign was invoked -- which is exactly how the accelerator run came
+    to report that no CUDA device was visible on a machine where one plainly was.
+    """
+    from lrtr import configure_cpu
+    monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
+    configure_cpu(threads=1, allow_gpu=True)
+    assert "CUDA_VISIBLE_DEVICES" not in os.environ
+
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
+    configure_cpu(threads=1, allow_gpu=True)
+    assert os.environ["CUDA_VISIBLE_DEVICES"] == "0"

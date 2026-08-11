@@ -100,8 +100,12 @@ def prepare(experiment: str, args: argparse.Namespace) -> tuple[Dict[str, Any], 
     cfg = load_config(args.config, args.smoke)
     out_dir = args.out_dir or (REPO_ROOT / "results" / (experiment + ("_smoke" if args.smoke else "")))
     # The BLAS limits were already applied by _pin_threads_before_numpy(); this call pins the
-    # torch pool, which can be set at any time.
-    threads = configure_cpu(args.threads if args.threads is not None else _THREADS)
+    # torch pool, which can be set at any time. It must be told about the device: it imports
+    # torch, and hiding the GPU there would undo the opt-in performed above and hide it for
+    # the rest of the process.
+    device = str(getattr(args, "device", "cpu"))
+    threads = configure_cpu(args.threads if args.threads is not None else _THREADS,
+                            allow_gpu=not device.startswith("cpu"))
     out_dir.mkdir(parents=True, exist_ok=True)
     return cfg, out_dir, threads
 
