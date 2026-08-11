@@ -1172,9 +1172,45 @@ earlier formulation of this work used it. The threshold is $s$ itself rather tha
 $2\min(s,F-s)-1$; the admissible sets nest in $s$, so monotonicity of the frontier holds by
 construction rather than needing a proof and a restriction to $s\le F/2$; and $\kappa_i=7.4$ now
 reads directly as ``separable up to $7$, lost at $8$'', which is what a capacity ought to mean.
-Computationally~\eqref{eq:kappa} is a single linear programme --- the $\max$ of two linear forms
-is handled by one auxiliary scalar --- and it settles every sparsity at once, rather than one
-feasibility problem per $s$.
+Computationally~\eqref{eq:kappa} is a single linear programme, stated as
+Algorithm~\ref{alg:frontier}: the $\max$ of two linear forms is handled by one auxiliary scalar,
+and one solve settles every sparsity at once rather than one feasibility problem per $s$.
+
+\begin{algorithm}[t]
+\caption{\textsc{CollisionFrontier} --- the largest affinely separable sparsity, per feature}
+\label{alg:frontier}
+\begin{algorithmic}[1]
+\Require code $\Phi\in\R^{d\times F}$; feature set $\mathcal I\subseteq[F]$; minimum amplitude
+  $\alpha\in(0,1]$
+\Ensure $\kappa_i(\alpha)$ and the frontier $\lceil\kappa_i(\alpha)\rceil-1$ for each
+  $i\in\mathcal I$
+\For{$i\in\mathcal I$}
+  \State solve, in variables $u,v\in\R^{F-1}_{\ge0}$ and $t\in\R$:
+  \Statex \qquad $\min\;t$ \quad s.t.\quad $\Phi_{-i}(u-v)=\phi_i$,\quad
+    $\alpha\mathbf 1^{\top}u\le t$,\quad $1+\alpha\mathbf 1^{\top}v\le t$,\quad
+    $u,v\le1/\alpha$
+  \State $\kappa_i(\alpha)\gets t^{\star}$;\quad
+    $s_i^{\max}\gets\lceil\kappa_i(\alpha)\rceil-1$
+\EndFor
+\State \Return $\{(\kappa_i(\alpha),s_i^{\max})\}_{i\in\mathcal I}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{remark}[Why splitting $z$ into two non-negative vectors loses nothing]
+\label{rem:split}
+Algorithm~\ref{alg:frontier} does not constrain $u$ and $v$ to have disjoint supports, so a
+feasible point need not have $u=z^{+}$ and $v=z^{-}$. It is still exact. If
+$u_j,v_j>0$ for some $j$, subtracting $\min(u_j,v_j)$ from both leaves $u-v$ unchanged, keeps
+feasibility, and strictly decreases both $\mathbf 1^{\top}u$ and $\mathbf 1^{\top}v$, hence does
+not increase $t$. Every optimum therefore admits a canonical split, on which the two budget
+constraints are exactly those of~\eqref{eq:kappa} and the bounds $u,v\le1/\alpha$ are exactly
+$\norm{z}_\infty\le1/\alpha$.
+\end{remark}
+
+The cost is one linear programme in $2(F-1)+1$ variables with $d$ equality constraints per
+feature, which is affordable for every feature at $d=50$ and not at $d=400$; how we choose a
+subset there, and why the resulting minimum is an upper bound, is stated in
+Section~\ref{sec:limitations}.
 
 \subsection{What the state distribution contributes}
 \label{sec:frontier-amplitudes}
