@@ -441,6 +441,14 @@ $\widehat W$ & measured mean squared off-diagonal cross-talk \\
 $\theta$ & decoding threshold (default $1/2$) \\
 $p_{\mathrm{rec}}(s)$ & probability of exact threshold recovery at sparsity $s$ \\
 $s_{95}$ & largest $s$ such that $p_{\mathrm{rec}}\ge0.95$ for \emph{every} tested $s'\le s$ \\
+$\Sigma=\Phi\Phi^{\top}$ & frame operator (invertible iff $\Phi$ has full row rank) \\
+$h_i=\phi_i^{\top}\Sigma^{-1}\phi_i$ & leverage of feature $i$; $\sum_ih_i=d$ \\
+$W_{\star}(\Phi)$ & the code's own floor: least mean-square cross-talk it admits \\
+$R_{\mathrm{geom}},R_{\mathrm{readout}}$ & $W_{\star}(\Phi)/W(F,d)$ and $W(G,\Phi)/W_{\star}(\Phi)$ \\
+$\Phi_{-i}$ & $\Phi$ with column $i$ deleted \\
+$\alpha\in(0,1]$ & smallest detectable active amplitude \\
+$\kappa_i(\alpha)$ & collision frontier of feature $i$; separable at $s$ iff $\kappa_i>s$ \\
+$\delta_i(s),\gamma_i(s)$ & distance between the two hulls, and the margin $\delta_i(s)/2$ \\
 $m,m'$ & feature counts \emph{inside imported statements}; $m'$ plays the role of $F$ \\
 \bottomrule
 \end{tabular}
