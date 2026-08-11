@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -284,8 +285,18 @@ def run_cell(task: str, loss: str, p: float, d: int, F: int, sparsities: List[in
     # (model, cfg, sparsities, seed), so the results do not depend on how many workers run it,
     # up to BLAS reduction order (see the determinism caveat in the README).
     jobs = [(m, cfg, sparsities, 100_000 + 997 * i) for i, m in enumerate(models)]
+    t_diag = time.perf_counter()
+
+    def _tick(done: int, total: int) -> None:
+        # Without this a cell is silent for its whole duration, which is how a twentyfold
+        # slowdown went unnoticed for two and a half hours.
+        el = time.perf_counter() - t_diag
+        eta = el / done * (total - done) if done else float("nan")
+        log(f"    [{name}] diagnosed {done}/{total}  elapsed {el/60:.1f} min  eta {eta/60:.1f} min")
+
     diagnoses = map_trials(diagnose, jobs, workers=workers,
-                           threads_per_worker=max(1, (os.cpu_count() or 4) // max(1, workers or 1)))
+                           threads_per_worker=max(1, (os.cpu_count() or 4) // max(1, workers or 1)),
+                           on_done=_tick)
 
     (out_dir / "weights").mkdir(parents=True, exist_ok=True)
     np.savez_compressed(
