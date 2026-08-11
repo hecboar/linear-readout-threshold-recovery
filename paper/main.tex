@@ -201,6 +201,43 @@ we state its $O(F^2d)$ cost rather than conflate the two. Proposition~\ref{prop:
 identifies what a ratio near one means under the pseudoinverse readout --- equalised leverage
 scores, a property of the code's geometry and not of its usefulness.
 
+\item \textbf{The floor of the code itself, and what an attainment ratio actually measures.}
+Theorem~\ref{thm:floor} constrains an ensemble, so a code sitting a fraction of a percent above
+it cannot be interpreted: the readout may be excellent, or the floor may be unreachable for that
+code. Theorem~\ref{thm:codefloor} removes the ambiguity in closed form --- the least cross-talk
+attainable at unit gain on feature $i$ is $1/h_i-1$, attained by the calibrated pseudoinverse ---
+and Proposition~\ref{prop:excess} attributes the gap to the code exactly, as a weighted
+dispersion of its leverage scores. This factors the usual ratio into
+$R_{\mathrm{geom}}\times R_{\mathrm{readout}}$ (Eq.~\eqref{eq:decomposition}), and the
+consequence is deflationary: the calibrated pseudoinverse has $R_{\mathrm{readout}}=1$
+identically, so an attainment ratio reported with it is a statement about the code's geometry and
+says nothing about the decoder. We report both factors.
+
+\item \textbf{A per-feature affine capacity, computable exactly.} For a \emph{given} code and a
+\emph{given} feature, Theorem~\ref{thm:frontier} gives the largest sparsity at which any affine
+probe can detect that feature, as the value $\kappa_i$ of a single linear programme:
+separability holds at every sparsity up to $s$ iff $\kappa_i>s$, and the frontier is
+$\lceil\kappa_i\rceil-1$. This is the question interpretability practice asks and the ensemble
+bounds do not answer. Written for supports of size \emph{at most} $s$, the threshold is $s$
+itself, monotonicity holds by construction, and $\kappa_i$ settles every sparsity at once.
+Proposition~\ref{prop:knapsack} shows the state law enters through one scalar only --- the
+smallest detectable amplitude --- and Remark~\ref{rem:notdistributional} declines to call that
+distribution-awareness, because two laws with the same support family give the same frontier.
+Failure comes with a finite certificate that a third party can re-check from $\Phi$ alone
+(Proposition~\ref{prop:farkas}), and success comes with a margin equal to half the distance
+between the two hulls, which is a certified noise tolerance rather than a scale
+(Proposition~\ref{prop:margin}).
+
+\item \textbf{The hierarchy is an implication, and only one way.} Sherman--Morrison makes leverage
+exactly redundancy (Lemma~\ref{lem:sm}), which bounds the affine frontier from above
+(Theorem~\ref{thm:arrow}) and yields a failure threshold with no decoder, no probe and no
+training in it: leverage below $(s-1)^2/((F-1)+(s-1)^2)$ makes affine separability at sparsity
+$s$ impossible (Corollary~\ref{cor:failthresh}). The converse is false, and
+$\Phi=[\,I_d\;I_d\,]$ refutes it: perfectly uniform leverage, hence optimal analog geometry, with
+the worst possible frontier (Proposition~\ref{prop:oneway}). So bad analog geometry implies a bad
+affine frontier while good analog geometry implies nothing --- which is what makes ``hierarchy''
+literally true here rather than a label on three separate measurements.
+
 \item \textbf{A separation between two decoding questions, under one sparse-state model.}
 Proposition~\ref{prop:uniform-energy} gives the average analog-reconstruction floor under
 uniformly random supports, so that both sides of Corollary~\ref{cor:separation} use the same
@@ -233,7 +270,7 @@ the threshold invariant and is therefore not obstructed by the same criterion.
 \subsection{Scope of claims}
 \label{sec:scope}
 
-Four caveats apply throughout, and we state them once here rather than repeating them.
+Six caveats apply throughout, and we state them once here rather than repeating them.
 
 First, Theorem~\ref{thm:floor} is a rank--trace, unit-diagonal cross-Gramian inequality
 closely related to known Welch and dual-frame Welch bounds
@@ -245,6 +282,16 @@ scale we derive for the H\"{a}nni template is a compatibility threshold certifie
 specific proof pipeline, not a universal upper bound on computation in superposition. Fourth,
 the experiments cover random codes, gradient-optimised codes and one trained toy model; none
 of them is a claim about large trained language models.
+
+Fifth, the constrained minimisation behind Theorem~\ref{thm:codefloor} is the Capon beamformer
+with the frame operator in place of a covariance, and its minimiser is the canonical dual frame
+vector rescaled; we claim no novelty in the optimisation, only in reading $h_i$ as leverage and in
+the exact attribution of Proposition~\ref{prop:excess}. Sixth, the margin of
+Proposition~\ref{prop:margin} and the dimensional ceiling of Proposition~\ref{prop:circuit} are
+stated in the exactly-$s$ parameterisation in which they were derived and verified, while the
+frontier itself is stated for at most $s$; and the finite nonlinear witness of
+Section~\ref{sec:witness} is a derivation we have not yet implemented, so no measurement in this
+paper depends on it.
 
 % ============================================================================
 \section{Background and related work}
