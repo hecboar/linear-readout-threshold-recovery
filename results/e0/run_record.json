@@ -1,0 +1,89 @@
+{
+  "experiment": "e0_benchmark",
+  "smoke": false,
+  "command": "e0_benchmark.py --device cuda",
+  "argv": [
+    "experiments/e0_benchmark.py",
+    "--device",
+    "cuda"
+  ],
+  "started_utc": "2026-08-11T15:07:18Z",
+  "config": {
+    "shapes": [
+      [
+        50,
+        100
+      ],
+      [
+        100,
+        200
+      ],
+      [
+        200,
+        400
+      ],
+      [
+        400,
+        800
+      ]
+    ],
+    "seed_batches": [
+      1,
+      5,
+      10,
+      20
+    ],
+    "steps": 5000,
+    "batch": 2048,
+    "lr": 0.001,
+    "frontier_shapes": [
+      [
+        50,
+        100
+      ],
+      [
+        100,
+        200
+      ],
+      [
+        200,
+        400
+      ]
+    ],
+    "frontier_features": 5,
+    "frontier_sparsities": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "device": "cuda",
+    "threads": 18
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39",
+    "processor": "aarch64",
+    "cpu_count": 20,
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "git_commit": "edf353c8eebf181a94fa6b1476556619027a8349",
+    "git": {
+      "commit": "edf353c8eebf181a94fa6b1476556619027a8349",
+      "branch": "phase0-reproducibility",
+      "dirty": false,
+      "dirty_files": [],
+      "dirty_file_count": 0,
+      "describe": "edf353c"
+    },
+    "env_omp_num_threads": "18",
+    "matplotlib": "3.11.0",
+    "torch": "2.13.0+cu130",
+    "torch_cuda_available": true,
+    "torch_num_threads": 18
+  },
+  "projected_training_hours": 4.070967060346286,
+  "duration_seconds": 1060.279,
+  "finished_utc": "2026-08-11T15:24:58Z",
+  "exit_status": "ok"
+}

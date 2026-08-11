@@ -1,9 +1,11 @@
 # Selected by experiments/e0_benchmark.py from measured throughput.
 # Consumed by the campaign to size its seed batches; do not hand-edit.
-device: cpu
-measured_on: Windows-11-10.0.26200-SP0
-commit: 406bbd5893a84bf00603a9f8b980cf3d985fbdb9
+device: cuda
+measured_on: Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39
+commit: edf353c8eebf181a94fa6b1476556619027a8349
 seed_batch_by_width:
-  16: 4
-  24: 4
-projected_training_hours: 9.75
+  50: 10
+  100: 5
+  200: 5
+  400: 1
+projected_training_hours: 4.07
