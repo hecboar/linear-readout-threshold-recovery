@@ -143,6 +143,22 @@ def native_distribution_profile(W_in: np.ndarray, W_out: np.ndarray, p: float, n
     reasons that have nothing to do with the code. Reported instead is per-coordinate detection
     quality at the threshold that maximises accuracy on the *training* split, evaluated on the
     held-out split.
+
+    **KNOWN DEFECT -- do not compare decoders on these numbers.** The threshold is selected by
+    accuracy, and the base rate here is `p`, around 1%. At that base rate the accuracy-optimal
+    threshold is close to "predict everything off", so each decoder is placed at whatever
+    conservative operating point its own score distribution happens to give: measured on a
+    trained `L4` model at `d=50`, the network lands at precision 1.00 with recall 0.10 (F1 0.19)
+    while an affine probe on the same representation lands at precision 0.70 with recall 0.75
+    (F1 0.73). The criterion is the same for both, so there is no asymmetry of method, but the
+    resulting F1 gap measures where each score distribution puts its accuracy optimum rather
+    than how well either decodes.
+
+    This is the same trap `select_thresholds` in :mod:`lrtr.probes` documents and avoids -- there
+    the threshold is chosen on the objective actually reported. The fix here is the same: select
+    on the reported metric. It is cheap, because this profile is recomputed from saved weights
+    without retraining. Until then, the Boolean audit is the comparison to quote.
+    See `docs/known_defects.md`.
     """
     from .interface import unit_diagonal
 
