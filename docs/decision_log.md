@@ -318,3 +318,78 @@ makes E3 provable, so E1 and E3 are one reform. Monotonicity now holds by constr
 
 **Not opened:** the `1-delta` probabilistic affine frontier, sign-rank, and any bound on hidden
 units. E5's witness extractor is authorised only as a one-day build when Stage A is under way.
+
+---
+
+## D13 — 2026-08-11 — A seed names the same code on every device
+
+**Status:** binding
+
+`scripts/check_env_gpu.py` refused to clear the DGX Spark, reporting a relative weight
+difference of 2.07 after twenty float64 steps. That was not a numerical fault: a CUDA generator
+and a CPU generator produce different streams for the same seed, so the check compared two
+different random problems and could never have passed on any accelerator. On identical inputs
+the arithmetic agrees to 0.0 exactly, measured on the machine.
+
+The false alarm concealed a real defect. `train_toy_models_batched` drew the *initialisation*
+from a device generator, so `seed 0` named a different `W_in` on GPU than on CPU. Every
+theoretical quantity in this work is a function of `W_in` — leverage, `kappa`, `R_geom` — so the
+theory and the measurement would have described different objects.
+
+**Decided.** The initialisation is always drawn on the CPU stream. On CPU the batches continue
+that same generator, so a CPU run stays byte-identical to `train_toy_model` and every committed
+result still reproduces; only the accelerator changes, and it changes to agree.
+
+**Deliberately not decided the other way.** The per-step batches stay on the compute device.
+Drawing 32M uniforms per step on the host costs about two orders of magnitude more than the
+training step it feeds, which would produce exactly the host-bound idle GPU that J0 exists to
+detect. So a run is reproducible from its seed *on the same device class*, `device` is recorded
+in every run record, and the docstring says this instead of claiming more. The `cpu_data` flag
+forces full device-independence and exists so the gate can test arithmetic in isolation.
+
+---
+
+## D14 — 2026-08-11 — The repository is venue-neutral, and internal work is separated from the release
+
+**Status:** executed for the renames; the pruning is pending approval
+
+Seven top-level paths named the target journal, and the venue is not decided until after Stage
+A. Renaming is hygiene rather than framing, so it was done now: `paper/` became
+`paper/`, and the six venue-named documents moved into `internal/` under neutral names, joined
+by the submission material that has no place in a public repository — cover letter, reviewer
+candidates, prepared rebuttals, external-review prompt.
+
+**On the earlier version.** The artefacts stay and the labels go. Preserving a superseded
+manuscript is normal practice; naming the venues it passed through, and publishing our own
+enumerated defect list, is not, and neither belongs in the scientific record. The README
+now states the substantive fact — an audit found numerical claims in the earlier appendix that
+its own published code does not reproduce — and points at `docs/decision_log.md` for the
+registered predictions, which is the part that is evidence rather than confession.
+
+**Open.** `superseded-submission/` is preserved
+intact by instruction. Either keep it as it is or exclude it from the
+public release. `internal/` must not ship; removing it costs no reproducibility, since it holds
+no code, no configuration and no results.
+
+---
+
+## D15 — 2026-08-11 — E6's demotion is executed in the manuscript
+
+**Status:** executed, closing D7
+
+D7 decided this on 2026-08-08 and the manuscript still carried both the scaling-law reading and
+the `d/(16 ln d)` reference curve. Now: the section is retitled a scalability stress test and
+opens by saying it lacks the resolution to measure a scaling law; the reference curve is gone
+from the figure, caption, prose and generated macros.
+
+The fit is *kept*, because the reason for the withdrawal is that three shapes are
+indistinguishable on four widths, and the `R^2` values are the evidence for that. It now leads
+with the non-identifiability and claims no law, neither for `d/ln d` nor against it.
+
+The abstract had to change with it. It claimed the `L4` model "reaches" the floor, which D11
+showed is a statement about leverage evenness containing nothing about the decoder — so the
+abstract was selling a result the paper had already retracted. Rewritten around the two
+criteria, the code's own floor, the per-feature affine capacity and the one-way implication. At
+250 words against a 250-word limit it cost the `O(Fd^2)` framing and the Hänni recast, both of
+which survive in the contributions. The highlights had the same defect and the scalability
+bullet is dropped, which is what demoting E6 means.

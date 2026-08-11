@@ -1118,16 +1118,21 @@ the value of one linear programme per feature.
 \begin{definition}[Affine separability of a feature]
 \label{def:affsep}
 Fix $\Phi\in\R^{d\times F}$, a feature $i$ and a sparsity $s$. Write $\mathcal A_i(s)$ for the
-set of states $\Phi b$ with $i\in\operatorname{supp}(b)$, $|\operatorname{supp}(b)|\le s$ and
-entries in $[0,1]$, and $\mathcal B_i(s)$ for the same with $i\notin\operatorname{supp}(b)$.
-Feature $i$ is \emph{affinely separable at sparsity $s$} if there exist $w\in\R^d$ and
-$\theta\in\R$ with $w^{\top}x>\theta$ for every $x\in\mathcal A_i(s)$ and $w^{\top}x<\theta$ for
-every $x\in\mathcal B_i(s)$.
+set of states $\Phi b$ with $b\in\{0,1\}^F$, $b_i=1$ and $|\operatorname{supp}(b)|\le s$, and
+$\mathcal B_i(s)$ for the same with $b_i=0$. Feature $i$ is \emph{affinely separable at sparsity
+$s$} if there exist $w\in\R^d$ and $\theta\in\R$ with $w^{\top}x>\theta$ for every
+$x\in\mathcal A_i(s)$ and $w^{\top}x<\theta$ for every $x\in\mathcal B_i(s)$.
 \end{definition}
 
-Because affine functionals separate a pair of sets exactly when they separate their convex hulls,
-separability fails precisely when the two hulls meet. That collision is what the programme below
-detects.
+The states are Boolean here, and that is not a simplification we could drop. Allowing an active
+amplitude to be any positive number makes ``$i$ is active'' an open condition, and an active
+state with $b_i\to0$ converges to an inactive one; the two hulls then touch for every code and
+every sparsity, so nothing would ever be separable. A positive floor on the active amplitude is
+what makes the question well posed, and Corollary~\ref{cor:kappa-alpha} is the graded statement
+with that floor made explicit.
+
+An affine functional separates two sets exactly when it separates their convex hulls, so the
+question is whether those two hulls meet. The programme below decides it.
 
 \begin{theorem}[The collision frontier]
 \label{thm:frontier}
@@ -1145,13 +1150,15 @@ $\lceil\kappa_i\rceil-1$.
 \end{theorem}
 
 \begin{proof}
-A collision is a pair of states $\Phi b^{+}=\Phi b^{-}$ with $b^{+},b^{-}\in[0,1]^F$,
-$i\in\operatorname{supp}(b^{+})$, $i\notin\operatorname{supp}(b^{-})$, and both support sizes at
-most $s$; taking hulls replaces the integrality of the supports by the constraint that the
-coordinate sums be at most $s$, and by Proposition~\ref{prop:knapsack} below this relaxation is
-exact. Normalising the active state so that its $i$th coordinate is $1$, write $b^{+}=e_i+u$ and
-$b^{-}=v$ with $u,v\ge0$ supported off $i$; we may take $u$ and $v$ to have disjoint supports,
-since a common component cancels from both sides and only relaxes the two sum constraints. Then
+Separability fails exactly when $\operatorname{conv}\mathcal A_i(s)$ meets
+$\operatorname{conv}\mathcal B_i(s)$. By Proposition~\ref{prop:knapsack} below, applied to the
+coordinates other than $i$ with budget $s-1$ on the active side and $s$ on the inactive side,
+those hulls are $\Phi\{e_i+u:u\in[0,1]^{F-1},\;\mathbf 1^{\top}u\le s-1\}$ and
+$\Phi\{v:v\in[0,1]^{F-1},\;\mathbf 1^{\top}v\le s\}$ respectively --- the relaxation from
+$0/1$ coordinates to the box is exact, because the polytope is integral. So a collision is a
+pair $u,v$ in those two boxes with $\Phi(e_i+u)=\Phi v$. We may take $u$ and $v$ to have
+disjoint supports, since a common component cancels from both sides and only relaxes the two sum
+constraints. Then
 $\Phi(e_i+u)=\Phi v$ reads $\Phi_{-i}(v-u)=\phi_i$, so with $z=v-u$ we have $z^{+}=v$ and
 $z^{-}=u$. The budget on the inactive state is $\sum_j v_j\le s$, that on the active state is
 $1+\sum_j u_j\le s$, and the entries lie in $[0,1]$, giving $\norm{z}_\infty\le1$. The two
