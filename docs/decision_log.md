@@ -393,3 +393,38 @@ criteria, the code's own floor, the per-feature affine capacity and the one-way 
 250 words against a 250-word limit it cost the `O(Fd^2)` framing and the Hänni recast, both of
 which survive in the contributions. The highlights had the same defect and the scalability
 bullet is dropped, which is what demoting E6 means.
+
+---
+
+## D16 — 2026-08-11 — Worker pools spawn, and long phases must report progress
+
+**Status:** binding
+
+Stage A's `d=100` cell ran for two and a half hours on work that takes nineteen minutes. Two
+separate defects, and the second is why the first went unnoticed.
+
+**The pool must spawn.** `map_trials` exports `OMP_NUM_THREADS` and *then* creates the pool, which
+only works if the child imports NumPy afterwards. `ProcessPoolExecutor` forks by default on
+Linux, and a forked child imports nothing — it inherits the parent's already-initialised OpenBLAS
+pool, sized by `_pin_threads_before_numpy` for the whole machine. Ten workers therefore ran
+eighteen BLAS threads each: about 180 threads on 20 cores, load average 133, and each worker
+progressing at roughly two cores while the rest of its threads spun. This is exactly the failure
+`_pin_threads_before_numpy` documents, in a code path that had never been exercised until `e7`
+started calling `map_trials`. Fixed by passing a spawn context. Verified rather than assumed:
+parent `OMP=18`, children `OMP=2` with three OS threads each.
+
+Spawning also avoids inheriting a CUDA context across `fork`, which is undefined for a parent
+that has already trained on the GPU. It requires every experiment script to keep its
+`if __name__ == "__main__"` guard; all eight have one, and that is now load-bearing.
+
+**A long phase must report progress.** The cell printed nothing between starting and finishing,
+so a twentyfold slowdown was invisible for two and a half hours. `map_trials` already had an
+`on_done` hook that nobody used. Every completed model now logs the count, the elapsed time and
+an ETA. The rule: no phase that can run for more than a few minutes may be silent.
+
+**Also recorded: two of my own wrong turns.** I first blamed the probe fitting's scaling, on a
+local measurement showing a 48x jump from `d=50` to `d=100`. On the Spark the same measurement is
+linear (4.4 / 9.2 / 22.0 ms per step), so the pathology was the development machine and the
+inference from it was wrong. And I estimated the campaign at 6–15 hours, then 3–4 days, from
+extrapolations of a single unfinished cell. Both were avoidable by measuring one `diagnose` on the
+target machine, which takes four minutes and settles it.
