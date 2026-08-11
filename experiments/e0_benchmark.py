@@ -80,8 +80,15 @@ class DeviceSampler:
                     capture_output=True, text=True, timeout=5)
                 if r.returncode == 0 and r.stdout.strip():
                     u, m = r.stdout.strip().splitlines()[0].split(",")
+                    # The two fields fail independently: a unified-memory part such as GB10
+                    # reports utilisation normally and "[N/A]" for memory, so parsing them
+                    # together would lose the utilisation -- which is the number J0 exists to
+                    # collect -- and leave the two lists at different lengths.
                     self.util.append(float(u))
-                    self.mem.append(float(m))
+                    try:
+                        self.mem.append(float(m))
+                    except ValueError:
+                        pass
             except Exception:
                 pass
             self._stop.wait(self.period)
@@ -105,7 +112,7 @@ class DeviceSampler:
         return {"samples": len(self.util),
                 "gpu_util_mean": float(np.mean(self.util)),
                 "gpu_util_max": float(np.max(self.util)),
-                "gpu_mem_max_mib": float(np.max(self.mem))}
+                "gpu_mem_max_mib": float(np.max(self.mem)) if self.mem else None}
 
 
 def time_training(d: int, F: int, B: int, steps: int, batch: int, device: str,
