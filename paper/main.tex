@@ -367,6 +367,38 @@ computation: small-error linear readout requires uniformly small coordinate erro
 threshold recovery only requires the aggregate interference from the active support to remain
 below a margin.
 
+The collision frontier of Section~\ref{sec:frontier} sits in this neighbourhood and we place it
+carefully, because two established literatures ask adjacent questions.
+
+The first is group testing. Recovering a sparse Boolean $b$ from $\Phi b$ is exactly
+\emph{quantitative} group testing when $\Phi$ is a real measurement matrix, and the combinatorial
+theory of superimposed, disjunct and separable codes descends from Kautz and
+Singleton~\cite{kautz1964superimposed}. That theory asks how many tests suffice to identify the
+\emph{whole} support, by \emph{any} decoder, usually for a matrix to be designed. We ask something
+weaker and more specific: for a matrix we are given, and one coordinate of it, is that coordinate's
+presence decidable by an \emph{affine} function of $\Phi b$? The gap is real in both directions.
+A matrix can be identifiable in the group-testing sense while $\kappa_i\le s$, because
+$\kappa_i\le s$ only requires a collision between \emph{convex combinations} of admissible states,
+not an exact coincidence of two integer ones. Conversely $\kappa_i>s$ certifies a linear probe
+with a margin, which identifiability alone does not supply. The restriction to affine decoders is
+not a weakness of the analysis but the object of interest, since linear probing is how features
+are read in practice.
+
+The second is the null space property. Writing $z'$ for $z$ extended by zero at coordinate $i$,
+the constraint $\Phi_{-i}z=\phi_i$ says precisely that $z'-e_i\in\ker\Phi$, so $\kappa_i$ is a
+statement about kernel vectors normalised at one coordinate --- the same geometry as the null
+space property and as the neighbourliness of randomly projected
+polytopes~\cite{donoho2005neighborliness}. Two differences matter. The null space property is
+quantified over all supports and certifies recovery by $\ell_1$ minimisation, a nonlinear decoder;
+$\kappa_i$ is per-coordinate and certifies an affine one. And the null space property is hard to
+verify, which is why the literature tests it by semidefinite
+relaxation~\cite{daspremont2011nullspace}, whereas $\kappa_i$ is the exact value of one linear
+programme --- a consequence of asking the weaker, one-coordinate question rather than of a better
+algorithm. The box $\norm{z}_\infty\le1/\alpha$, which comes from bounded activations and has no
+counterpart in the null space property, turns out to bind rarely, so for most features the
+frontier is a minimum-$\ell_1$-representation quantity and the tools of that literature apply
+directly.
+
 \subsection{Sparse autoencoders}
 
 Sparse autoencoder work scales dictionary learning to millions of
