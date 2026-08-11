@@ -477,15 +477,22 @@ uniformly random supports of size $s$ drawn from a grid $\mathcal S$; a threshol
 trial budget $T$; a confidence level $1-\alpha$.
 
 \textbf{Output:} (i) the attainment ratio $r=\widehat W/W(F,d)\ge1$ and the maximum-form ratio
-$r_{\max}$; (ii) for each $s\in\mathcal S$, the empirical $p_{\mathrm{rec}}(s)$ with a Wilson
-interval and the exact per-coordinate RMS error $\rho_{\mathrm{lin}}(s)$ of the calibrated
-linear interface; (iii) the criterion-separation witness $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$.
+$r_{\max}$, together with its factorisation $R_{\mathrm{geom}}\times R_{\mathrm{readout}}$
+against the code's own floor (Section~\ref{sec:codefloor}); (ii) for each $s\in\mathcal S$, the
+empirical $p_{\mathrm{rec}}(s)$ with a Wilson interval and the exact per-coordinate RMS error
+$\rho_{\mathrm{lin}}(s)$ of the calibrated linear interface; (iii) the criterion-separation
+witness $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$; (iv) for each feature in a chosen subset, the
+collision frontier $\kappa_i$ and hence the largest sparsity at which any affine probe can
+detect that feature (Algorithm~\ref{alg:frontier}).
 \end{problem}
 
-The output is a diagnosis, not a score to be optimised. A code with $r$ close to $1$ is
-Welch-optimal in the mean-square sense; a large $s_{95}$ with $\rho_{\mathrm{lin}}(s_{95})$
-well above $d^{-1/2}$ says the code supports support recovery in a regime where analog
-reconstruction from the same map is useless.
+The output is a diagnosis, not a score to be optimised, and the four parts answer different
+questions. A code with $r$ close to $1$ is Welch-optimal in the mean-square sense, but only
+$R_{\mathrm{readout}}$ says anything about the decoder; a large $s_{95}$ with
+$\rho_{\mathrm{lin}}(s_{95})$ well above $d^{-1/2}$ says the code supports support recovery in a
+regime where analog reconstruction from the same map is useless; and $\kappa_i$ is the only part
+that is per-feature and exact rather than aggregate and empirical, which is what makes it usable
+as a statement about an individual feature rather than about the code on average.
 
 \subsection{Algorithm 1: floor attainment}
 
