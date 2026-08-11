@@ -87,6 +87,7 @@ __all__ = [
     "robust_affine_margin_compact",
     "robust_affine_frontier",
     "verify_certificate",
+    "radon_witness",
 ]
 
 TOL = 1e-9
@@ -929,4 +930,134 @@ def robust_affine_frontier(Phi: np.ndarray, sparsity_grid: Sequence[int],
         "grid": grid,
         "rows": per_s,
         "s_aff_robust": s_robust,
+    }
+
+
+# =====================================================================================
+# G3 -- the finite nonlinear witness. Consumes the frontier's certificate.
+# =====================================================================================
+
+def _decompose_capped_box(u: np.ndarray, k: int) -> List[Dict[str, Any]]:
+    """Write `u` in `{u in [0,1]^n : 1^T u <= k}` as a convex combination of its 0/1 vertices.
+
+    The vertices are the indicators of at most `k` coordinates, so the polytope is the
+    independent-set polytope of the uniform matroid. The obvious level-set decomposition --
+    sort, then take nested top-`j` indicators -- does **not** work here, because a point with
+    `1^T u <= k` can have far more than `k` nonzeros and the wide indicators are not vertices.
+
+    Peeling does. Repeatedly take the `k` largest positive coordinates, subtract their minimum
+    from all of them, and record that indicator with that weight. Each step zeroes at least one
+    coordinate, so it terminates in at most `n` steps, and it removes `t * |S|` from `1^T u`
+    while spending weight `t`, so the total weight is about `1^T u / k <= 1`. Whatever slack is
+    left goes on the zero vector, which is also a vertex.
+
+    The weights are asserted to be convex and the reconstruction exact; nothing here is trusted
+    on the strength of the argument above.
+    """
+    u = np.array(u, dtype=np.float64)
+    n = u.size
+    if k <= 0:
+        if np.any(u > TOL):
+            raise ValueError(f"cannot decompose a nonzero point with budget k={k}")
+        return [{"support": [], "weight": 1.0}]
+
+    parts: List[Dict[str, Any]] = []
+    r = u.copy()
+    for _ in range(n + 1):
+        pos = np.flatnonzero(r > TOL)
+        if pos.size == 0:
+            break
+        S = pos[np.argsort(-r[pos])[:k]]
+        t = float(r[S].min())
+        parts.append({"support": sorted(int(j) for j in S), "weight": t})
+        r[S] -= t
+        r[np.abs(r) <= TOL] = 0.0
+    if np.any(np.abs(r) > 1e-8):
+        raise ValueError(f"peeling did not terminate; residual {np.abs(r).max():.3e}")
+
+    spent = float(sum(p["weight"] for p in parts))
+    if spent > 1.0 + 1e-8:
+        raise ValueError(f"decomposition weight {spent:.6f} exceeds one, so it is not convex")
+    if spent < 1.0 - 1e-12:
+        parts.append({"support": [], "weight": 1.0 - spent})
+
+    got = np.zeros(n)
+    for p in parts:
+        if p["support"]:
+            got[np.asarray(p["support"], dtype=int)] += p["weight"]
+    if not np.allclose(got, u, atol=1e-8):
+        raise ValueError(f"reconstruction error {np.abs(got - u).max():.3e}")
+    return parts
+
+
+def radon_witness(Phi: np.ndarray, feature_index: int, s: int,
+                  alpha: float = 1.0) -> Dict[str, Any]:
+    """Explicit states that **no** affine rule can label correctly for feature `i` at sparsity `s`.
+
+    When `kappa_i <= s` the two hulls meet, and the meeting point is a convex combination of
+    active states that equals a convex combination of inactive ones:
+
+        sum_k lambda_k x_k^+  =  sum_l mu_l x_l^- .
+
+    Any affine `f` would have to make the left side positive and the right side negative at the
+    same point, so the listed states are a finite, self-contained refutation. This is what turns
+    "a solver reports the hulls intersect somewhere among millions of states" into "these
+    explicit states cannot all be labelled by any affine rule", and the trained network can then
+    be evaluated on exactly those states.
+
+    The certificate is built from the frontier's own optimal `z`, so nothing new is solved: with
+    `u = z^-` and `v = z^+`, `Phi (e_i + u) = Phi v`, and the budgets `1 + sum u <= kappa_i <= s`
+    and `sum v <= kappa_i <= s` are what make both sides admissible at sparsity `s`. Each side is
+    then decomposed into Boolean states by :func:`_decompose_capped_box`.
+
+    **Not implemented:** the Radon/Caratheodory compression to at most `d + 2` states. The
+    witness returned is valid but may be larger than that bound, and `n_states` reports what it
+    actually is rather than what the theory permits.
+    """
+    Phi = np.ascontiguousarray(Phi, dtype=np.float64)
+    d, F = Phi.shape
+    i = int(feature_index)
+    s = int(s)
+    rec = collision_radius_atmost(Phi, i, alpha=alpha)
+    kappa = rec["rho_hat"]
+    if not np.isfinite(kappa) or kappa > s + TOL:
+        return {"feature": i, "s": s, "kappa": kappa, "status": "separable",
+                "reason": f"kappa={kappa} > s={s}, so no collision exists at this sparsity"}
+
+    z = np.asarray(rec["z"], dtype=np.float64)
+    v = np.clip(z, 0.0, None)                 # inactive side
+    u = np.clip(-z, 0.0, None)                # extra active features, beyond i itself
+    others = [j for j in range(F) if j != i]
+
+    active = _decompose_capped_box(u, s - 1)
+    inactive = _decompose_capped_box(v, s)
+
+    def lift(support: List[int], with_i: bool) -> List[int]:
+        out = [others[j] for j in support]
+        if with_i:
+            out.append(i)
+        return sorted(out)
+
+    act = [{"support": lift(p["support"], True), "weight": p["weight"]} for p in active]
+    ina = [{"support": lift(p["support"], False), "weight": p["weight"]} for p in inactive]
+
+    # Verify the identity from Phi alone, the way a third party would.
+    def combine(states: List[Dict[str, Any]]) -> np.ndarray:
+        acc = np.zeros(d)
+        for st in states:
+            if st["support"]:
+                acc += st["weight"] * Phi[:, np.asarray(st["support"], dtype=int)].sum(axis=1)
+        return acc
+
+    residual = float(np.linalg.norm(combine(act) - combine(ina)))
+    sizes_ok = (all(len(st["support"]) <= s and i in st["support"] for st in act)
+                and all(len(st["support"]) <= s and i not in st["support"] for st in ina))
+    return {
+        "feature": i, "s": s, "kappa": kappa, "status": "witness",
+        "active": act, "inactive": ina,
+        "n_states": len(act) + len(ina),
+        "radon_bound": int(d + 2),
+        "residual": residual,
+        "supports_admissible": bool(sizes_ok),
+        "verified": bool(residual < 1e-6 and sizes_ok),
     }

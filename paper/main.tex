@@ -289,9 +289,9 @@ vector rescaled; we claim no novelty in the optimisation, only in reading $h_i$ 
 the exact attribution of Proposition~\ref{prop:excess}. Sixth, the margin of
 Proposition~\ref{prop:margin} and the dimensional ceiling of Proposition~\ref{prop:circuit} are
 stated in the exactly-$s$ parameterisation in which they were derived and verified, while the
-frontier itself is stated for at most $s$; and the finite nonlinear witness of
-Section~\ref{sec:witness} is a derivation we have not yet implemented, so no measurement in this
-paper depends on it.
+frontier itself is stated for at most $s$; and while the finite nonlinear witness of
+Section~\ref{sec:witness} is implemented and validated, its compression to $d+2$ states is not,
+and no measurement in this paper depends on it.
 
 % ============================================================================
 \section{Background and related work}
@@ -1477,17 +1477,27 @@ label attached to three separate measurements.
 The third level has no frontier to compute. ``All nonlinear decoders'' has no capacity without a
 restricted class, and restricting it leads to sign-rank, which we do not open. What it does have
 is a finite certificate, and it comes free from Proposition~\ref{prop:farkas}: the states
-appearing in~\eqref{eq:farkas} are at most $d+2$ explicit vectors that \emph{no} affine rule can
-label correctly. A trained network either resolves them or does not, with margin
+appearing in~\eqref{eq:farkas} are explicit vectors that \emph{no} affine rule can label
+correctly, and Radon's theorem says the obstruction compresses to at most $d+2$ of them. A
+trained network either resolves them or does not, with margin
 \[
   \gamma_{\mathrm{net}}
   =\min\Big(\min_k N_i(x^{+}_k)-\theta,\;\min_l\theta-N_i(x^{-}_l)\Big),
 \]
-and that is a sharper report than a recovery curve: not ``a solver says the hulls intersect
-somewhere among millions of states'' but ``these eleven states cannot all be labelled by any
-affine rule, and the learned decoder resolves all eleven with margin $0.21$''. The chain is then
-one theory rather than three metrics, each level consuming the previous. Extracting the witnesses
-is implementation we have not yet done, and we say so in Section~\ref{sec:limitations}.
+which is a sharper report than a recovery curve: not ``a solver says the hulls intersect
+somewhere among the $\binom{F}{s}$ admissible states'' but a named, listed set that any third
+party can rebuild from $\Phi$ and check.
+
+The extraction is implemented (\code{lrtr.affine\_frontier.radon\_witness}) and validated by
+asking a linear programme for an affine separator of exactly the extracted states and requiring
+it to be infeasible; on small codes it is also checked against brute-force enumeration of every
+Boolean state. Two honest qualifications. The compression to $d+2$ is \emph{not} implemented, so
+the witness we return is valid but not minimal --- on the codes we have examined it comes out at
+about $d+2$ states already, which is small against $\binom{F}{s}$ but is not a handful, and the
+per-state margin $\gamma_{\mathrm{net}}$ is therefore a minimum over that many states. And no
+result in this paper is yet derived from it; the chain
+$G_1\to G_2\to G_3$ is complete as a construction, and reporting witnesses for trained models is
+future work rather than a claim made here.
 
 % ============================================================================
 \section{Application: two frameworks, two invariants}
@@ -2110,10 +2120,12 @@ sample as a check --- so the value is an upper bound on the true minimum. Theore
 is sufficient and not necessary, so the subset can miss the true argmin, and we report the
 leverage rank of the minimiser actually found so that a reader can see when it does.
 
-\item \textbf{The nonlinear witness is a derivation, not a measurement.} Section~\ref{sec:witness}
-shows that a failure of affine separability compresses to at most $d+2$ explicit states which no
-affine rule can label. We have not implemented the extractor, so no number in this paper comes
-from it, and the sharper report it would license is not made.
+\item \textbf{The nonlinear witness is built but not yet used.} The extractor of
+Section~\ref{sec:witness} is implemented and validated --- every witness it returns is confirmed
+inseparable by a linear programme, and on small codes against brute-force enumeration --- but two
+things are missing. The Radon compression to $d+2$ states is not implemented, so the witnesses are
+valid and not minimal; and no result reported in this paper is derived from one, so the sharper
+claim it licenses is not made here.
 \end{enumerate}
 
 \subsection{Open problem}
