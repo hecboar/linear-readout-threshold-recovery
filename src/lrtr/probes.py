@@ -110,9 +110,16 @@ def _fit_margin_family(X: np.ndarray, split: StateSplit, grid: Sequence[float], 
     Both are multi-label problems sharing one design matrix, so the weights are a single
     `(d+1, F)` array and one pass costs one `(m, F)` product. The `(n, F)` logit matrix is never
     materialised -- that is what makes `F = 800` at `n = 100 000` affordable on a CPU.
+
+    The label matrix is built **once**, before the loops. It used to be rebuilt every step, which
+    meant constructing a `StateSplit` object and a dense `(batch, F)` one-hot array inside the
+    hottest loop in the campaign -- of the order of `10^5` times per model. That was the cost
+    centre: the arithmetic here is tiny, and what dominated was Python-level allocation. Indexing
+    a precomputed `Y` gives exactly the same batches, because the random stream is untouched.
     """
     n, p = X.shape
     F = split.F
+    Y = one_hot_targets(split)
     rng = np.random.default_rng(seed)
     out: Dict[float, np.ndarray] = {}
     for lam in grid:
@@ -121,8 +128,7 @@ def _fit_margin_family(X: np.ndarray, split: StateSplit, grid: Sequence[float], 
         for t in range(steps):
             idx = rng.integers(0, n, size=min(batch, n))
             Xb = X[idx]
-            sub = StateSplit(supports=split.supports[idx], sparsity=split.sparsity[idx], F=F)
-            Yb = one_hot_targets(sub)
+            Yb = Y[idx]
             Zb = Xb @ W
             if kind == "logistic":
                 # Stable sigmoid: exp(-|z|) cannot overflow, unlike exp(-z) for very negative z.
@@ -234,7 +240,8 @@ def _val_curve(W_in: np.ndarray, val_by_s: Dict[int, StateSplit], W: np.ndarray,
 def select_probe(W_in: np.ndarray, train: StateSplit, val: StateSplit, family: str,
                  representation: str, policy: str, grid: Sequence[float] = DEFAULT_RIDGE_GRID,
                  theta_fixed: float = 0.5, val_by_s: Optional[Dict[int, StateSplit]] = None,
-                 objective: str = "curve_auc", **fit_kw) -> Dict[str, Any]:
+                 objective: str = "curve_auc",
+                 fits: Optional[Dict[float, np.ndarray]] = None, **fit_kw) -> Dict[str, Any]:
     """Fit over the grid, pick the penalty and thresholds on validation, return the winner.
 
     ``objective`` decides what "best on validation" means, and it must match what is reported or
@@ -245,12 +252,18 @@ def select_probe(W_in: np.ndarray, train: StateSplit, val: StateSplit, family: s
     per-sparsity validation recovery curve, which is the co-primary estimand of the analysis
     plan. ``mixture_exact`` is retained for comparison and needs no per-sparsity validation
     split.
+
+    ``fits`` lets a caller supply the fitted weights instead of having them refitted here. The
+    fit depends on ``(family, representation, train, penalty)`` and **not** on ``policy``, which
+    only chooses thresholds from validation scores afterwards, so a caller sweeping policies can
+    fit once and pass the result in. :func:`probe_profile` does exactly that.
     """
     if objective not in SELECTION_OBJECTIVES:
         raise ValueError(f"unknown objective {objective!r}; use one of {SELECTION_OBJECTIVES}")
     if objective == "curve_auc" and not val_by_s:
         objective = "mixture_exact"          # no per-sparsity validation available
-    fits = fit_probe(W_in, train, family, representation, grid=grid, **fit_kw)
+    if fits is None:
+        fits = fit_probe(W_in, train, family, representation, grid=grid, **fit_kw)
     best: Optional[Dict[str, Any]] = None
     for lam, W in fits.items():
         Z = score_probe(W_in, val, W, representation)
@@ -412,11 +425,23 @@ def probe_profile(W_in: np.ndarray, bundle: SplitBundle,
 
     for fam in families:
         for rep in reps:
+            # The weights depend on (family, representation, split, penalty) and not on the
+            # threshold policy, so they are fitted once here and reused across policies. Fitting
+            # inside the policy loop repeated every fit three times identically, which on the
+            # margin families is the dominant cost of the whole campaign.
+            global_fits = fit_probe(W_in, bundle.train, fam, rep, grid=grid, **fit_kw)
+            oracle_fits: Dict[int, Dict[float, np.ndarray]] = {}
+            if include_oracle:
+                for s in bundle.sparsities:
+                    tr = bundle.train_by_s[s]
+                    if len(tr) and len(bundle.val_by_s[s]) and len(bundle.test_by_s[s]):
+                        oracle_fits[s] = fit_probe(W_in, tr, fam, rep, grid=grid, **fit_kw)
             for pol in policies:
                 key = f"{fam}_{rep}_{pol}"
                 sel = select_probe(W_in, bundle.train, bundle.val, fam, rep, pol,
                                    grid=grid, theta_fixed=theta_fixed,
-                                   val_by_s=bundle.val_by_s, objective=objective, **fit_kw)
+                                   val_by_s=bundle.val_by_s, objective=objective,
+                                   fits=global_fits, **fit_kw)
                 ev = evaluate_probe(W_in, bundle.test_by_s, sel["W"], rep, sel["theta"],
                                     calibrated=(fam == "logistic"))
                 # The tail interval is fixed from validation, before the test rows are read.
@@ -453,7 +478,7 @@ def probe_profile(W_in: np.ndarray, bundle: SplitBundle,
                         continue
                     o = select_probe(W_in, tr, va, fam, rep, pol, grid=grid,
                                      theta_fixed=theta_fixed, objective="mixture_exact",
-                                     **fit_kw)
+                                     fits=oracle_fits[s], **fit_kw)
                     ev_s = evaluate_probe(W_in, {s: te}, o["W"], rep, o["theta"],
                                           calibrated=(fam == "logistic"))
                     r = ev_s["rows"][0]

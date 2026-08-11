@@ -26,12 +26,13 @@ configuration works anywhere.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
-from _common import RunRecord, base_parser, log, prepare, write_json
+from _common import RunRecord, base_parser, log, map_trials, prepare, write_json
 
 from lrtr.affine_frontier import (
     affine_failure_threshold,
@@ -259,7 +260,7 @@ def cell_name(task: str, loss: str, p: float, d: int) -> str:
 
 def run_cell(task: str, loss: str, p: float, d: int, F: int, sparsities: List[int],
              cfg: Dict[str, Any], device: str, out_dir: Path,
-             resume: bool) -> List[Dict[str, Any]]:
+             resume: bool, workers: Optional[int] = None) -> List[Dict[str, Any]]:
     name = cell_name(task, loss, p, d)
     ckpt = out_dir / "raw" / f"cell_{name}.json"
     if resume and ckpt.exists():
@@ -277,7 +278,14 @@ def run_cell(task: str, loss: str, p: float, d: int, F: int, sparsities: List[in
             batch=cfg["batch"], lr=cfg["lr"], task=task, device=device,
             log_every=max(1, cfg["steps"] // 5))
 
-    diagnoses = [diagnose(m, cfg, sparsities, seed=100_000 + 997 * i) for i, m in enumerate(models)]
+    # The seeds are independent models, so their diagnoses are embarrassingly parallel. This is
+    # the campaign's dominant cost -- the diagnosis, not the training -- and running it in one
+    # process left nineteen of twenty cores idle. Each job is a pure function of
+    # (model, cfg, sparsities, seed), so the results do not depend on how many workers run it,
+    # up to BLAS reduction order (see the determinism caveat in the README).
+    jobs = [(m, cfg, sparsities, 100_000 + 997 * i) for i, m in enumerate(models)]
+    diagnoses = map_trials(diagnose, jobs, workers=workers,
+                           threads_per_worker=max(1, (os.cpu_count() or 4) // max(1, workers or 1)))
 
     (out_dir / "weights").mkdir(parents=True, exist_ok=True)
     np.savez_compressed(
@@ -581,7 +589,8 @@ def main() -> None:
             for task, loss, p, d, F, n_seeds in cells:
                 sparsities = list(range(1, int(s_max_by_d[str(d)]) + 1))
                 got = run_cell(task, loss, p, d, F, sparsities,
-                               {**cfg, "n_seeds": n_seeds}, device, out_dir, bool(args.resume))
+                               {**cfg, "n_seeds": n_seeds}, device, out_dir, bool(args.resume),
+                               workers=args.workers)
                 diags.extend(got)
                 s95m = [x["s95"]["model"] for x in got]
                 s95p = [max(v for k, v in x["s95"].items() if k.startswith("probe_"))

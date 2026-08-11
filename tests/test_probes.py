@@ -315,3 +315,43 @@ def test_selection_objective_is_recorded_and_switchable(model, bundle):
     with pytest.raises(ValueError, match="unknown objective"):
         select_probe(model["W_in"], bundle.train, bundle.val, "ridge", "pre", "fixed",
                      objective="vibes")
+
+
+def test_the_fit_does_not_depend_on_the_threshold_policy():
+    """The invariant that lets probe_profile fit once and sweep policies.
+
+    The weights depend on (family, representation, split, penalty); the policy only picks
+    thresholds from validation scores afterwards. probe_profile relies on this to avoid refitting
+    every probe once per policy, which was three times the necessary work on the margin families
+    and dominated the campaign's wall clock. If this ever stops holding, the caching is wrong.
+    """
+    W_in = random_unit_code(10, 30, np.random.default_rng(4))
+    b = make_state_splits(F=30, sparsities=[1, 2], n_train=400, n_val=200, n_test=150, seed=5)
+    for fam in ("ridge", "logistic", "svm"):
+        ref = None
+        for pol in ("fixed", "global", "per_feature"):
+            sel = select_probe(W_in, b.train, b.val, fam, "pre", pol, grid=(1e-2, 1.0),
+                               steps=25, batch=64)
+            fits = fit_probe(W_in, b.train, fam, "pre", grid=(1e-2, 1.0), steps=25, batch=64)
+            # The selected penalty may differ by policy; the fitted weights for a given penalty
+            # must not.
+            assert sel["W"] == pytest.approx(fits[sel["penalty"]], rel=0, abs=0), (fam, pol)
+            if ref is None:
+                ref = {k: v.copy() for k, v in fits.items()}
+            else:
+                for k in ref:
+                    assert fits[k] == pytest.approx(ref[k], rel=0, abs=0), (fam, pol, k)
+
+
+def test_supplying_fits_changes_nothing():
+    """Passing precomputed fits must reproduce the refitting path exactly."""
+    W_in = random_unit_code(8, 24, np.random.default_rng(6))
+    b = make_state_splits(F=24, sparsities=[1, 2], n_train=300, n_val=150, n_test=120, seed=8)
+    kw = dict(grid=(1e-3, 1e-1), steps=20, batch=64)
+    for fam in ("ridge", "svm"):
+        a = select_probe(W_in, b.train, b.val, fam, "post", "global", **kw)
+        fits = fit_probe(W_in, b.train, fam, "post", **kw)
+        c = select_probe(W_in, b.train, b.val, fam, "post", "global", fits=fits, **kw)
+        assert a["penalty"] == c["penalty"]
+        assert a["W"] == pytest.approx(c["W"], rel=0, abs=0)
+        assert a["val_objective"] == pytest.approx(c["val_objective"], rel=0, abs=0)
