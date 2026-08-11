@@ -123,19 +123,32 @@ def train_toy_models_batched(d: int, F: int, loss_kind: str, p: float, seeds: Se
                              steps: int = 50000, batch: int = 2048, lr: float = 1e-3,
                              task: str = "relu", device: str = "cpu",
                              dtype: torch.dtype = torch.float32, log_every: int = 5000,
-                             progress: Optional[Any] = None) -> List[Dict[str, Any]]:
+                             progress: Optional[Any] = None,
+                             cpu_data: bool = False) -> List[Dict[str, Any]]:
     """Train ``len(seeds)`` independent models simultaneously as one batched computation.
 
-    Each model is *exactly* the model :func:`train_toy_model` would produce for that seed --
-    same initialisation, same per-step data, same optimiser trajectory. The only change is that
-    the ``S`` forward passes are issued as one batched matmul and the ``S`` losses are summed,
-    which leaves every per-seed gradient untouched because the seeds share no parameters. This
-    matters on an accelerator: at these widths a single model leaves the device almost idle,
-    while ``S`` of them saturate it, so the seed count stops being the thing that limits the
-    study. ``tests/test_batched_training.py`` asserts the equivalence in float64.
+    On CPU each model is *exactly* the model :func:`train_toy_model` would produce for that
+    seed -- same initialisation, same per-step data, same optimiser trajectory. The only change
+    is that the ``S`` forward passes are issued as one batched matmul and the ``S`` losses are
+    summed, which leaves every per-seed gradient untouched because the seeds share no
+    parameters. This matters on an accelerator: at these widths a single model leaves the device
+    almost idle, while ``S`` of them saturate it, so the seed count stops being the thing that
+    limits the study. ``tests/test_batched_training.py`` asserts the equivalence in float64.
 
     Every seed keeps its own generator, so adding seeds never perturbs the existing ones and a
     campaign can be extended without invalidating what has already been run.
+
+    **What a seed names on an accelerator.** CUDA generators use a different algorithm from CPU
+    ones, so the same seed gives a different stream on each. The initialisation is therefore
+    always drawn on the CPU stream and then moved: ``W_in`` is the object every theoretical
+    quantity is computed from -- leverage, the collision frontier, the geometry ratio -- so
+    "seed 0" must name the same code whether or not an accelerator was used. The per-step
+    batches are drawn on the compute device, because at these widths drawing 32M uniforms per
+    step on the host costs two orders of magnitude more than the training step it feeds. A run
+    is thus reproducible from its seed on the same device class, and ``device`` is recorded in
+    the returned record. Pass ``cpu_data=True`` to draw the batches on the CPU stream as well,
+    which makes a GPU run bit-identical to the CPU one at a large throughput cost; that is how
+    ``scripts/check_env_gpu.py`` isolates arithmetic disagreement from stream divergence.
     """
     if loss_kind not in ("L2", "L4"):
         raise ValueError(f"loss_kind must be 'L2' or 'L4', got {loss_kind!r}")
@@ -147,18 +160,25 @@ def train_toy_models_batched(d: int, F: int, loss_kind: str, p: float, seeds: Se
     dev = torch.device(device)
     S = len(seeds)
 
-    gens = [torch.Generator(device=dev).manual_seed(s) for s in seeds]
-    W_in = torch.stack([torch.randn(d, F, generator=g, dtype=dtype, device=dev) / np.sqrt(F)
-                        for g in gens]).requires_grad_(True)
-    W_out = torch.stack([torch.randn(F, d, generator=g, dtype=dtype, device=dev) / np.sqrt(d)
-                         for g in gens]).requires_grad_(True)
+    # Always the CPU stream, so that a seed names the same initial code on every device.
+    init_gens = [torch.Generator().manual_seed(s) for s in seeds]
+    W_in = torch.stack([torch.randn(d, F, generator=g, dtype=dtype) / np.sqrt(F)
+                        for g in init_gens]).to(dev).requires_grad_(True)
+    W_out = torch.stack([torch.randn(F, d, generator=g, dtype=dtype) / np.sqrt(d)
+                         for g in init_gens]).to(dev).requires_grad_(True)
+    # On CPU the batches continue the very same stream, which is what makes a CPU run
+    # byte-identical to train_toy_model and keeps every committed result reproducible.
+    if dev.type == "cpu" or cpu_data:
+        gens = init_gens
+    else:
+        gens = [torch.Generator(device=dev).manual_seed(s) for s in seeds]
     opt = torch.optim.Adam([W_in, W_out], lr=lr)
 
     exponent = 2 if loss_kind == "L2" else 4
     history: List[List[Dict[str, float]]] = [[] for _ in seeds]
 
     for t in range(steps):
-        x = torch.stack([sample_task_batch(F, batch, p, g, dtype, dev) for g in gens])
+        x = torch.stack([sample_task_batch(F, batch, p, g, dtype) for g in gens]).to(dev)
         target = target_of(x, task)
         h = torch.relu(torch.einsum("sbf,sdf->sbd", x, W_in))
         pred = torch.einsum("sbd,sfd->sbf", h, W_out)
@@ -178,7 +198,7 @@ def train_toy_models_batched(d: int, F: int, loss_kind: str, p: float, seeds: Se
                 progress(t + 1, steps)
 
     with torch.no_grad():
-        x = torch.stack([sample_task_batch(F, 8192, p, g, dtype, dev) for g in gens])
+        x = torch.stack([sample_task_batch(F, 8192, p, g, dtype) for g in gens]).to(dev)
         target = target_of(x, task)
         h = torch.relu(torch.einsum("sbf,sdf->sbd", x, W_in))
         pred = torch.einsum("sbd,sfd->sbf", h, W_out)
