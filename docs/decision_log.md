@@ -428,3 +428,41 @@ linear (4.4 / 9.2 / 22.0 ms per step), so the pathology was the development mach
 inference from it was wrong. And I estimated the campaign at 6–15 hours, then 3–4 days, from
 extrapolations of a single unfinished cell. Both were avoidable by measuring one `diagnose` on the
 target machine, which takes four minutes and settles it.
+
+---
+
+## D17 — 2026-08-12 — Both pre-registered estimands are reported, including where they disagree
+
+**Status:** binding
+
+Stage A's two pre-registered estimands disagree at the largest width, unanimously and in opposite
+directions, on the `L4` cells:
+
+| | network wins on `s95` | network wins on recovery AUC |
+|---|---|---|
+| `d=50` | 0/20 | 0/20 |
+| `d=100` | 0/20 | 0/20 |
+| `d=200` | 0/20 | **20/20** |
+
+The recovery curves cross at about `s = 11` at `d=200`: the affine probe is better up to there and
+the network is better beyond it. The interpolated `s95` gap at that width is 7.998 against 8.292,
+not the full level the floored statistic suggests.
+
+**Decided.** Report both, and report the reversal as the finding.
+
+**Why this is not the manoeuvre D1 forbids.** D1 rules out "a new summary statistic chosen because
+it favours the network". Recovery AUC is not new: `curve_auc` is the selection objective already
+written in `configs/e7.json` and the analysis plan names it co-primary. Reporting only `s95` would
+be equally selective in the other direction, and reporting only AUC would be exactly the
+substitution D1 prohibits. D1 did not anticipate the two disagreeing; this entry resolves that
+case rather than reinterpreting D1.
+
+**What it means substantively, stated as a hypothesis and not a conclusion.** The affine probe is
+better near the 95% crossing and the network is better in the tail. If that survives scrutiny it
+is a sharper claim than either estimand alone, because it says *where* the nonlinearity earns
+anything rather than whether it does.
+
+**Process note.** The first summary of Stage A given to the principal investigator said the network
+never beats the probe in any of the 120 trained models. That was true of `s95` and false of AUC,
+and it came from reading the automated gate, which only computes `s95`. The gate reports its own
+criteria; it does not notice when they are incomplete.
