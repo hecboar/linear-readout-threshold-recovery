@@ -51,3 +51,53 @@ remaining ones measured under different criteria. It waits for Stage A to end.
 was per-feature Boolean thresholds tuned on raw accuracy, which produced "predict everything off";
 it was measured, diagnosed and fixed by selecting on the reported objective. The lesson did not
 propagate to the native path.
+
+---
+
+## KD2 — The headline comparison gave the probe a threshold-tuning advantage
+
+**Found:** 2026-08-12, while checking whether the audit packet contained enough to answer its own
+question about fairness. Not yet fixed in the reporting code.
+
+**Where:** `experiments/e7_scaled_toy.py`, the stage report. `s95(model)` comes from
+`evaluate_network(..., theta=cfg["theta"])` — a **fixed** 0.5, never tuned. `s95(best probe)` is the
+maximum over all eighteen probe configurations, two thirds of which use a validation-selected
+threshold (`global` or `per_feature`). The gate then reports "the network beats the best affine probe
+on 0% of trained models", which compares an untuned decoder against the best of a tuned family.
+
+**Corrected comparison.** Giving the network the same three policies, selected on the same validation
+split (`scripts/network_threshold_policies.py`, output in
+`results/e7/derived/network_threshold_policies.json`):
+
+| cell | policy | network | best probe | winner |
+|---|---|---|---|---|
+| L4 d=50 | fixed | 3 | 2 | network |
+| L4 d=50 | global | 3 | 4 | probe |
+| L4 d=50 | per_feature | 3 | 3 | tie |
+| L4 d=100 | fixed | 4 | 5 | probe |
+| L4 d=100 | global | 5 | 5 | tie |
+| L4 d=100 | per_feature | 5 | 5 | tie |
+| L4 d=200 | fixed | 7 | 8 | probe |
+| L4 d=200 | global | 6 | 7 | probe |
+| L4 d=200 | per_feature | 5 | 7 | probe |
+
+Network 1, tie 3, probe 5, against the gate's 0-for-120.
+
+**What it changes.** The direction of the headline survives at `d=200`, where the probe wins under
+all three policies. It does not survive at `d=50`, where the network wins the fixed-threshold
+comparison, and at `d=100` the matched-policy result is a tie under both tuned policies. So the
+finding is width-dependent: the probe's advantage grows with width. That is a sharper claim than the
+flat one, and it is the one the data supports.
+
+**Not a D1 violation.** D1 forbids introducing a new summary statistic because it favours the
+network. `s95` is unchanged, the thresholds are selected by the same routine the probes use, and all
+nine matched comparisons are reported including the five the probe wins. Equalising a treatment
+asymmetry in both directions is not the manoeuvre D1 rules out; leaving it unequalised would have
+been the mirror-image error.
+
+**Also checked and clear.** Choosing the probe *configuration* by test `s95` rather than validation
+is an optimistic bias in how the summary was computed. Quantified: selecting on validation and
+reporting the test number gives the same medians (4, 5, 8), so it does not move the result.
+
+**Fix.** Report the matched-policy matrix rather than a single gate percentage, and stop comparing an
+untuned decoder against the best of a tuned family.

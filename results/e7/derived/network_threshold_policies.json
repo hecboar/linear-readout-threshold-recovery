@@ -1,0 +1,47 @@
+[
+  {
+    "loss": "L4",
+    "d": 50,
+    "network_s95_by_policy": {
+      "fixed": 3.0,
+      "global": 3.0,
+      "per_feature": 3.0
+    }
+  },
+  {
+    "loss": "L4",
+    "d": 100,
+    "network_s95_by_policy": {
+      "fixed": 4.0,
+      "global": 5.0,
+      "per_feature": 5.0
+    }
+  },
+  {
+    "loss": "L4",
+    "d": 200,
+    "network_s95_by_policy": {
+      "fixed": 7.0,
+      "global": 6.0,
+      "per_feature": 5.0
+    }
+  },
+  {
+    "loss": "L2",
+    "d": 50,
+    "network_s95_by_policy": {
+      "fixed": 0.0,
+      "global": 0.0,
+      "per_feature": 0.0
+    }
+  },
+  {
+    "loss": "L2",
+    "d": 200,
+    "network_s95_by_policy": {
+      "fixed": 0.0,
+      "global": 0.0,
+      "per_feature": 0.0
+    }
+  }
+]
