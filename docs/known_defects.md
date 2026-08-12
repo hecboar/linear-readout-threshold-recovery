@@ -101,3 +101,48 @@ reporting the test number gives the same medians (4, 5, 8), so it does not move 
 
 **Fix.** Report the matched-policy matrix rather than a single gate percentage, and stop comparing an
 untuned decoder against the best of a tuned family.
+
+---
+
+## KD3 — Two theorems are false as stated, and one proposition draws the wrong conclusion
+
+**Found:** 2026-08-12 by external adversarial audit, verified independently against the
+implementation. Full record with counterexamples in `docs/external_audit_2026_08_12.md`.
+
+`thm:arrow` and `cor:failthresh` are stated for all `h_i < 1` while their shared proof only
+establishes them for `h_i <= 1/2`; explicit unit-norm counterexamples at `d=2, F=3` give
+`kappa = inf` against finite bounds. `prop:oneway` concludes that `kappa_i = 1` leaves a feature
+separable at `s = 1`, when `thm:frontier` requires `kappa_i > s` and the correct answer is 0.
+`thm:codefloor` claims the row-wise optimum coincides with the algebraic pseudoinverse; it is the
+gain-calibrated one, `D_h^{-1} Phi^+`.
+
+**Not affected:** every measurement. `e3_bound_respected` applies the corollary at `h.min()` only,
+and the largest `h_min` across all 180 Stage A models is 0.4885, inside the valid region. The tests
+that reported no violations sampled only that region, which is why they passed — a test gap, not a
+false test.
+
+**Fix.** Add the `h_i <= 1/2` hypothesis, define `kappa_i = +infinity` when the LP is infeasible and
+handle it in the frontier statement, correct `prop:oneway` to "separable at no positive sparsity",
+delete the pseudoinverse clause, and add the counterexamples as regression tests so the gap that let
+this through is closed.
+
+---
+
+## KD4 — The probe-versus-network headline compares different decoder inputs
+
+**Found:** 2026-08-12, same audit, verified per seed.
+
+The network reads `ReLU(Phi b)`. Two thirds of the probe configurations read the pre-ReLU state
+`Phi b`, which the ReLU has not truncated, and "best probe" maximises over both. Holding the decoder
+input fixed to the post-ReLU state and matching threshold policies gives **network 2, tie 5,
+probe 2** across the nine comparisons, against KD2's 1/3/5 and the gate's 0-for-120.
+
+**What it changes.** The claim "an affine probe beats the network" is not supported once the input is
+held fixed. A different claim is: the information is more affinely accessible before the ReLU than
+after it. That is a statement about what the nonlinearity discards, and it needs its own framing
+rather than being folded into a decoder comparison.
+
+**Related.** `theta = 0.5` is not a common scale across ridge, logistic and squared-hinge outputs, so
+E7's "same handicap" phrasing is wrong: `ridge_*_fixed` reaches `s95 = 0` at two widths, which is a
+scale artefact. The matched policy should be the validation-selected global threshold, which adds one
+calibration parameter to each decoder.
