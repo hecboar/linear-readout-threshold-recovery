@@ -513,9 +513,15 @@ def write_stage_report(rep: Dict[str, Any], out_dir: Path) -> Path:
          "|---|---|---|---|---|---|---|---|"]
     for d, row in rep["per_width"].items():
         for kind, v in row.items():
-            L.append(f"| {d} | {kind} | {v['n']} | {f(v['s95_model'], 1)} | "
+            # The untrained control has no network, so its "model" column is not a measurement of
+            # anything. Printing 0.0 there invites it to be read as a decoder that failed, and the
+            # external audit read it exactly that way. It is n/a.
+            s95_model = "n/a" if kind == "random" else f(v["s95_model"], 1)
+            r_readout = ("1 by construction" if kind == "random"
+                         else f(v["R_readout_wout"]))
+            L.append(f"| {d} | {kind} | {v['n']} | {s95_model} | "
                      f"{f(v['s95_best_probe'], 1)} | {f(v['R_geom'], 3)} | "
-                     f"{f(v['R_readout_wout'])} | {f(v['kappa_min'], 2)} |")
+                     f"{r_readout} | {f(v['kappa_min'], 2)} |")
     frac = (rep["network_beats_best_probe_fraction"] or 0.0) * 100.0
     L += ["", "## Gates", "",
           f"- the network beats the best affine probe on **{frac:.0f}%** of trained models",

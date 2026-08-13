@@ -248,17 +248,24 @@ distribution. The separation is between reconstructing values and identifying th
 is not a claim that nonlinearity is required, and the thresholded linear readout is measured
 throughout as the appropriate control.
 
-\item \textbf{Validation on learned codes and a trained network.} Codes optimised under the
-unit-diagonal constraint converge to the floor, and the tied variant converges to a unit-norm
-tight frame. In a trained toy model of computation in superposition, the $L^4$ solution comes
-within a few parts in a thousand of the floor under the pseudoinverse readout --- which by
-Proposition~\ref{prop:leverage} says its features carry near-equal leverage --- and its
-thresholded output keeps recovering supports past the sparsity at which the thresholded linear
-readouts of its own code stop doing so. Below that crossover the best linear readout is the
-stronger decoder, and it wins on the $s_{95}$ statistic. The $L^2$ solution is shown by direct
-measurement to maintain an effectively linear
-interface, an independent and quantitative corroboration of the reading
-in~\cite{bhagat2026cc}.
+\item \textbf{The trained network does not out-decode an affine probe of its own representation.}
+Across 120 trained models at three widths, with the probe restricted to the same post-ReLU state the
+network's output layer reads and both decoders given one validation-selected threshold, the two tie
+on $s_{95}$ in 119 of 120 (Section~\ref{sec:res-primary}). This outcome was registered before the
+runs, and it is reported as the finding rather than replaced by a statistic that reverses it. What
+does separate is the \emph{stage}: the pre-ReLU representation is more affinely decodable than the
+post-ReLU one in every cell, so the gap earlier work reads as a nonlinear advantage is a statement
+about what the ReLU discards.
+
+\item \textbf{The loss decides the interface, and the geometry is mostly not learned.} An $L^2$
+objective destroys the interface --- leverage dispersion drives $R_{\mathrm{geom}}$ into the tens and
+rising with width, while an untrained random code stays at $1.0$, and the collision frontier
+collapses to $1$, meaning some feature is not separable even at $s=1$. An $L^4$ objective
+does not. But an untrained random code already reaches $R_{\mathrm{geom}}\approx1.01$ and comes
+within one to two sparsity levels of the $L^4$ frontier, so near-floor geometry is generic at this
+load and is not evidence of learned structure. The $L^2$ solution is also shown by direct
+measurement to maintain an effectively linear interface, an independent and quantitative
+corroboration of the reading in~\cite{bhagat2026cc}.
 
 \item \textbf{Application to computation in superposition.} Matching the floor against the
 published tolerance of the H\"{a}nni correction layer gives a $d^{3/2}$ compatibility scale
@@ -1981,6 +1988,153 @@ leverage score, with no decoder and no probe in the argument. The corollary is a
 minimum leverage, which is where it is strongest and, being below a half, also where its
 hypothesis holds. Whether that prediction survives at other widths is the
 question Section~\ref{sec:limitations} flags as open.
+
+\subsection{E7: the network against an affine probe of its own representation}
+\label{sec:res-primary}
+
+The experiments above compare the network's thresholded output against \emph{fixed} readouts of its
+code. That understates the baseline, and the audit that prompted this campaign said so. This section
+replaces it: 180 models at $d\in\{50,100,200\}$ with $F=2d$, 20 seeds per cell, three code families
+($L^4$, $L^2$, and an untrained random code), and an affine probe fitted over three families, two
+representations, three threshold policies and a six-point regularisation grid, all selected on
+validation with the test split opened once. \code{tests/test\_probes.py} poisons the test set and
+asserts that no selected hyperparameter moves, so leakage is excluded structurally rather than by
+inspection.
+
+\paragraph{Splits, and where they cannot be disjoint.} Train, validation and test draw
+\emph{disjoint supports}, which is a stronger guarantee than disjoint states and is what makes a
+fitted probe's test score meaningful. It cannot hold unconditionally: at $s=1$ there are only $F$
+supports in total --- 100, 200 and 400 at the three widths --- against the thousands of states each
+split requests. The sampler therefore serves the test split first, caps the smallest sparsities at
+what the space contains, and distributes the remainder proportionally; it records which sparsities
+were exhausted and how many draws were rejected, and it raises rather than silently returning an
+empty split. At $F=100$ the $s=1$ test set holds 50 states, not 4096, and the sparsities $s\in\{1,2\}$
+are flagged exhausted. Every per-sparsity rate at those sparsities is therefore computed on fewer
+states than the nominal budget, and its Wilson interval is correspondingly wider.
+
+\paragraph{The comparison has to be matched, and matching it changes the answer.}
+A first pass compared the network at a fixed $\theta=1/2$ against the best of all eighteen probe
+configurations. That stacks three advantages on the probe: two thirds of the configurations tune
+their threshold on validation while the network does not; two thirds read the \emph{pre}-ReLU state
+$\Phi b$ while the network's output layer reads $\mathrm{ReLU}(\Phi b)$; and $\theta=1/2$ is not on a
+common scale across a ridge prediction, a logistic probability and a hinge margin. Removing all
+three --- probe restricted to the post-ReLU state, one validation-selected global threshold for each
+side, differences paired within seed --- gives Table~\ref{tab:primary}.
+
+\begin{table}[t]
+\centering
+\caption{E7: network minus best post-ReLU affine probe, $s_{95}$, paired within seed with a
+bootstrap interval over the 20 models of each cell. Both decoders read the same state and each gets
+one validation-selected global threshold.}
+\label{tab:primary}
+\small
+\begin{tabular}{llccc}
+\toprule
+loss & $d$ & mean difference & 95\% interval & ties / probe wins \\
+\midrule
+$L^4$ & 50  & \PrimLfourFiftyPostDiff      & [\PrimLfourFiftyPostCiLow, \PrimLfourFiftyPostCiHigh]           & \PrimLfourFiftyPostTies\ / \PrimLfourFiftyPostProbeWins \\
+$L^4$ & 100 & \PrimLfourHundredPostDiff    & [\PrimLfourHundredPostCiLow, \PrimLfourHundredPostCiHigh]       & \PrimLfourHundredPostTies\ / \PrimLfourHundredPostProbeWins \\
+$L^4$ & 200 & \PrimLfourTwoHundredPostDiff & [\PrimLfourTwoHundredPostCiLow, \PrimLfourTwoHundredPostCiHigh] & \PrimLfourTwoHundredPostTies\ / \PrimLfourTwoHundredPostProbeWins \\
+$L^2$ & 50  & \PrimLtwoFiftyPostDiff       & [\PrimLtwoFiftyPostCiLow, \PrimLtwoFiftyPostCiHigh]             & \PrimLtwoFiftyPostTies\ / \PrimLtwoFiftyPostProbeWins \\
+$L^2$ & 100 & \PrimLtwoHundredPostDiff     & [\PrimLtwoHundredPostCiLow, \PrimLtwoHundredPostCiHigh]         & \PrimLtwoHundredPostTies\ / \PrimLtwoHundredPostProbeWins \\
+$L^2$ & 200 & \PrimLtwoTwoHundredPostDiff  & [\PrimLtwoTwoHundredPostCiLow, \PrimLtwoTwoHundredPostCiHigh]   & \PrimLtwoTwoHundredPostTies\ / \PrimLtwoTwoHundredPostProbeWins \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The two tie in 119 of the 120 trained models. This is the outcome registered before the campaign
+ran, in the words it was registered in: a properly trained, validation-selected affine decoder
+\emph{matches} the network, and we report that rather than looking for a statistic that reverses it.
+
+\paragraph{What does separate is the stage, not the decoder.} Restoring the pre-ReLU probe recovers a
+gap, and it is a gap between representations rather than between decoders: at $d=50$ the pre-ReLU
+probe leads the network by \PrimLfourFiftyPreDiff{} of a sparsity level on all
+\PrimLfourFiftyPreProbeWins{} seeds, and at $d=200$ by \PrimLfourTwoHundredPreDiff{}. The
+preactivation is more affinely decodable than the state the ReLU leaves behind. Read as a decoder
+comparison this looks like a nonlinear disadvantage; read correctly it says what the nonlinearity
+discards, and the network is not entitled to the information it destroys.
+
+\paragraph{The loss decides the interface.} The three code families separate cleanly and by a wide
+margin, at every width:
+
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+& $d=50$ & $d=100$ & $d=200$ \\
+\midrule
+$R_{\mathrm{geom}}$, $L^4$ & \SALfourFiftyRgeom & \SALfourHundredRgeom & \SALfourTwoHundredRgeom \\
+$R_{\mathrm{geom}}$, $L^2$ & \SALtwoFiftyRgeom & \SALtwoHundredRgeom & \SALtwoTwoHundredRgeom \\
+$R_{\mathrm{geom}}$, random & \SARandFiftyRgeom & \SARandHundredRgeom & \SARandTwoHundredRgeom \\
+\midrule
+$\kappa_{\min}$, $L^4$ & \FullLfourFiftyKappaMin & \FullLfourHundredKappaMin & \FullLfourTwoHundredKappaMin \\
+$\kappa_{\min}$, $L^2$ & \FullLtwoFiftyKappaMin & \FullLtwoHundredKappaMin & \FullLtwoTwoHundredKappaMin \\
+$\kappa_{\min}$, random & \FullRandFiftyKappaMin & \FullRandHundredKappaMin & \FullRandTwoHundredKappaMin \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+$L^2$ drives $R_{\mathrm{geom}}$ into the tens and rising with width, and its frontier collapses to
+$1$ --- by Theorem~\ref{thm:frontier} some feature is not separable even at $s=1$, which for
+singleton states means two features share a representation. The mechanism is a spread of column
+norms: a feature whose direction is a fraction of a typical length lies inside the convex hull of
+the others, and no duplicate is needed. $L^4$ does not do this, and its
+$R_{\mathrm{readout}}$ of \SALfourFiftyRreadout{} says its own output layer is near-optimal for the
+code it built.
+
+\paragraph{But near-floor geometry is generic.} The untrained random code reaches
+$R_{\mathrm{geom}}=\SARandFiftyRgeom{}$ at $d=50$ and its frontier is
+\FullRandTwoHundredKappaMin{} at $d=200$, against $L^4$'s \FullLfourTwoHundredKappaMin{}. So the
+distance from the rank--trace floor, which earlier work reads as a signature of learned structure,
+is what an i.i.d.\ code gives for free at this load; the trained code is better, by one to two
+sparsity levels, and that margin is the honest size of the effect.
+
+\paragraph{And the margin comes from the code, not the readout.} The random control differs from a
+trained model in two ways at once --- its code is not trained \emph{and} its readout is
+$\Phi^{+}$ rather than learned --- so it cannot say which half matters. E8 separates them with three
+arms on an identical budget, \EeightSeeds{} seeds each: both trained; a random code held
+\emph{frozen} with only $W_{\mathrm{out}}$ trainable; and neither trained.
+
+\begin{center}\small
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{3}{c}{$d=50$} & \multicolumn{3}{c}{$d=100$} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+arm & $R_{\mathrm{geom}}$ & $\kappa_{\min}$ & $R_{\mathrm{readout}}$
+    & $R_{\mathrm{geom}}$ & $\kappa_{\min}$ & $R_{\mathrm{readout}}$ \\
+\midrule
+both trained & \EeightTrainedFiftyRgeom & \EeightTrainedFiftyKappa & \EeightTrainedFiftyRreadout
+             & \EeightTrainedHundredRgeom & \EeightTrainedHundredKappa & \EeightTrainedHundredRreadout \\
+frozen code  & \EeightFrozenFiftyRgeom & \EeightFrozenFiftyKappa & \EeightFrozenFiftyRreadout
+             & \EeightFrozenHundredRgeom & \EeightFrozenHundredKappa & \EeightFrozenHundredRreadout \\
+neither      & \EeightRandomFiftyRgeom & \EeightRandomFiftyKappa & \EeightRandomFiftyRreadout
+             & \EeightRandomHundredRgeom & \EeightRandomHundredKappa & \EeightRandomHundredRreadout \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Training the readout alone leaves the frontier where an untrained code puts it:
+\EeightFrozenHundredKappa{} against \EeightRandomHundredKappa{} at $d=100$, while training both
+reaches \EeightTrainedHundredKappa{}. The gain is entirely in $\Phi$. That is unsurprising for
+$\kappa$, which is a function of the code alone --- the frozen and untrained rows must agree up to
+the column normalisation that distinguishes them, and their agreement is a consistency check rather
+than a result --- but it is the point: whatever the training buys for support recovery, it buys by
+moving the code.
+
+The readout column is the surprise. The frozen arm trained $W_{\mathrm{out}}$ for the full budget and
+ended at $R_{\mathrm{readout}}=\EeightFrozenHundredRreadout{}$, nearly twice the cross-talk of the
+best readout \emph{of the code it was given}, while the jointly trained arm reaches
+\EeightTrainedHundredRreadout{}. Gradient descent finds a good decoder only when it may also move
+the code; held to a fixed random $\Phi$, on this objective, it does not.
+
+\paragraph{The frontier is now exact.} Earlier we reported $\kappa_{\min}$ over a subset of features
+and called it an upper bound. Evaluating every feature of all 180 models shows the bound was tight:
+the subset overestimated by \FullLfourTwoHundredSubsetOver{} on average at $d=200$ and never by more
+than a tenth of a level. Its \emph{justification} is weaker than its accuracy, though. The subset was
+chosen by Theorem~\ref{thm:arrow}, and that theorem is sufficient rather than necessary: on trained
+codes it locates the true argmin in only \FullLfourTwoHundredArgminFound{} of 20 models at $d=200$,
+where the true argmin sits at leverage rank \FullLfourTwoHundredArgminRankMed{} by median, outside
+the window. On untrained codes it succeeds every time. Training pulls the lowest-leverage feature and
+the worst-frontier feature apart, and the numbers above are the exact ones.
 
 \subsection{E6: a scalability stress test, not a scaling law}
 \label{sec:res-e6}

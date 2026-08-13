@@ -371,6 +371,64 @@ def build() -> Macros:
     hi = [c for c in load("g1/g1_reanalysis.json")["cells"]
           if c["loss_kind"] == "L2" and c["p_train"] == 0.02][0]
     m.num("GoneLtwoRgeomDenseP", hi["R_geom"], 4)
+
+    # ---------------- Stage A of the accelerator campaign, and its re-analyses ----------------
+    # Only what Section 10.5 quotes. check_manuscript_numbers.py requires every generated macro to
+    # be used, which is the right constraint: it stops the file accumulating numbers nobody reads.
+    W = {50: "Fifty", 100: "Hundred", 200: "TwoHundred"}
+    LO = {"L4": "Lfour", "L2": "Ltwo", "random": "Rand"}
+    per_width = load("e7/raw/e7_stage_A.json")["report"]["per_width"]
+    for d, tag in W.items():
+        for loss, lt in LO.items():                      # the geometry table: all nine cells
+            m.num(f"SA{lt}{tag}Rgeom", per_width[str(d)][loss]["R_geom"], 4)
+    m.num("SALfourFiftyRreadout", per_width["50"]["L4"]["R_readout_wout"], 4)
+
+    prim = {(c["loss"], c["d"]): c for c in
+            load("e7/derived/primary_comparison.json")["cells"]}
+    for d, tag in W.items():
+        for loss in ("L4", "L2"):                        # the primary table: trained cells only
+            v = prim[(loss, d)]["network_minus_probe"]["post_relu"]["s95"]
+            t = f"Prim{LO[loss]}{tag}Post"
+            m.num(t + "Diff", v["mean"], 2)
+            m.num(t + "CiLow", v["ci_low"], 2)
+            m.num(t + "CiHigh", v["ci_high"], 2)
+            m.integer(t + "Ties", v["n_zero"])
+            m.integer(t + "ProbeWins", v["n_negative"])
+    pre50 = prim[("L4", 50)]["network_minus_probe"]["pre_relu"]["s95"]
+    pre200 = prim[("L4", 200)]["network_minus_probe"]["pre_relu"]["s95"]
+    m.num("PrimLfourFiftyPreDiff", pre50["mean"], 2)
+    m.integer("PrimLfourFiftyPreProbeWins", pre50["n_negative"])
+    m.num("PrimLfourTwoHundredPreDiff", pre200["mean"], 2)
+
+    full = {(c["loss"], c["d"]): c for c in
+            load("e7/derived/all_feature_frontier.json")["cells"]}
+    for d, tag in W.items():
+        for loss, lt in LO.items():                      # the frontier table: all nine cells
+            m.num(f"Full{lt}{tag}KappaMin", full[(loss, d)]["kappa_min_full_mean"], 4)
+    hi200 = full[("L4", 200)]
+    m.num("FullLfourTwoHundredSubsetOver", hi200["subset_overestimate_mean"], 4)
+    m.integer("FullLfourTwoHundredArgminFound", hi200["models_where_subset_found_the_argmin"])
+    m.integer("FullLfourTwoHundredArgminRankMed",
+              int(hi200["leverage_rank_of_true_argmin_median"]))
+
+    # ---------------- E8: which half of the training does the work ----------------
+    import collections
+
+    e8 = collections.defaultdict(list)
+    for r in load("e8/raw/e8_runs.json")["runs"]:
+        e8[(r["arm"], r["d"])].append(r)
+    ARM = {"trained": "Trained", "frozen": "Frozen", "random": "Random"}
+    for (arm, dd), rs in e8.items():
+        if dd not in W:
+            continue
+        t = f"Eeight{ARM[arm]}{W[dd]}"
+        m.num(t + "Rgeom", float(np.mean([x["theory"]["analog"]["R_geom"] for x in rs])), 4)
+        m.num(t + "Kappa", float(np.mean([x["theory"]["affine"]["kappa_min"] for x in rs])), 3)
+        ro = [x["theory"]["analog"]["R_readout"].get("wout") for x in rs]
+        ro = [v for v in ro if v is not None]
+        if ro:
+            m.num(t + "Rreadout", float(np.mean(ro)), 4)
+    m.integer("EeightSeeds", len(e8[("trained", 50)]))
     return m
 
 

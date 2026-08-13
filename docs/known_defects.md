@@ -162,3 +162,24 @@ rather than being folded into a decoder comparison.
 E7's "same handicap" phrasing is wrong: `ridge_*_fixed` reaches `s95 = 0` at two widths, which is a
 scale artefact. The matched policy should be the validation-selected global threshold, which adds one
 calibration parameter to each decoder.
+
+
+---
+
+## KD5 — Presentation defects the audit named, now fixed
+
+**Status: FIXED** 2026-08-12.
+
+The untrained control's `s95(model)` printed as `0.0` in the stage report, and the audit read it as a
+decoder that failed. There is no network in that arm, so the column is not a measurement; it now
+prints `n/a`, and its `R_readout` prints "1 by construction" rather than `1.0000`, since the baseline
+sets its own decoder to `pinv(Phi)`. The gate was already computed over `loss_kind != "random"`, so
+no number was ever contaminated -- this was a reading hazard, not an arithmetic one.
+
+The manuscript asserted "enforced-disjoint supports" without saying that it cannot hold at the
+smallest sparsities: at `s = 1` only `F` supports exist, against thousands of requested states.
+Section 10.5 now states what the sampler does -- test split served first, smallest sparsities capped
+at what the space contains, remainder distributed proportionally, exhausted sparsities and rejected
+draws recorded, an empty split raised rather than returned -- and gives the measured consequence,
+that the `s = 1` test set holds 50 states at `F = 100` and that `s` in `{1, 2}` are flagged
+exhausted, so their intervals are wider than the nominal budget implies.
