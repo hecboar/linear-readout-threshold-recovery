@@ -1,0 +1,122 @@
+{
+  "tasks": [
+    "relu"
+  ],
+  "steps": 50000,
+  "batch": 2048,
+  "lr": 0.001,
+  "theta": 0.5,
+  "eval_s_max": {
+    "50": 10,
+    "100": 14,
+    "200": 20,
+    "400": 28
+  },
+  "n_fit": 8192,
+  "probe_n_train": 8192,
+  "probe_n_test": 4096,
+  "native_n_train": 8192,
+  "native_n_test": 4096,
+  "probe_n_val": 4096,
+  "probe_steps": 300,
+  "probe_batch": 4096,
+  "include_oracle": false,
+  "frontier_n_low": 24,
+  "frontier_n_random": 8,
+  "frontier_alpha": 1.0,
+  "_note": "Stage B, re-scoped. The original design tested robustness of a nonlinear advantage; the matched comparison in Stage A returned a tie, so that framing is dead. These are the cells that test claims which are still live. include_oracle is off: the per-sparsity oracle probes are an upper envelope that feeds no number in the paper (verified: no reference in primary_comparison.py, native_comparison.py, all_feature_frontier.py or main.tex), and measured at d=200 with 20 sparsities they at least double the diagnosis cost.",
+  "stages": {
+    "B": {
+      "note": "feature load and training sparsity, for the two claims that survive Stage A: that near-floor geometry is generic AT THIS LOAD, and that the L2/L4 separation does not depend on training sparsity",
+      "cells": [
+        {
+          "widths": [
+            100,
+            200
+          ],
+          "overcompleteness": 4,
+          "train_sparsities": [
+            0.01
+          ],
+          "losses": [
+            "L2",
+            "L4"
+          ],
+          "n_seeds": 10
+        },
+        {
+          "widths": [
+            50,
+            200
+          ],
+          "overcompleteness": 2,
+          "train_sparsities": [
+            0.02
+          ],
+          "losses": [
+            "L2",
+            "L4"
+          ],
+          "n_seeds": 10
+        }
+      ],
+      "controls": {
+        "widths": [
+          100,
+          200
+        ],
+        "overcompleteness": 4,
+        "n_seeds": 10
+      }
+    }
+  },
+  "smoke": {
+    "tasks": [
+      "relu"
+    ],
+    "steps": 200,
+    "batch": 128,
+    "eval_s_max": {
+      "16": 2,
+      "24": 3
+    },
+    "n_fit": 200,
+    "probe_n_train": 400,
+    "probe_n_test": 150,
+    "native_n_train": 512,
+    "native_n_test": 256,
+    "probe_n_val": 200,
+    "probe_steps": 60,
+    "probe_batch": 128,
+    "frontier_n_low": 6,
+    "frontier_n_random": 2,
+    "stages": {
+      "B": {
+        "note": "smoke",
+        "cells": [
+          {
+            "widths": [
+              16
+            ],
+            "overcompleteness": 4,
+            "train_sparsities": [
+              0.05
+            ],
+            "losses": [
+              "L2"
+            ],
+            "n_seeds": 2
+          }
+        ],
+        "controls": {
+          "widths": [
+            16
+          ],
+          "overcompleteness": 4,
+          "n_seeds": 2
+        }
+      }
+    },
+    "include_oracle": false
+  }
+}
