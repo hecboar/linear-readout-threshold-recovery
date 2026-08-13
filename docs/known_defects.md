@@ -7,6 +7,18 @@ the fix is committed and verified, not when it is understood.
 
 ## KD1 — The native-distribution detection threshold is selected by accuracy
 
+**Status: FIXED** 2026-08-12 in `lrtr.distributional.native_distribution_profile`. It now selects
+on the metric being reported (`f1_selected`), keeps the old accuracy-selected point visible beside
+it rather than deleting it, and adds a **threshold-free** measure: per state, take the `k` largest
+scores where `k` is that state's own number of active coordinates, and ask how often the active set
+is recovered exactly. `scripts/native_comparison.py` recomputes it over all 180 saved models; no
+retraining was needed.
+
+The corrected numbers reverse the reading. On one `L4` model at `d=50`, F1 goes from network 0.197
+against post-ReLU probe 0.182 (both artefacts of the accuracy criterion) to network **0.422**
+against 0.398, and the threshold-free top-`k` gives network **0.851** against 0.840. The pre-ReLU
+probe leads on both (0.764 and 0.923), which is the same pre/post split the Boolean path shows.
+
 **Found:** 2026-08-12, while checking whether "the affine probe beats the network" survives on the
 network's own input distribution.
 

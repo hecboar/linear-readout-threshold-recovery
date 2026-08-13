@@ -190,18 +190,63 @@ def native_distribution_profile(W_in: np.ndarray, W_out: np.ndarray, p: float, n
                         "rms": float(np.sqrt(energy)),
                         "energy_empirical": distribution_weighted_error_ci(A, X_te)}
 
-    def detection(score_tr: np.ndarray, score_te: np.ndarray) -> Dict[str, float]:
-        grid = np.quantile(np.abs(score_tr), np.linspace(0.5, 0.999, 60))
-        acc = [float(((np.abs(score_tr) >= t) == on_tr).mean()) for t in grid]
-        t_best = float(grid[int(np.argmax(acc))])
-        pred = np.abs(score_te) >= t_best
-        tp = float((pred & on_te).sum())
-        fp = float((pred & ~on_te).sum())
-        fn = float((~pred & on_te).sum())
-        return {"threshold": t_best, "accuracy": float((pred == on_te).mean()),
+    def _at(pred: np.ndarray, truth: np.ndarray) -> Dict[str, float]:
+        tp = float((pred & truth).sum())
+        fp = float((pred & ~truth).sum())
+        fn = float((~pred & truth).sum())
+        return {"accuracy": float((pred == truth).mean()),
                 "precision": tp / (tp + fp) if tp + fp else 0.0,
                 "recall": tp / (tp + fn) if tp + fn else 0.0,
                 "f1": 2 * tp / (2 * tp + fp + fn) if tp else 0.0}
+
+    def detection(score_tr: np.ndarray, score_te: np.ndarray) -> Dict[str, Any]:
+        """Detection quality, selected on the reported metric and also without a threshold.
+
+        **This used to select on accuracy, and that was defect KD1.** The base rate here is `p`,
+        around 1%, so the accuracy-optimal threshold sits close to "predict everything off" and
+        each decoder was scored at whatever conservative operating point its own score
+        distribution happened to give. Measured that way a trained `L4` network landed at
+        precision 1.00 with recall 0.10 while an affine probe on the same representation reached
+        0.70 and 0.75 -- and the pre- and post-ReLU probes differed from each other by the same
+        factor, which is the tell that the number was measuring calibration rather than decoding.
+
+        Two things are reported now, and neither can be gamed by a threshold choice:
+
+        * `f1_selected`, the operating point chosen by maximising `F1` on the *training* draw --
+          the metric actually compared, as :func:`lrtr.probes.select_thresholds` already does for
+          the Boolean path. `accuracy_selected` is kept alongside so the old number stays visible
+          rather than vanishing.
+        * `ranking`, which needs no threshold at all: for each state take the `k` largest scores
+          where `k` is that state's own number of active coordinates, and ask how often the active
+          set is recovered exactly. This isolates whether a decoder *orders* active above inactive
+          from whether its scale happens to be calibrated.
+        """
+        grid = np.quantile(np.abs(score_tr), np.linspace(0.5, 0.999, 60))
+        by = {}
+        for name, key in (("accuracy_selected", "accuracy"), ("f1_selected", "f1")):
+            vals = [_at(np.abs(score_tr) >= t, on_tr)[key] for t in grid]
+            t_best = float(grid[int(np.argmax(vals))])
+            by[name] = {"threshold": t_best, **_at(np.abs(score_te) >= t_best, on_te)}
+
+        # Threshold-free: per-state top-k, with k the true number of active coordinates.
+        k_per_state = on_te.sum(axis=1)
+        order = np.argsort(-np.abs(score_te), axis=1)
+        exact = np.zeros(score_te.shape[0], dtype=bool)
+        hits = np.zeros(score_te.shape[0])
+        for r in range(score_te.shape[0]):
+            k = int(k_per_state[r])
+            if k == 0:
+                exact[r] = True
+                hits[r] = 1.0
+                continue
+            chosen = order[r, :k]
+            n_hit = int(on_te[r, chosen].sum())
+            hits[r] = n_hit / k
+            exact[r] = n_hit == k
+        by["ranking"] = {"topk_exact": float(exact.mean()),
+                         "topk_hit_rate": float(hits.mean()),
+                         "mean_active_per_state": float(k_per_state.mean())}
+        return by
 
     detect = {"model": detection((W_out @ np.maximum(W_in @ X_tr, 0.0)).T,
                                  (W_out @ np.maximum(W_in @ X_te, 0.0)).T)}
