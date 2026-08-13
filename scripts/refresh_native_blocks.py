@@ -62,7 +62,11 @@ def main() -> int:
             key = (loss, d, k)
             if key in exact:
                 aff = diag["theory"]["affine"]
-                aff["kappa_min_subset"] = aff["kappa_min"]
+                # Idempotent on purpose. A second run must not overwrite the subset value with the
+                # exact one it was already replaced by -- that would silently destroy the number
+                # the campaign actually computed, which is the one a reader needs to judge whether
+                # the shortcut was sound.
+                aff.setdefault("kappa_min_subset", aff["kappa_min"])
                 aff["kappa_min_exact_all_features"] = exact[key]
                 aff["kappa_min"] = exact[key]
                 aff["is_upper_bound"] = False
