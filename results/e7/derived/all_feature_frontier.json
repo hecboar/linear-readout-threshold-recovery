@@ -1,0 +1,1932 @@
+{
+  "n_low": 24,
+  "n_random": 8,
+  "cells": [
+    {
+      "loss": "L4",
+      "d": 50,
+      "n_models": 20,
+      "kappa_min_full_mean": 4.48728512418222,
+      "kappa_min_subset_mean": 4.489802394826717,
+      "subset_overestimate_mean": 0.002517270644497227,
+      "subset_overestimate_max": 0.015264227311168277,
+      "models_where_subset_found_the_argmin": 15,
+      "leverage_rank_of_true_argmin_median": 5.0,
+      "leverage_rank_of_true_argmin_max": 64,
+      "per_model": [
+        {
+          "kappa_min_full": 4.514594568175757,
+          "kappa_min_subset": 4.514594568175757,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 7,
+          "n_features": 100,
+          "n_subset": 28,
+          "leverage_of_true_argmin": 0.4894009494825285
+        },
+        {
+          "kappa_min_full": 4.5072714459363095,
+          "kappa_min_subset": 4.5072714459363095,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 3,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.48402791567568687
+        },
+        {
+          "kappa_min_full": 4.478225592918481,
+          "kappa_min_subset": 4.484154515631659,
+          "subset_overestimate": 0.005928922713178686,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 32,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.49499513050369437
+        },
+        {
+          "kappa_min_full": 4.496850055578761,
+          "kappa_min_subset": 4.496850055578761,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.48597874378863126
+        },
+        {
+          "kappa_min_full": 4.476524330141622,
+          "kappa_min_subset": 4.476524330141622,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 100,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4846485837594068
+        },
+        {
+          "kappa_min_full": 4.455465711954768,
+          "kappa_min_subset": 4.455465711954768,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 6,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.48770658898150004
+        },
+        {
+          "kappa_min_full": 4.5092776207840615,
+          "kappa_min_subset": 4.514820278808522,
+          "subset_overestimate": 0.005542658024460856,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 28,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4958056682848916
+        },
+        {
+          "kappa_min_full": 4.531231660245321,
+          "kappa_min_subset": 4.544455595343626,
+          "subset_overestimate": 0.01322393509830544,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 64,
+          "n_features": 100,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.5032325229324016
+        },
+        {
+          "kappa_min_full": 4.443534245440057,
+          "kappa_min_subset": 4.443534245440057,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 27,
+          "leverage_of_true_argmin": 0.47918613503740953
+        },
+        {
+          "kappa_min_full": 4.49757517836542,
+          "kappa_min_subset": 4.49757517836542,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 28,
+          "leverage_of_true_argmin": 0.4818831057652815
+        },
+        {
+          "kappa_min_full": 4.407840293921513,
+          "kappa_min_subset": 4.407840293921513,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.48262161448011603
+        },
+        {
+          "kappa_min_full": 4.526215804961534,
+          "kappa_min_subset": 4.541480032272703,
+          "subset_overestimate": 0.015264227311168277,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 35,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.49672342580865375
+        },
+        {
+          "kappa_min_full": 4.47338134965889,
+          "kappa_min_subset": 4.47338134965889,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.48140665654718817
+        },
+        {
+          "kappa_min_full": 4.539317244512814,
+          "kappa_min_subset": 4.539317244512814,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 19,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4919329967332414
+        },
+        {
+          "kappa_min_full": 4.479233125792993,
+          "kappa_min_subset": 4.479233125792993,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 100,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.48560723622337115
+        },
+        {
+          "kappa_min_full": 4.503777371912498,
+          "kappa_min_subset": 4.514163041655329,
+          "subset_overestimate": 0.010385669742831283,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 31,
+          "n_features": 100,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.4944858488315096
+        },
+        {
+          "kappa_min_full": 4.42783250564206,
+          "kappa_min_subset": 4.42783250564206,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.48455364730958606
+        },
+        {
+          "kappa_min_full": 4.499862770613095,
+          "kappa_min_subset": 4.499862770613095,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4871568560734948
+        },
+        {
+          "kappa_min_full": 4.487999778183918,
+          "kappa_min_subset": 4.487999778183918,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4862395684467521
+        },
+        {
+          "kappa_min_full": 4.4896918289045376,
+          "kappa_min_subset": 4.4896918289045376,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 100,
+          "n_subset": 28,
+          "leverage_of_true_argmin": 0.48615266144409536
+        }
+      ]
+    },
+    {
+      "loss": "L2",
+      "d": 50,
+      "n_models": 20,
+      "kappa_min_full_mean": 1.0000096252311437,
+      "kappa_min_subset_mean": 1.0000176489429624,
+      "subset_overestimate_mean": 8.023711818583302e-06,
+      "subset_overestimate_max": 0.00016047423637166602,
+      "models_where_subset_found_the_argmin": 19,
+      "leverage_rank_of_true_argmin_median": 6.0,
+      "leverage_rank_of_true_argmin_max": 31,
+      "per_model": [
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 6,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.01632013413635511
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 100,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.013022716816005742
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.013845404985682097
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 100,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.013363100299421905
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 9,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.014424936979995908
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 6,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.015577402659738122
+        },
+        {
+          "kappa_min_full": 1.0001925046228741,
+          "kappa_min_subset": 1.0003529788592458,
+          "subset_overestimate": 0.00016047423637166602,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 31,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.04272599792798575
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 100,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.010977257747529424
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 6,
+          "n_features": 100,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.016840271710419463
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 15,
+          "n_features": 100,
+          "n_subset": 28,
+          "leverage_of_true_argmin": 0.017575078087887924
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.01076007396821878
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.008710633900377032
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 13,
+          "n_features": 100,
+          "n_subset": 28,
+          "leverage_of_true_argmin": 0.020231158984697344
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.011562751135257824
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 9,
+          "n_features": 100,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.01588258238180452
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 12,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.019924099183765347
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 13,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.016968438545974223
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 6,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.013866493267588318
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 22,
+          "n_features": 100,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.026164082034357165
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 3,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.0115688636077062
+        }
+      ]
+    },
+    {
+      "loss": "random",
+      "d": 50,
+      "n_models": 20,
+      "kappa_min_full_mean": 3.1612470670521797,
+      "kappa_min_subset_mean": 3.1612470670521797,
+      "subset_overestimate_mean": 0.0,
+      "subset_overestimate_max": 0.0,
+      "models_where_subset_found_the_argmin": 20,
+      "leverage_rank_of_true_argmin_median": 0.0,
+      "leverage_rank_of_true_argmin_max": 10,
+      "per_model": [
+        {
+          "kappa_min_full": 3.1961623521487077,
+          "kappa_min_subset": 3.1961623521487077,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 10,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4404080097963428
+        },
+        {
+          "kappa_min_full": 3.1709960812260705,
+          "kappa_min_subset": 3.1709960812260705,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.3924039869835408
+        },
+        {
+          "kappa_min_full": 3.1371818167030368,
+          "kappa_min_subset": 3.1371818167030368,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 100,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.40465357000342106
+        },
+        {
+          "kappa_min_full": 3.249940048854342,
+          "kappa_min_subset": 3.249940048854342,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.3954938188224613
+        },
+        {
+          "kappa_min_full": 3.3140649740137684,
+          "kappa_min_subset": 3.3140649740137684,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 10,
+          "n_features": 100,
+          "n_subset": 27,
+          "leverage_of_true_argmin": 0.44784077143837403
+        },
+        {
+          "kappa_min_full": 3.0401947979871076,
+          "kappa_min_subset": 3.0401947979871076,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.3686193971910621
+        },
+        {
+          "kappa_min_full": 3.220641883041286,
+          "kappa_min_subset": 3.220641883041286,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4037759009337187
+        },
+        {
+          "kappa_min_full": 3.183367262860463,
+          "kappa_min_subset": 3.183367262860463,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4130594736762186
+        },
+        {
+          "kappa_min_full": 3.091398736997874,
+          "kappa_min_subset": 3.091398736997874,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.3774560391083556
+        },
+        {
+          "kappa_min_full": 3.0713465203176216,
+          "kappa_min_subset": 3.0713465203176216,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.40474725637692305
+        },
+        {
+          "kappa_min_full": 3.0535424910720215,
+          "kappa_min_subset": 3.0535424910720215,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.36995260365257276
+        },
+        {
+          "kappa_min_full": 3.046263041000805,
+          "kappa_min_subset": 3.046263041000805,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.39613951175966855
+        },
+        {
+          "kappa_min_full": 3.1057182079889003,
+          "kappa_min_subset": 3.1057182079889003,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.3562790002434964
+        },
+        {
+          "kappa_min_full": 3.2777483094575914,
+          "kappa_min_subset": 3.2777483094575914,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.3846315328616856
+        },
+        {
+          "kappa_min_full": 3.103374046651613,
+          "kappa_min_subset": 3.103374046651613,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4008371516799874
+        },
+        {
+          "kappa_min_full": 3.0315222034749576,
+          "kappa_min_subset": 3.0315222034749576,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.3655469470428599
+        },
+        {
+          "kappa_min_full": 3.1836012383412653,
+          "kappa_min_subset": 3.1836012383412653,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.38833206191933467
+        },
+        {
+          "kappa_min_full": 3.181809674053571,
+          "kappa_min_subset": 3.181809674053571,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.42890476619776646
+        },
+        {
+          "kappa_min_full": 3.2745240822881954,
+          "kappa_min_subset": 3.2745240822881954,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 28,
+          "leverage_of_true_argmin": 0.39041596941289386
+        },
+        {
+          "kappa_min_full": 3.2915435725643976,
+          "kappa_min_subset": 3.2915435725643976,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 100,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.3913775925160719
+        }
+      ]
+    },
+    {
+      "loss": "L4",
+      "d": 100,
+      "n_models": 20,
+      "kappa_min_full_mean": 6.015491103292876,
+      "kappa_min_subset_mean": 6.027258513440303,
+      "subset_overestimate_mean": 0.01176741014742686,
+      "subset_overestimate_max": 0.0992082517569397,
+      "models_where_subset_found_the_argmin": 12,
+      "leverage_rank_of_true_argmin_median": 23.0,
+      "leverage_rank_of_true_argmin_max": 75,
+      "per_model": [
+        {
+          "kappa_min_full": 6.0312333696927025,
+          "kappa_min_subset": 6.0312333696927025,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.48400098315282586
+        },
+        {
+          "kappa_min_full": 6.032584425107485,
+          "kappa_min_subset": 6.040962897535586,
+          "subset_overestimate": 0.008378472428100636,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 72,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.497459221710777
+        },
+        {
+          "kappa_min_full": 5.996981448351385,
+          "kappa_min_subset": 5.996981448351385,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 3,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4862058756563189
+        },
+        {
+          "kappa_min_full": 6.039714036939448,
+          "kappa_min_subset": 6.046416556872163,
+          "subset_overestimate": 0.006702519932715312,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 40,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4945820793029794
+        },
+        {
+          "kappa_min_full": 6.051824657815498,
+          "kappa_min_subset": 6.051824657815498,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4855942334833679
+        },
+        {
+          "kappa_min_full": 6.001833464048242,
+          "kappa_min_subset": 6.001833464048242,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 23,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4924182560202905
+        },
+        {
+          "kappa_min_full": 6.029944905469334,
+          "kappa_min_subset": 6.048769011667422,
+          "subset_overestimate": 0.018824106198088053,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 49,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4957561732064115
+        },
+        {
+          "kappa_min_full": 6.017559306900555,
+          "kappa_min_subset": 6.017559306900555,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 60,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.49624264268864476
+        },
+        {
+          "kappa_min_full": 6.031963586880987,
+          "kappa_min_subset": 6.053190775523242,
+          "subset_overestimate": 0.021227188642255257,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 55,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.49676909619316295
+        },
+        {
+          "kappa_min_full": 5.9034675136148715,
+          "kappa_min_subset": 5.9034675136148715,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.48477851663497973
+        },
+        {
+          "kappa_min_full": 6.028918131321764,
+          "kappa_min_subset": 6.028918131321764,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 3,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.48674632610919016
+        },
+        {
+          "kappa_min_full": 6.005524903638653,
+          "kappa_min_subset": 6.005524903638653,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.484779802510963
+        },
+        {
+          "kappa_min_full": 5.967104195983187,
+          "kappa_min_subset": 6.066312447740127,
+          "subset_overestimate": 0.0992082517569397,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 25,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4920428857796643
+        },
+        {
+          "kappa_min_full": 6.0389500504915725,
+          "kappa_min_subset": 6.054130019237716,
+          "subset_overestimate": 0.01517996874614358,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 75,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4976153235714175
+        },
+        {
+          "kappa_min_full": 6.035717508301231,
+          "kappa_min_subset": 6.041093968249919,
+          "subset_overestimate": 0.005376459948688073,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 33,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4937398326104649
+        },
+        {
+          "kappa_min_full": 5.955666604995469,
+          "kappa_min_subset": 5.955666604995469,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4861310214371151
+        },
+        {
+          "kappa_min_full": 6.043195349171348,
+          "kappa_min_subset": 6.043195349171348,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.48551093140225016
+        },
+        {
+          "kappa_min_full": 6.0157639880990805,
+          "kappa_min_subset": 6.076215223394687,
+          "subset_overestimate": 0.06045123529560659,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 48,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4957976862086982
+        },
+        {
+          "kappa_min_full": 6.057719302492809,
+          "kappa_min_subset": 6.057719302492809,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 23,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.492876646355328
+        },
+        {
+          "kappa_min_full": 6.024155316541903,
+          "kappa_min_subset": 6.024155316541903,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 3,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4867427303370082
+        }
+      ]
+    },
+    {
+      "loss": "L2",
+      "d": 100,
+      "n_models": 20,
+      "kappa_min_full_mean": 1.0015655413095699,
+      "kappa_min_subset_mean": 1.0019311546801315,
+      "subset_overestimate_mean": 0.0003656133705615239,
+      "subset_overestimate_max": 0.002120317897009505,
+      "models_where_subset_found_the_argmin": 14,
+      "leverage_rank_of_true_argmin_median": 10.5,
+      "leverage_rank_of_true_argmin_max": 82,
+      "per_model": [
+        {
+          "kappa_min_full": 1.00106589044674,
+          "kappa_min_subset": 1.00106589044674,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 7,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.009251558419012273
+        },
+        {
+          "kappa_min_full": 1.0048620391278595,
+          "kappa_min_subset": 1.0053243843529625,
+          "subset_overestimate": 0.00046234522510291143,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 34,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.015101997875427164
+        },
+        {
+          "kappa_min_full": 1.0015872977782707,
+          "kappa_min_subset": 1.0015872977782707,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 3,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.009342466320137108
+        },
+        {
+          "kappa_min_full": 1.003220019129292,
+          "kappa_min_subset": 1.003220019129292,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.007692026933337592
+        },
+        {
+          "kappa_min_full": 1.0017589573924506,
+          "kappa_min_subset": 1.0017589573924506,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 12,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.010834929405000313
+        },
+        {
+          "kappa_min_full": 1.0004348112112031,
+          "kappa_min_subset": 1.0004348112112031,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.00871635254749158
+        },
+        {
+          "kappa_min_full": 1.0005373770199806,
+          "kappa_min_subset": 1.0005373770199806,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.008332825555660521
+        },
+        {
+          "kappa_min_full": 1.0000844686644685,
+          "kappa_min_subset": 1.0000844686644685,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.007628410883241726
+        },
+        {
+          "kappa_min_full": 1.002158287239501,
+          "kappa_min_subset": 1.002158287239501,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 16,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.011138814114316926
+        },
+        {
+          "kappa_min_full": 1.0015473358844325,
+          "kappa_min_subset": 1.0015473358844325,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 9,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.009610141643547834
+        },
+        {
+          "kappa_min_full": 1.0016417983523795,
+          "kappa_min_subset": 1.0035946954566672,
+          "subset_overestimate": 0.0019528971042876986,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 82,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.10291720961499269
+        },
+        {
+          "kappa_min_full": 1.0028450219777274,
+          "kappa_min_subset": 1.004965339874737,
+          "subset_overestimate": 0.002120317897009505,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 51,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.02243918272538081
+        },
+        {
+          "kappa_min_full": 1.0006057591584274,
+          "kappa_min_subset": 1.001245348902678,
+          "subset_overestimate": 0.0006395897442506016,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 68,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.03421991598229379
+        },
+        {
+          "kappa_min_full": 1.0008531433582122,
+          "kappa_min_subset": 1.0008531433582122,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 23,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.012423927436899183
+        },
+        {
+          "kappa_min_full": 1.001000435999757,
+          "kappa_min_subset": 1.001000435999757,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.007320638466348054
+        },
+        {
+          "kappa_min_full": 1.0020619330493044,
+          "kappa_min_subset": 1.0023309226986288,
+          "subset_overestimate": 0.0002689896493244248,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 33,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.015073984672966438
+        },
+        {
+          "kappa_min_full": 1.0010552940879256,
+          "kappa_min_subset": 1.0010552940879256,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.0072634234107453515
+        },
+        {
+          "kappa_min_full": 1.0028045707089335,
+          "kappa_min_subset": 1.0028045707089335,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 15,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.010974784057971095
+        },
+        {
+          "kappa_min_full": 1.0004438774252236,
+          "kappa_min_subset": 1.002312005216479,
+          "subset_overestimate": 0.0018681277912553362,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 27,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.012641361496725166
+        },
+        {
+          "kappa_min_full": 1.0007425081793109,
+          "kappa_min_subset": 1.0007425081793109,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 7,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.009131733318094002
+        }
+      ]
+    },
+    {
+      "loss": "random",
+      "d": 100,
+      "n_models": 20,
+      "kappa_min_full_mean": 4.428928068300715,
+      "kappa_min_subset_mean": 4.428928068300715,
+      "subset_overestimate_mean": 0.0,
+      "subset_overestimate_max": 0.0,
+      "models_where_subset_found_the_argmin": 20,
+      "leverage_rank_of_true_argmin_median": 1.0,
+      "leverage_rank_of_true_argmin_max": 9,
+      "per_model": [
+        {
+          "kappa_min_full": 4.527546898347834,
+          "kappa_min_subset": 4.527546898347834,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.43506607199754166
+        },
+        {
+          "kappa_min_full": 4.402453031529557,
+          "kappa_min_subset": 4.402453031529557,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 3,
+          "n_features": 200,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.42823473148617314
+        },
+        {
+          "kappa_min_full": 4.439147445038601,
+          "kappa_min_subset": 4.439147445038601,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4262814914029293
+        },
+        {
+          "kappa_min_full": 4.55099800390135,
+          "kappa_min_subset": 4.55099800390135,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.43131752461089956
+        },
+        {
+          "kappa_min_full": 4.352103579698447,
+          "kappa_min_subset": 4.352103579698447,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4068854614230564
+        },
+        {
+          "kappa_min_full": 4.425739866191271,
+          "kappa_min_subset": 4.425739866191271,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.40246617325225137
+        },
+        {
+          "kappa_min_full": 4.407907177437098,
+          "kappa_min_subset": 4.407907177437098,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.394024817169245
+        },
+        {
+          "kappa_min_full": 4.407231970461934,
+          "kappa_min_subset": 4.407231970461934,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 200,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.4304055321593994
+        },
+        {
+          "kappa_min_full": 4.433469575342562,
+          "kappa_min_subset": 4.433469575342562,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4138762893960454
+        },
+        {
+          "kappa_min_full": 4.365123961798885,
+          "kappa_min_subset": 4.365123961798885,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.41886268558739226
+        },
+        {
+          "kappa_min_full": 4.4657799005277266,
+          "kappa_min_subset": 4.4657799005277266,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.41773817601875773
+        },
+        {
+          "kappa_min_full": 4.415469618988551,
+          "kappa_min_subset": 4.415469618988551,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.3988131741354336
+        },
+        {
+          "kappa_min_full": 4.404544418440082,
+          "kappa_min_subset": 4.404544418440082,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.43037686655560375
+        },
+        {
+          "kappa_min_full": 4.513579558760024,
+          "kappa_min_subset": 4.513579558760024,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 9,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4414864335483504
+        },
+        {
+          "kappa_min_full": 4.477433124785426,
+          "kappa_min_subset": 4.477433124785426,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 9,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4487860877756437
+        },
+        {
+          "kappa_min_full": 4.399279396174945,
+          "kappa_min_subset": 4.399279396174945,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.39780506157626766
+        },
+        {
+          "kappa_min_full": 4.313142852756576,
+          "kappa_min_subset": 4.313142852756576,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.39008283715851755
+        },
+        {
+          "kappa_min_full": 4.406296217512722,
+          "kappa_min_subset": 4.406296217512722,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 200,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.41479790375694775
+        },
+        {
+          "kappa_min_full": 4.383957172536892,
+          "kappa_min_subset": 4.383957172536892,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.41145138839363643
+        },
+        {
+          "kappa_min_full": 4.48735759578383,
+          "kappa_min_subset": 4.48735759578383,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 200,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4276077836105123
+        }
+      ]
+    },
+    {
+      "loss": "L4",
+      "d": 200,
+      "n_models": 20,
+      "kappa_min_full_mean": 8.035167804512858,
+      "kappa_min_subset_mean": 8.055742977487443,
+      "subset_overestimate_mean": 0.0205751729745832,
+      "subset_overestimate_max": 0.06258248531656996,
+      "models_where_subset_found_the_argmin": 6,
+      "leverage_rank_of_true_argmin_median": 38.5,
+      "leverage_rank_of_true_argmin_max": 190,
+      "per_model": [
+        {
+          "kappa_min_full": 8.068560731280453,
+          "kappa_min_subset": 8.070426788644122,
+          "subset_overestimate": 0.0018660573636690714,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 31,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4929865252703239
+        },
+        {
+          "kappa_min_full": 8.078674401790087,
+          "kappa_min_subset": 8.078674401790087,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 7,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.48975692270127114
+        },
+        {
+          "kappa_min_full": 8.05544750500069,
+          "kappa_min_subset": 8.05544750500069,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 45,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4944541533760517
+        },
+        {
+          "kappa_min_full": 8.040873727988785,
+          "kappa_min_subset": 8.074159936544296,
+          "subset_overestimate": 0.03328620855551101,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 32,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.49324182023078494
+        },
+        {
+          "kappa_min_full": 8.014886170361716,
+          "kappa_min_subset": 8.017431263421999,
+          "subset_overestimate": 0.0025450930602826105,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 67,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4953632041452725
+        },
+        {
+          "kappa_min_full": 8.055392055959135,
+          "kappa_min_subset": 8.096986051843823,
+          "subset_overestimate": 0.041593995884687374,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 139,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4979460849734872
+        },
+        {
+          "kappa_min_full": 8.020761115156004,
+          "kappa_min_subset": 8.020761115156004,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 15,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.49242849867115784
+        },
+        {
+          "kappa_min_full": 8.016531255374721,
+          "kappa_min_subset": 8.035401562694425,
+          "subset_overestimate": 0.018870307319703628,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 27,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.49308627968693525
+        },
+        {
+          "kappa_min_full": 8.008809607884716,
+          "kappa_min_subset": 8.041764722794184,
+          "subset_overestimate": 0.03295511490946801,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 150,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.49824051363315847
+        },
+        {
+          "kappa_min_full": 8.045635177290658,
+          "kappa_min_subset": 8.054857476840686,
+          "subset_overestimate": 0.009222299550028623,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 190,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.49964602755903575
+        },
+        {
+          "kappa_min_full": 8.017257950493894,
+          "kappa_min_subset": 8.02579962894555,
+          "subset_overestimate": 0.008541678451656765,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 30,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.49308434424533926
+        },
+        {
+          "kappa_min_full": 7.997134780564785,
+          "kappa_min_subset": 8.022854909374239,
+          "subset_overestimate": 0.025720128809453513,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 106,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.49692703050424153
+        },
+        {
+          "kappa_min_full": 8.054136661886961,
+          "kappa_min_subset": 8.113870112695778,
+          "subset_overestimate": 0.05973345080881742,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 171,
+          "n_features": 400,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4992577709728974
+        },
+        {
+          "kappa_min_full": 8.014803506894472,
+          "kappa_min_subset": 8.066244726363745,
+          "subset_overestimate": 0.05144121946927349,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 30,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4931103596705324
+        },
+        {
+          "kappa_min_full": 8.046797967749463,
+          "kappa_min_subset": 8.046797967749463,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 16,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4915037365845483
+        },
+        {
+          "kappa_min_full": 8.02529452334161,
+          "kappa_min_subset": 8.066288498255108,
+          "subset_overestimate": 0.040993974913497766,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 117,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4971904579790865
+        },
+        {
+          "kappa_min_full": 8.023978614259972,
+          "kappa_min_subset": 8.023978614259972,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 400,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4894655042586769
+        },
+        {
+          "kappa_min_full": 8.008157405392108,
+          "kappa_min_subset": 8.070739890708678,
+          "subset_overestimate": 0.06258248531656996,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 105,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4968608283273705
+        },
+        {
+          "kappa_min_full": 8.059936166211546,
+          "kappa_min_subset": 8.082087611290591,
+          "subset_overestimate": 0.022151445079044763,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 92,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4962460385974707
+        },
+        {
+          "kappa_min_full": 8.050286765375395,
+          "kappa_min_subset": 8.050286765375395,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 14,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.49104906136452514
+        }
+      ]
+    },
+    {
+      "loss": "L2",
+      "d": 200,
+      "n_models": 20,
+      "kappa_min_full_mean": 1.0146456029933184,
+      "kappa_min_subset_mean": 1.0180608460197234,
+      "subset_overestimate_mean": 0.003415243026404813,
+      "subset_overestimate_max": 0.013703168895061069,
+      "models_where_subset_found_the_argmin": 4,
+      "leverage_rank_of_true_argmin_median": 34.0,
+      "leverage_rank_of_true_argmin_max": 109,
+      "per_model": [
+        {
+          "kappa_min_full": 1.0161267142600459,
+          "kappa_min_subset": 1.0161267142600459,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.00595798014636279
+        },
+        {
+          "kappa_min_full": 1.0138303209761863,
+          "kappa_min_subset": 1.018243447459457,
+          "subset_overestimate": 0.004413126483270746,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 35,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.009327234771365399
+        },
+        {
+          "kappa_min_full": 1.0117677341962739,
+          "kappa_min_subset": 1.0179282499663815,
+          "subset_overestimate": 0.006160515770107677,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 83,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.01439427696342118
+        },
+        {
+          "kappa_min_full": 1.0076753987238285,
+          "kappa_min_subset": 1.0146133857063164,
+          "subset_overestimate": 0.0069379869824879314,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 30,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.009109785954835038
+        },
+        {
+          "kappa_min_full": 1.0121913605045088,
+          "kappa_min_subset": 1.0258945293995698,
+          "subset_overestimate": 0.013703168895061069,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 109,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.017850345845640082
+        },
+        {
+          "kappa_min_full": 1.0124454190015513,
+          "kappa_min_subset": 1.0166679318468799,
+          "subset_overestimate": 0.0042225128453285965,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 101,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.017085497813272968
+        },
+        {
+          "kappa_min_full": 1.0134136918939733,
+          "kappa_min_subset": 1.0157979715120828,
+          "subset_overestimate": 0.002384279618109497,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 24,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.008405565325518465
+        },
+        {
+          "kappa_min_full": 1.0183737092435015,
+          "kappa_min_subset": 1.0220921827859428,
+          "subset_overestimate": 0.0037184735424413695,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 90,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.01518570062596327
+        },
+        {
+          "kappa_min_full": 1.0173568851849217,
+          "kappa_min_subset": 1.0190800826099924,
+          "subset_overestimate": 0.001723197425070655,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 27,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.00796162811694446
+        },
+        {
+          "kappa_min_full": 1.0186405231918718,
+          "kappa_min_subset": 1.0186405231918718,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.006150410589389477
+        },
+        {
+          "kappa_min_full": 1.0208819053218514,
+          "kappa_min_subset": 1.0208819053218514,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 21,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.009126465756463814
+        },
+        {
+          "kappa_min_full": 1.015109256624329,
+          "kappa_min_subset": 1.0206034748490396,
+          "subset_overestimate": 0.005494218224710634,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 33,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.009042431983910151
+        },
+        {
+          "kappa_min_full": 1.01506089792883,
+          "kappa_min_subset": 1.0171368444365962,
+          "subset_overestimate": 0.002075946507766213,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 36,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.009039966126766602
+        },
+        {
+          "kappa_min_full": 1.0145925273126035,
+          "kappa_min_subset": 1.0145925273126035,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.006522997985705067
+        },
+        {
+          "kappa_min_full": 1.0094095225115474,
+          "kappa_min_subset": 1.0102844576252152,
+          "subset_overestimate": 0.000874935113667874,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 67,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.01055591555997082
+        },
+        {
+          "kappa_min_full": 1.0132015957152098,
+          "kappa_min_subset": 1.0136488026451171,
+          "subset_overestimate": 0.0004472069299072956,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 75,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.013007559138056412
+        },
+        {
+          "kappa_min_full": 1.0152641782021627,
+          "kappa_min_subset": 1.016003303398011,
+          "subset_overestimate": 0.0007391251958481782,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 48,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.010089783843749754
+        },
+        {
+          "kappa_min_full": 1.0119123085989066,
+          "kappa_min_subset": 1.0192669679836148,
+          "subset_overestimate": 0.007354659384708251,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 78,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.012661728961648301
+        },
+        {
+          "kappa_min_full": 1.0169456418672944,
+          "kappa_min_subset": 1.0189201813410385,
+          "subset_overestimate": 0.0019745394737440414,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 24,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.008652632686565463
+        },
+        {
+          "kappa_min_full": 1.0187124686069722,
+          "kappa_min_subset": 1.0247934367428384,
+          "subset_overestimate": 0.006080968135866227,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 28,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.00899058372381316
+        }
+      ]
+    },
+    {
+      "loss": "random",
+      "d": 200,
+      "n_models": 20,
+      "kappa_min_full_mean": 6.237736452287781,
+      "kappa_min_subset_mean": 6.237736452287781,
+      "subset_overestimate_mean": 0.0,
+      "subset_overestimate_max": 0.0,
+      "models_where_subset_found_the_argmin": 20,
+      "leverage_rank_of_true_argmin_median": 2.0,
+      "leverage_rank_of_true_argmin_max": 16,
+      "per_model": [
+        {
+          "kappa_min_full": 6.0969331531133415,
+          "kappa_min_subset": 6.0969331531133415,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.43043799967166785
+        },
+        {
+          "kappa_min_full": 6.167792028826882,
+          "kappa_min_subset": 6.167792028826882,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4402225485798928
+        },
+        {
+          "kappa_min_full": 6.182818872605075,
+          "kappa_min_subset": 6.182818872605075,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4401401257026142
+        },
+        {
+          "kappa_min_full": 6.425457033703271,
+          "kappa_min_subset": 6.425457033703271,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 10,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4569499027819196
+        },
+        {
+          "kappa_min_full": 6.090615636444808,
+          "kappa_min_subset": 6.090615636444808,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4338232324567981
+        },
+        {
+          "kappa_min_full": 6.1339349259531595,
+          "kappa_min_subset": 6.1339349259531595,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.42147857214842865
+        },
+        {
+          "kappa_min_full": 6.280898444652255,
+          "kappa_min_subset": 6.280898444652255,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 16,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.45712786606670347
+        },
+        {
+          "kappa_min_full": 6.405675010525786,
+          "kappa_min_subset": 6.405675010525786,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 12,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4557748757457649
+        },
+        {
+          "kappa_min_full": 6.237102204976602,
+          "kappa_min_subset": 6.237102204976602,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4264005535893392
+        },
+        {
+          "kappa_min_full": 6.265356563839332,
+          "kappa_min_subset": 6.265356563839332,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4452978949690834
+        },
+        {
+          "kappa_min_full": 6.1991733776997195,
+          "kappa_min_subset": 6.1991733776997195,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.43160367461299826
+        },
+        {
+          "kappa_min_full": 6.323248799274532,
+          "kappa_min_subset": 6.323248799274532,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 8,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.45051987904140145
+        },
+        {
+          "kappa_min_full": 6.075734920560828,
+          "kappa_min_subset": 6.075734920560828,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4389441198745166
+        },
+        {
+          "kappa_min_full": 6.175629750749437,
+          "kappa_min_subset": 6.175629750749437,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 6,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4478189342462608
+        },
+        {
+          "kappa_min_full": 6.3650462737557065,
+          "kappa_min_subset": 6.3650462737557065,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4441123479495359
+        },
+        {
+          "kappa_min_full": 6.1599720512890395,
+          "kappa_min_subset": 6.1599720512890395,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.43941911636947895
+        },
+        {
+          "kappa_min_full": 6.172479802448119,
+          "kappa_min_subset": 6.172479802448119,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 400,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4315231187047714
+        },
+        {
+          "kappa_min_full": 6.3333366930963155,
+          "kappa_min_subset": 6.3333366930963155,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 6,
+          "n_features": 400,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.4520891657063692
+        },
+        {
+          "kappa_min_full": 6.246084752847979,
+          "kappa_min_subset": 6.246084752847979,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.43509268796614026
+        },
+        {
+          "kappa_min_full": 6.41743874939344,
+          "kappa_min_subset": 6.41743874939344,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 400,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.44777480863883073
+        }
+      ]
+    }
+  ]
+}
