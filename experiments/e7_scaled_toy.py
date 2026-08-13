@@ -524,7 +524,15 @@ def write_stage_report(rep: Dict[str, Any], out_dir: Path) -> Path:
                      f"{r_readout} | {f(v['kappa_min'], 2)} |")
     frac = (rep["network_beats_best_probe_fraction"] or 0.0) * 100.0
     L += ["", "## Gates", "",
-          f"- the network beats the best affine probe on **{frac:.0f}%** of trained models",
+          "- **do not read the next line as a decoder comparison.** It scores the network at a",
+          "  fixed `theta` against the best of eighteen probe configurations, two thirds of which",
+          "  tune their threshold on validation and two thirds of which read the *pre*-ReLU state",
+          "  the network's output layer never sees. Three asymmetries, all favouring the probe.",
+          "  The matched comparison -- same input, same threshold treatment, paired within seed --",
+          "  is `scripts/primary_comparison.py`, and it reports a tie. See docs/known_defects.md",
+          "  KD2 and KD4.",
+          f"- unmatched, retained for continuity: the network beats the best affine probe on "
+          f"**{frac:.0f}%** of trained models",
           f"- L2/L4 geometry separated at every width: **{rep['l2_l4_separates_everywhere']}**",
           f"- E3 arrow held: **{rep['e3_arrow_held']}**"
           + ("" if rep["e3_arrow_held"] else f" — VIOLATIONS: {rep['e3_violations']}"), ""]
@@ -533,7 +541,13 @@ def write_stage_report(rep: Dict[str, Any], out_dir: Path) -> Path:
                  "counterexample means the frontier or the leverage computation is wrong. Find it "
                  "before reading anything else here.")
     elif rep["l2_l4_separates_everywhere"]:
-        L.append("The empirical hook survives this stage, so spending the next one is justified.")
+        L.append("The L2/L4 separation replicates at every width, so that hook survives. **That is "
+                 "not sufficient to justify the next stage**, and this report cannot tell you "
+                 "whether it is: the gate above compares an untuned decoder against the best of a "
+                 "tuned family, so a 0% there is uninformative about whether the network "
+                 "out-decodes an affine probe. Read the matched comparison first. When it was run "
+                 "for Stage A it returned a tie, which changed the paper's thesis and made most of "
+                 "Stage B's design -- robustness of a nonlinear advantage -- the wrong question.")
     else:
         L.append("The L2/L4 separation did **not** hold at every width. Under decision D1 that is "
                  "reported rather than rescued: re-read the plan's yellow outcomes before "
@@ -630,7 +644,8 @@ def main() -> None:
             frac = (rep["network_beats_best_probe_fraction"] or 0.0) * 100.0
             log("")
             log(f"  Stage {st} report -> {path.name}")
-            log(f"    network beats the best probe on {frac:.0f}% of models")
+            log(f"    network beats the best probe on {frac:.0f}% of models "
+                f"(UNMATCHED -- see KD2/KD4; run scripts/primary_comparison.py)")
             log(f"    L2/L4 separated at every width: {rep['l2_l4_separates_everywhere']}")
             log(f"    E3 arrow held: {rep['e3_arrow_held']}")
 
