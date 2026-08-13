@@ -1,0 +1,401 @@
+{
+  "policy": "global",
+  "cells": [
+    {
+      "loss": "L4",
+      "d": 50,
+      "policy": "global",
+      "n_seeds": 20,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 20,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": 0.010129801432291646,
+            "ci_low": 0.009313964843749984,
+            "ci_high": 0.010904286702473951,
+            "n_positive": 20,
+            "n_zero": 0,
+            "n_negative": 0
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": -1.0,
+            "ci_low": -1.0,
+            "ci_high": -1.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          },
+          "auc": {
+            "mean": -0.06241251627604168,
+            "ci_low": -0.06417439778645834,
+            "ci_high": -0.060880516899956605,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        }
+      }
+    },
+    {
+      "loss": "L2",
+      "d": 50,
+      "policy": "global",
+      "n_seeds": 20,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 20,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": 0.0005404155487163283,
+            "ci_low": -0.0001907556261946729,
+            "ci_high": 0.0013526423770035395,
+            "n_positive": 12,
+            "n_zero": 0,
+            "n_negative": 8
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 20,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": 0.000507761534617003,
+            "ci_low": -0.0002195833730644123,
+            "ci_high": 0.0013240597914365019,
+            "n_positive": 11,
+            "n_zero": 0,
+            "n_negative": 9
+          }
+        }
+      }
+    },
+    {
+      "loss": "random",
+      "d": 50,
+      "policy": "global",
+      "n_seeds": 20,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": -1.0,
+            "ci_low": -1.0,
+            "ci_high": -1.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          },
+          "auc": {
+            "mean": -0.20366764898332282,
+            "ci_low": -0.20993806076991708,
+            "ci_high": -0.19746453657396446,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": -3.0,
+            "ci_low": -3.0,
+            "ci_high": -3.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          },
+          "auc": {
+            "mean": -0.4625340599462507,
+            "ci_low": -0.46817178215258043,
+            "ci_high": -0.4569999762641058,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        }
+      }
+    },
+    {
+      "loss": "L4",
+      "d": 100,
+      "policy": "global",
+      "n_seeds": 20,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 20,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": -0.01642831655649038,
+            "ci_low": -0.017005814772385826,
+            "ci_high": -0.015838153545673073,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 20,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": -0.07142809119591345,
+            "ci_low": -0.07390657442533054,
+            "ci_high": -0.06892794424203724,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        }
+      }
+    },
+    {
+      "loss": "L2",
+      "d": 100,
+      "policy": "global",
+      "n_seeds": 20,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 20,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": -0.0037327974759615383,
+            "ci_low": -0.0042964252178485565,
+            "ci_high": -0.003151247934194712,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 20,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": -0.003842623197115385,
+            "ci_low": -0.004392616624098557,
+            "ci_high": -0.0032609590970552904,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        }
+      }
+    },
+    {
+      "loss": "random",
+      "d": 100,
+      "policy": "global",
+      "n_seeds": 20,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": -2.0,
+            "ci_low": -2.0,
+            "ci_high": -2.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          },
+          "auc": {
+            "mean": -0.19444127478966347,
+            "ci_low": -0.2000581801194411,
+            "ci_high": -0.18908715820312502,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": -4.0,
+            "ci_low": -4.0,
+            "ci_high": -4.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          },
+          "auc": {
+            "mean": -0.35660135591947123,
+            "ci_low": -0.36184552659254815,
+            "ci_high": -0.35149812152569115,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        }
+      }
+    },
+    {
+      "loss": "L4",
+      "d": 200,
+      "policy": "global",
+      "n_seeds": 20,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": -0.05,
+            "ci_low": -0.15,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 19,
+            "n_negative": 1
+          },
+          "auc": {
+            "mean": -0.019823255037006583,
+            "ci_low": -0.020663050601356904,
+            "ci_high": -0.018980319374486028,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": -1.0,
+            "ci_low": -1.0,
+            "ci_high": -1.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          },
+          "auc": {
+            "mean": -0.048150956003289475,
+            "ci_low": -0.049169929905941615,
+            "ci_high": -0.04706870631167766,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        }
+      }
+    },
+    {
+      "loss": "L2",
+      "d": 200,
+      "policy": "global",
+      "n_seeds": 20,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 20,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": -3.253495065789584e-05,
+            "ci_low": -0.00027367264597039705,
+            "ci_high": 0.00020141087582236828,
+            "n_positive": 11,
+            "n_zero": 0,
+            "n_negative": 9
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 20,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": -4.474198190789567e-05,
+            "ci_low": -0.00029312358655427814,
+            "ci_high": 0.00019464432565789377,
+            "n_positive": 11,
+            "n_zero": 0,
+            "n_negative": 9
+          }
+        }
+      }
+    },
+    {
+      "loss": "random",
+      "d": 200,
+      "policy": "global",
+      "n_seeds": 20,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": -2.15,
+            "ci_low": -2.3,
+            "ci_high": -2.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          },
+          "auc": {
+            "mean": -0.18192688630756576,
+            "ci_low": -0.18630543855365958,
+            "ci_high": -0.17793569400185033,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": -5.0,
+            "ci_low": -5.0,
+            "ci_high": -5.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          },
+          "auc": {
+            "mean": -0.33783460115131575,
+            "ci_low": -0.3412642658434416,
+            "ci_high": -0.3347941068950453,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 20
+          }
+        }
+      }
+    }
+  ]
+}

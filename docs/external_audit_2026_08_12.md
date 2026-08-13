@@ -141,3 +141,59 @@ EOF
 # B2: largest h_min over all 180 models
 # A5: post-ReLU restricted comparison, per seed
 ```
+
+---
+
+# The corrected primary comparison, and what it produced
+
+Run by `scripts/primary_comparison.py`; output in `results/e7/derived/primary_comparison.json`.
+Nothing retrained: the network is rescored from the saved weights and the probe numbers are read
+from the per-seed records. Same decoder input (post-ReLU), same threshold treatment (one
+validation-selected global threshold each), paired within seed, bootstrap over models.
+
+## Result: the network and the best affine probe tie
+
+`s95`, network minus best post-ReLU probe:
+
+| cell | mean diff | 95% CI | net / tie / probe |
+|---|---|---|---|
+| L4 d=50 | +0.00 | [+0.00, +0.00] | 0 / **20** / 0 |
+| L4 d=100 | +0.00 | [+0.00, +0.00] | 0 / **20** / 0 |
+| L4 d=200 | −0.05 | [−0.15, +0.00] | 0 / **19** / 1 |
+| L2 d=50 | +0.00 | [+0.00, +0.00] | 0 / **20** / 0 |
+| L2 d=100 | +0.00 | [+0.00, +0.00] | 0 / **20** / 0 |
+| L2 d=200 | +0.00 | [+0.00, +0.00] | 0 / **20** / 0 |
+
+The AUC differences are resolved but tiny: `+0.0101` at `L4 d=50` (network ahead), `−0.0164` and
+`−0.0198` at `d=100` and `d=200` (probe ahead), against absolute AUCs around 0.5–0.65.
+
+**This is the outcome D1 registered, and it is the word D1 used: the affine decoder *matches* the
+network.** Not "beats". The 0-for-120 gate was an artefact of three stacked asymmetries; with them
+removed the comparison is a tie in 119 of 120 trained models.
+
+## And a finding neither we nor the audit anticipated
+
+Measuring the probe alone — the network is not involved — pre-ReLU `s95` minus post-ReLU `s95`,
+paired, matched policy. This is what the ReLU discards:
+
+| d | L4 | L2 | random |
+|---|---|---|---|
+| 50 | +1.00 [1.00, 1.00] | 0.00 | **+2.00** [2.00, 2.00] |
+| 100 | 0.00 [0.00, 0.00] | 0.00 | **+2.00** [2.00, 2.00] |
+| 200 | +0.95 [0.85, 1.00] | 0.00 | **+2.85** [2.70, 3.00] |
+
+For an untrained random code the ReLU costs two to three sparsity levels of affine decodability.
+For the `L4`-trained code it costs zero to one. `L2` loses nothing because it has nothing to lose —
+its frontier is already collapsed at both stages.
+
+So the answer to "what does training contribute", which the random control seemed to make
+embarrassing, is not "very little". It is: **training arranges the code so that the nonlinearity it
+will be read through destroys less of what a linear probe could have recovered.** That is a
+mechanistic claim about the interaction between the code and the ReLU, it is invisible to any
+analog-geometry statistic (`R_geom` is ~1.00 for both `L4` and random), and it is measured on 120
+models with non-overlapping intervals.
+
+It also reframes the audit's recommended thesis. The audit proposed that most affine decodability
+is generic in random codes and `L4` adds a modest amount. That is right about the *pre-ReLU*
+representation and wrong about the post-ReLU one, which is the state that actually gets composed
+into the next layer.
