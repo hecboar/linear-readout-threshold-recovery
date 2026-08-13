@@ -197,3 +197,65 @@ It also reframes the audit's recommended thesis. The audit proposed that most af
 is generic in random codes and `L4` adds a modest amount. That is right about the *pre-ReLU*
 representation and wrong about the post-ReLU one, which is the state that actually gets composed
 into the next layer.
+
+---
+
+# The native route with KD1 fixed, and a claim I have to withdraw
+
+`scripts/native_comparison.py`, all 180 models, paired bootstrap. Threshold selected on the metric
+reported, plus the threshold-free top-`k` measure.
+
+## The network beats a post-ReLU affine probe on its own distribution
+
+Network minus best post-ReLU probe, top-`k` exact recovery:
+
+| d | L4 | L2 | random |
+|---|---|---|---|
+| 50 | **+0.0116** [+0.0100, +0.0133] | −0.0018 | −0.0849 |
+| 100 | **+0.0248** [+0.0233, +0.0263] | −0.0001 | −0.1103 |
+| 200 | **+0.0275** [+0.0263, +0.0287] | +0.0004 | −0.1130 |
+
+F1 agrees and is larger: `+0.029`, `+0.031`, `+0.040` for `L4`, all intervals excluding zero. The
+random rows are not a decoder comparison — that baseline's "own decoder" is `pinv(Phi)`, not a
+trained layer, so what they show is a fitted probe beating a fixed pseudoinverse, which is expected.
+
+Under the old accuracy criterion these same cells read 0.19 against 0.18: two artefacts compared
+with each other.
+
+## Withdrawn: "training makes the code more robust to its own ReLU"
+
+I claimed this from the Boolean route and it does not survive contact with the native route. The two
+disagree on the ordering:
+
+| d | code | Boolean, `s95` pre−post | native, top-`k` pre−post | native post-ReLU level |
+|---|---|---|---|---|
+| 50 | L4 | 1.00 | 0.091 | 0.832 |
+| 50 | random | **2.00** | 0.054 | 0.841 |
+| 100 | L4 | 0.00 | 0.198 | 0.600 |
+| 100 | random | **2.00** | 0.095 | 0.654 |
+| 200 | L4 | 0.95 | **0.305** | 0.257 |
+| 200 | random | **2.85** | 0.136 | 0.371 |
+
+On `s95` the random code loses two to three sparsity levels and `L4` loses zero to one, which is
+what I reported. On native top-`k` the ordering reverses: `L4` loses 0.09 to 0.31 and random loses
+0.05 to 0.14.
+
+Neither measurement is wrong. They are not in comparable units — sparsity levels against a
+probability — and the two codes sit at different points on their own curves, so a probability
+difference is steeper for one than the other (at `d=200`, `L4` post is 0.257 and random post is
+0.371). A difference of differences across non-comparable scales is not evidence.
+
+**So the claim is not established, and I should not have stated it as a finding.** It came from one
+route, and I generalised before checking the other — the same error as reading the `s95` gate and
+reporting "the network never wins". What would settle it is a measure on one scale for both codes:
+the pre/post gap in `kappa_i` itself, which is a sparsity in both cases and needs no probe, no
+threshold and no distribution.
+
+## What does hold across both routes
+
+* The network matches or slightly beats a fitted affine probe of the **same post-ReLU state** —
+  a tie on Boolean `s95` in 119 of 120 models, a small but resolved network advantage on the native
+  distribution.
+* The pre-ReLU state is more affinely decodable than the post-ReLU state, in every cell, on both
+  routes. That is a statement about the ReLU, not about any decoder.
+* `L2` destroys the interface at both stages and by every measure.

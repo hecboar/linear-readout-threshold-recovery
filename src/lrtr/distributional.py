@@ -228,21 +228,18 @@ def native_distribution_profile(W_in: np.ndarray, W_out: np.ndarray, p: float, n
             t_best = float(grid[int(np.argmax(vals))])
             by[name] = {"threshold": t_best, **_at(np.abs(score_te) >= t_best, on_te)}
 
-        # Threshold-free: per-state top-k, with k the true number of active coordinates.
+        # Threshold-free: per-state top-k, with k the true number of active coordinates. Written
+        # as a rank comparison rather than a loop over states, because k varies by row and the
+        # loop version costs minutes per model at F = 400.
         k_per_state = on_te.sum(axis=1)
         order = np.argsort(-np.abs(score_te), axis=1)
-        exact = np.zeros(score_te.shape[0], dtype=bool)
-        hits = np.zeros(score_te.shape[0])
-        for r in range(score_te.shape[0]):
-            k = int(k_per_state[r])
-            if k == 0:
-                exact[r] = True
-                hits[r] = 1.0
-                continue
-            chosen = order[r, :k]
-            n_hit = int(on_te[r, chosen].sum())
-            hits[r] = n_hit / k
-            exact[r] = n_hit == k
+        rank = np.empty_like(order)
+        np.put_along_axis(rank, order, np.arange(order.shape[1])[None, :], axis=1)
+        chosen = rank < k_per_state[:, None]
+        n_hit = (chosen & on_te).sum(axis=1)
+        empty = k_per_state == 0                      # no active coordinate: trivially recovered
+        hits = np.where(empty, 1.0, n_hit / np.maximum(k_per_state, 1))
+        exact = np.where(empty, True, n_hit == k_per_state)
         by["ranking"] = {"topk_exact": float(exact.mean()),
                          "topk_hit_rate": float(hits.mean()),
                          "mean_active_per_state": float(k_per_state.mean())}
