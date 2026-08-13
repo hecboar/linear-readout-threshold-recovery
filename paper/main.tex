@@ -2237,22 +2237,46 @@ commands are in Appendix~\ref{app:repro}.}
 \label{sec:discussion}
 % ============================================================================
 
-The results support a simple reading. The floor is not an obstacle that networks struggle
-against; it is a target that both direct optimisation and ordinary task training reach.
-E4 shows that gradient descent under the unit-diagonal constraint converges to a unit-norm
-tight frame, and E5 shows that a network trained on a task, with no interference objective at
-all, lands within \EfiveLfourRatioPinvMean{} of the same bound. What distinguishes models is not
-whether they approach the floor but whether the floor \emph{binds} them --- that is, whether
-they maintain a linear readout interface in the first place. The $L^2$ model does, measurably;
-the $L^4$ model does not, and it is the latter whose thresholded output keeps working past the
-sparsity at which the thresholded linear readouts of its own code have collapsed. The margin is narrow, and
-below that point the linear readout is the better decoder --- so this is evidence that leaving
-the linear class buys headroom at the hard end, not that it dominates.
+Three readings survive the campaign, and one that motivated the work does not.
+
+\textbf{The floor is a target, not an obstacle --- and reaching it means less than it looks.} E4 shows
+gradient descent under the unit-diagonal constraint converging to a unit-norm tight frame, and a
+network trained on a task with no interference objective lands within
+\EfiveLfourRatioPinvMean{} of the same bound. But an untrained i.i.d.\ code reaches
+$R_{\mathrm{geom}}=\SARandFiftyRgeom{}$ without any training at all, so proximity to the rank--trace
+floor is what the ensemble gives for free at this load rather than a signature of learned structure.
+What distinguishes models is not whether they approach the floor but whether the floor \emph{binds}
+them, and there the separation is enormous: $L^2$ drives $R_{\mathrm{geom}}$ to
+\SALtwoTwoHundredRgeom{} at $d=200$ and collapses its frontier to $1$, while $L^4$ stays at
+\SALfourTwoHundredRgeom{}.
+
+\textbf{The nonlinearity does not out-decode an affine probe of the state it produces.} Given the same
+post-ReLU representation and the same threshold treatment, the network and the best fitted affine
+probe tie on $s_{95}$ in 119 of 120 trained models. We registered this outcome as a result before
+running, and it is one: for support recovery on this task, at these widths, the network's second layer
+is doing what a linear probe of its first layer already does. The gap that earlier framings read as a
+nonlinear advantage is a gap between \emph{representations} --- the preactivation is more affinely
+decodable than what the ReLU leaves --- and attributing it to the decoder confuses where the
+information went with who read it.
+
+\textbf{What training buys is the code.} A random code with only its readout trained keeps an
+untrained code's frontier, \EeightFrozenHundredKappa{} against \EeightRandomHundredKappa{}, while
+training both reaches \EeightTrainedHundredKappa{}. And the frozen arm's own decoder ends at
+$R_{\mathrm{readout}}=\EeightFrozenHundredRreadout{}$ --- worse, after a full training budget, than
+the closed-form optimum for the code it was handed. On this objective the joint problem is easier
+than the conditional one, which is a statement about the optimisation and not about the geometry.
+
+What does not survive is the reading this work began with: that the $L^4$ model's thresholded output
+keeps working past where linear readouts of its own code collapse. Against the fixed readouts of E5
+that appeared true; against a probe fitted with the same care as the network was trained, it is not.
 
 This gives the debate in~\cite{bhagat2026cc,ferreiradasilva2026l4} an instrument. The question
-``does this network compute in superposition?'' becomes two measurements: how far the network's
-decision function is from a linear readout of its own code, and how far that code is from the
-floor. Neither requires reverse-engineering the mechanism.
+``does this network compute in superposition?'' becomes three measurements: how far the code is from
+its own floor rather than from the ensemble's, how far the network's decision function is from an
+affine readout of the same state, and, per feature, the largest sparsity at which any affine rule
+could succeed at all. None requires reverse-engineering the mechanism, and the third is exact rather
+than empirical --- which matters, because the campaign's history is a series of empirical readings
+that reversed when the estimand or the baseline was tightened, while $\kappa_i$ did not move.
 
 For capacity theory, the interface distinction explains why the H\"{a}nni and Adler--Shavit
 results coexist rather than compete (Section~\ref{sec:application}). It also cautions against
@@ -2298,21 +2322,21 @@ intervals are per-point and should not be read as a joint confidence band.
 \item \textbf{Open log gap.} The Adler--Shavit capacity bracket retains a single logarithmic
 factor of slack, which is not resolved here.
 
-\item \textbf{The leverage prediction is tested at one width.} Corollary~\ref{cor:failthresh}
-correctly predicts the affine collapse of the $L^2$ code in
-Section~\ref{sec:res-g1}, from leverage alone. That is \EfiveSeeds{} seeds at
-$d=\EfiveD$, and a single confirmation of a sufficient condition is weak evidence: the
-implication is proved, but whether trained codes routinely land in the regime where it bites is
-an empirical question this paper does not settle. Replication across widths is the obvious next
-experiment and we have not run it.
+\item \textbf{The leverage prediction is a sufficient condition, and its selection heuristic decays
+with width.} Corollary~\ref{cor:failthresh} predicts the $L^2$ collapse from leverage alone and
+holds at all three widths of Section~\ref{sec:res-primary}. But it is applied at $h_{\min}$, and it
+is sufficient rather than necessary, which shows up in where the true worst feature sits: the
+lowest-leverage window contains the true $\arg\min\kappa$ in \FullLfourTwoHundredArgminFound{} of 20
+$L^4$ models at $d=200$, against every model of every untrained code. Training pulls the two apart,
+so the theorem localises the failure less and less well as the code improves. Nothing reported
+depends on the heuristic --- the frontiers quoted are exact --- but a reader should not take low
+leverage as a reliable pointer to the binding feature.
 
-\item \textbf{A reported frontier minimum is an upper bound.} Solving~\eqref{eq:kappa} for every
-feature costs one linear programme each, which is affordable at $d=50$ and not at $d=400$. Where
-we report the smallest $\kappa_i$ over a code we compute it on a subset of features --- those of
-lowest leverage, which Theorem~\ref{thm:arrow} identifies as the candidates, plus a fixed random
-sample as a check --- so the value is an upper bound on the true minimum. Theorem~\ref{thm:arrow}
-is sufficient and not necessary, so the subset can miss the true argmin, and we report the
-leverage rank of the minimiser actually found so that a reader can see when it does.
+\item \textbf{Beyond $d=200$ the frontier is again a subset estimate.} Every $\kappa_i$ reported
+here is exact: all $F$ features of all 180 models. That costs one linear programme per feature, about
+$0.24$\,s at $d=200$, and it does not extrapolate --- at $d=400$ the same sweep is a hundredfold more
+solver time, so a wider campaign would have to return to a subset and to an upper bound. The
+statistic is exact at the widths we report and would not be at the next one.
 
 \item \textbf{The nonlinear witness is built but not yet used.} The extractor of
 Section~\ref{sec:witness} is implemented and validated --- every witness it returns is confirmed
@@ -2320,6 +2344,24 @@ inseparable by a linear programme, and on small codes against brute-force enumer
 things are missing. The Radon compression to $d+2$ states is not implemented, so the witnesses are
 valid and not minimal; and no result reported in this paper is derived from one, so the sharper
 claim it licenses is not made here.
+
+\item \textbf{How much the ReLU costs is quantified at one width only.} Section~\ref{sec:res-primary}
+establishes that the pre-ReLU state is more affinely decodable than the post-ReLU one everywhere. How
+\emph{much} more, in sparsity levels, is harder: $\kappa$ is defined on $\Phi b$, and
+$\mathrm{ReLU}(\Phi b)$ is not a linear image of the state polytope, so the post-ReLU side has to be
+sampled and tested rather than solved. Sampling can only refute separability, never confirm it, so it
+overestimates the frontier --- by two to eight levels here, against the exact $\kappa$ --- and the
+overestimate is only harmless in a difference taken with the same sampler and the same draws on both
+sides. At $d=50$ that difference is $0.87$ levels $[0.63,1.10]$ for $L^4$ and $2.03$ $[1.77,2.27]$ for
+an untrained code. At $d=100$ and $d=200$ the $L^4$ cells saturate the sampler's ceiling on both
+sides, so their difference is censoring and not measurement, and we report no value there. A larger
+sampling budget would resolve it and we have not spent one.
+
+\item \textbf{Two controls the analysis wants and does not have.} A random \emph{tight frame}, whose
+$R_{\mathrm{geom}}$ is exactly $1$ rather than the $\approx1.01$ of an i.i.d.\ code, would sharpen
+the claim that near-floor geometry is generic. And Section~\ref{sec:res-primary}'s frozen-encoder arm
+covers $d\in\{50,100\}$ only, so what training the code contributes is measured at two widths of the
+three.
 \end{enumerate}
 
 \subsection{Open problem}
@@ -2372,14 +2414,25 @@ Leverage links the two: low leverage forces the affine frontier down, with no de
 argument, and an explicit code refutes the converse, so the hierarchy holds in one direction
 only.
 
-We are deliberately not claiming a scaling law. The threshold-recovery campaign runs to
-$d=\EsixDmax$ at about a million features, which establishes that the measurement scales; four
-widths do not distinguish $c\,d/\ln d$ from the alternatives, and we say so rather than fit the
-shape the theory predicts and present it as evidence for it.
+Applied to 180 trained models, the instrument returns a negative result and two positive ones. The
+negative: given the same representation and the same threshold treatment, the network and a fitted
+affine probe tie on exact support recovery in 119 of 120 models, so on this task the nonlinearity
+does not out-decode a linear probe of the state it produces. The first positive: what separates
+models is the loss, not the architecture --- $L^2$ pushes $R_{\mathrm{geom}}$ to
+\SALtwoTwoHundredRgeom{} and collapses its frontier to $1$, while $L^4$ holds
+\SALfourTwoHundredRgeom{} and a frontier of \FullLfourTwoHundredKappaMin{}. The second: that
+separation is bought by training the code and not the readout, since a frozen random code with a
+fully trained readout keeps an untrained code's frontier.
+
+Two things we decline to claim. There is no scaling law here: the threshold-recovery campaign reaches
+$d=\EsixDmax$ at about a million features, which establishes that the measurement scales, but four
+widths do not distinguish $c\,d/\ln d$ from the alternatives. And proximity to the rank--trace floor
+is not evidence of learned structure, because an untrained code already achieves it.
 
 The broader lesson is that capacity questions for overcomplete representations are not settled by
-counting features. They depend on which decoding interface is maintained across computation, and
-that is now something one can measure --- per feature, exactly, for the code in hand.
+counting features, nor by measuring distance to a bound that random codes already meet. They depend
+on which decoding interface a particular code maintains, and on which representation is being read ---
+both of which are now measurable, per feature and exactly, for the code in hand.
 
 % ============================================================================
 \section*{Acknowledgements}
