@@ -530,8 +530,19 @@ def leverage_upper_bound_on_kappa(Phi: np.ndarray) -> np.ndarray:
 
         kappa_i <= 1 + sqrt((F-1) h_i/(1-h_i)).
 
-    The box is satisfied for free wherever the bound is informative: `h_i <= 1/2` gives
-    `||z||_2 <= 1`, hence `||z||_inf <= 1`.
+    **The hypothesis `h_i <= 1/2` is required, not decorative.** The minimum-`l2` witness is only
+    admissible for `kappa_i` if it also satisfies the box `||z||_inf <= 1`, and what guarantees
+    that is `h_i <= 1/2`, which forces `||z||_2 <= 1`. Above one half the bound is simply not
+    established, and it is not merely loose there -- it is false. Unit-norm counterexample at
+    `d = 2`, `F = 3`:
+
+        phi_1 = (1, 0),  phi_2 = (1/4, sqrt(15)/4),  phi_3 = (1/4, -sqrt(15)/4)
+
+    has `h_1 = 8/9`, so the expression evaluates to 5, while the unique representation of `phi_1`
+    by the other two columns is `z = (2, 2)`. That violates the box, the programme is infeasible,
+    and `kappa_1 = +infinity`. An earlier version of this docstring and of the manuscript stated
+    the bound for every `h_i < 1`; that was wrong. Entries with `h_i > 1/2` now return `+infinity`,
+    meaning "no bound established", which keeps every downstream comparison sound.
 
     **This is the direction the hierarchy needs.** The matching lower bound
     (:func:`leverage_bound_on_rho`) is nearly vacuous, and an argument through coherence cannot
@@ -539,30 +550,47 @@ def leverage_upper_bound_on_kappa(Phi: np.ndarray) -> np.ndarray:
     Leverage does, and the resulting implication is one-way: see
     :func:`affine_failure_threshold`, and `[I, I]` for the failure of the converse.
 
-    The `sqrt(F-1)` step is lossy, so the bound is far from tight -- on the trained `L4` models it
-    predicts failure at `s = 11` where the measured frontier is 4. It is a sufficient condition
-    for collapse, not an estimate of the frontier.
+    The `sqrt(F-1)` step is lossy, so where the bound does hold it is far from tight -- on the
+    trained `L4` models it predicts failure at `s = 11` where the measured frontier is 4. It is a
+    sufficient condition for collapse, not an estimate of the frontier.
     """
+    from .analog_optimum import leverage
+
     d, F = Phi.shape
-    return 1.0 + np.sqrt((F - 1) * min_l2_representation(Phi))
+    h = leverage(Phi)
+    out = 1.0 + np.sqrt((F - 1) * min_l2_representation(Phi))
+    return np.where(h <= 0.5 + TOL, out, np.inf)
 
 
 def affine_failure_threshold(F: int, s: int) -> float:
     """Leverage below which affine separability at sparsity `s` is impossible.
 
-    Solving `1 + sqrt((F-1) h/(1-h)) <= s` for `h`:
+    Solving `1 + sqrt((F-1) h/(1-h)) <= s` for `h` gives `(s-1)^2 / ((F-1) + (s-1)^2)`, but that
+    is only a sufficient condition for collapse where :func:`leverage_upper_bound_on_kappa`
+    actually holds, which needs `h <= 1/2`. So the threshold is
 
-        h_i <= (s-1)^2 / ((F-1) + (s-1)^2)   ==>   feature i is not separable at sparsity s.
+        h_i <= min{ 1/2, (s-1)^2 / ((F-1) + (s-1)^2) }  ==>  i is not separable at sparsity s.
 
-    A statement about the code alone, with no decoder and no training in it. Verified on 967
-    predicted failures with no counterexample, and it correctly predicts the collapse of the
-    `L2`-trained models from their leverage alone: `h_min = 0.0091` at `F = 100` falls below the
-    `s = 2` threshold of `0.01`, and the measured frontier is indeed 1.
+    The cap only bites for `s - 1 > sqrt(F-1)`; below that the original expression is already at
+    most one half and nothing changes.
+
+    **Why the cap is necessary.** Without it the statement is false. Unit-norm counterexample at
+    `d = 2`, `F = 3`: with `a = (1,0)`, `b = (-25/44, sqrt(1311)/44)` and
+    `phi_i = (-17/40, sqrt(1311)/40)`, the unique representation is `z = (1/5, 11/10)`, so
+    `||z||_inf > 1`, the programme is infeasible and `kappa_i = +infinity`. Its leverage is
+    `h_i = 5/9 = 0.5556`, which sits below the uncapped `s = 3` threshold of `2/3`, so the uncapped
+    corollary predicts failure at `s = 3` for a feature separable at every sparsity.
+
+    A statement about the code alone, with no decoder and no training in it. It correctly predicts
+    the collapse of the `L2`-trained models from their leverage alone: `h_min = 0.0091` at
+    `F = 100` falls below the `s = 2` threshold of `0.01`, and the measured frontier is indeed 1.
+    Every application in the campaign evaluates it at `h.min()`, and the largest `h_min` over the
+    180 Stage A models is 0.4885, so all of them fall inside the region where it is valid.
     """
     if s < 2:
         return 0.0
     k = (s - 1) ** 2
-    return float(k / ((F - 1) + k))
+    return float(min(0.5, k / ((F - 1) + k)))
 
 
 def leverage_bound_on_rho(Phi: np.ndarray) -> np.ndarray:

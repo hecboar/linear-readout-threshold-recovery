@@ -231,10 +231,10 @@ between the two hulls, which is a certified noise tolerance rather than a scale
 \item \textbf{The hierarchy is an implication, and only one way.} Sherman--Morrison makes leverage
 exactly redundancy (Lemma~\ref{lem:sm}), which bounds the affine frontier from above
 (Theorem~\ref{thm:arrow}) and yields a failure threshold with no decoder, no probe and no
-training in it: leverage below $(s-1)^2/((F-1)+(s-1)^2)$ makes affine separability at sparsity
-$s$ impossible (Corollary~\ref{cor:failthresh}). The converse is false, and
-$\Phi=[\,I_d\;I_d\,]$ refutes it: perfectly uniform leverage, hence optimal analog geometry, with
-the worst possible frontier (Proposition~\ref{prop:oneway}). So bad analog geometry implies a bad
+training in it: leverage below $\min\{\tfrac12,(s-1)^2/((F-1)+(s-1)^2)\}$ makes affine separability
+at sparsity $s$ impossible (Corollary~\ref{cor:failthresh}). The converse is false, and
+$\Phi=[\,I_d\;I_d\,]$ refutes it: perfectly uniform leverage, hence optimal analog geometry, and yet
+no feature separable at any positive sparsity (Proposition~\ref{prop:oneway}). So bad analog geometry implies a bad
 affine frontier while good analog geometry implies nothing --- which is what makes ``hierarchy''
 literally true here rather than a label on three separate measurements.
 
@@ -906,9 +906,10 @@ every $i$
   \;=\;\frac{1}{h_i}-1,
   \label{eq:capon}
 \end{equation}
-attained uniquely at $g_i^{\star}=\Sigma^{-1}\phi_i/h_i$. Stacking the $F$ minimisers as rows
-gives exactly the gain-calibrated pseudoinverse, so the row-wise optimum and the algebraic
-pseudoinverse coincide. Consequently the smallest mean-square off-diagonal cross-talk this code
+attained uniquely at $g_i^{\star}=\Sigma^{-1}\phi_i/h_i$. Stacking the $F$ minimisers as rows gives
+$G^{\star}=D_h^{-1}\Phi^{+}$ with $D_h=\operatorname{diag}(h_1,\dots,h_F)$: the row-wise optimum is
+the Moore--Penrose pseudoinverse \emph{after} gain calibration, and coincides with $\Phi^{+}$ itself
+only when every $h_i=1$. Consequently the smallest mean-square off-diagonal cross-talk this code
 admits is
 \begin{equation}
   W_{\star}(\Phi)\;:=\;\frac{1}{F(F-1)}\sum_{i=1}^{F}\Big(\frac1{h_i}-1\Big)
@@ -1191,9 +1192,10 @@ $\Phi_{-i}$ be $\Phi$ with column $i$ deleted. Put
   \;:\;\Phi_{-i}z=\phi_i,\;\norm{z}_\infty\le1\Big\}.
   \label{eq:kappa}
 \end{equation}
-Then feature $i$ is affinely separable at every sparsity $s'\le s$ if and only if
-$\kappa_i>s$. The largest sparsity at which feature $i$ is separable is
-$\lceil\kappa_i\rceil-1$.
+with $\kappa_i:=+\infty$ when the constraints admit no $z$ at all. Then feature $i$ is affinely
+separable at every sparsity $s'\le s$ if and only if $\kappa_i>s$. When $\kappa_i$ is finite the
+largest sparsity at which feature $i$ is separable is $\lceil\kappa_i\rceil-1$; when
+$\kappa_i=+\infty$ the feature is separable at every sparsity, and no collision exists to bound.
 \end{theorem}
 
 \begin{proof}
@@ -1417,7 +1419,7 @@ geometry into a bound on the affine frontier.
 
 \begin{theorem}[Low leverage forces the frontier down]
 \label{thm:arrow}
-For every $i$ with $h_i<1$,
+For every $i$ with $h_i\le\tfrac12$,
 \begin{equation}
   \kappa_i\;\le\;1+\sqrt{\frac{(F-1)\,h_i}{1-h_i}} .
   \label{eq:arrow}
@@ -1427,23 +1429,48 @@ For every $i$ with $h_i<1$,
 \begin{proof}
 Take the $z$ of Lemma~\ref{lem:sm}, so $\Phi_{-i}z=\phi_i$ and
 $\norm{z}_2=\sqrt{h_i/(1-h_i)}$. Then $\norm{z}_1\le\sqrt{F-1}\,\norm{z}_2$ and
-$\max(\sum_jz^{+}_j,1+\sum_jz^{-}_j)\le1+\norm{z}_1$, so this $z$ is a witness for the
-right-hand side. The box constraint is satisfied wherever the bound is informative: $h_i\le1/2$
-gives $\norm{z}_2\le1$ and hence $\norm{z}_\infty\le1$.
+$\max(\sum_jz^{+}_j,1+\sum_jz^{-}_j)\le1+\norm{z}_1$. For $z$ to be \emph{admissible} it must also
+satisfy the box, and $h_i\le1/2$ gives $\norm{z}_2\le1$ and hence $\norm{z}_\infty\le1$. So this
+$z$ witnesses the right-hand side.
 \end{proof}
+
+\begin{remark}[The hypothesis is necessary, not cosmetic]
+\label{rem:arrow-hyp}
+Above $h_i=1/2$ the minimum-$\ell_2$ representation need not satisfy the box, and the inequality
+is then not merely unproved but false. Take unit-norm columns in $\R^2$,
+\[
+  \phi_1=(1,0),\qquad
+  \phi_2=\Big(\tfrac14,\tfrac{\sqrt{15}}4\Big),\qquad
+  \phi_3=\Big(\tfrac14,-\tfrac{\sqrt{15}}4\Big).
+\]
+Here $h_1=8/9$, so the right-hand side of~\eqref{eq:arrow} equals $5$. But the second coordinate
+forces $z_2=z_3$ and the first then forces $z_2=z_3=2$, so the only representation of $\phi_1$ by
+the other two columns violates $\norm{z}_\infty\le1$: the programme~\eqref{eq:kappa} is infeasible
+and $\kappa_1=+\infty$. An earlier version of this work stated~\eqref{eq:arrow} for all $h_i<1$;
+that was wrong, and the counterexample is in the test suite.
+\end{remark}
 
 \begin{corollary}[A failure threshold with no decoder in it]
 \label{cor:failthresh}
 If
 \[
-  h_i\;\le\;\frac{(s-1)^2}{(F-1)+(s-1)^2}
+  h_i\;\le\;\min\left\{\frac12,\;\frac{(s-1)^2}{(F-1)+(s-1)^2}\right\}
 \]
 then feature $i$ is \emph{not} affinely separable at sparsity $s$.
 \end{corollary}
 
 \begin{proof}
-Solve $1+\sqrt{(F-1)h/(1-h)}\le s$ for $h$ and apply Theorem~\ref{thm:frontier}.
+Solve $1+\sqrt{(F-1)h/(1-h)}\le s$ for $h$, intersect with the hypothesis of
+Theorem~\ref{thm:arrow}, and apply Theorem~\ref{thm:frontier}.
 \end{proof}
+
+The cap only binds for $s-1>\sqrt{F-1}$; below that the second expression is already at most a
+half and the statement is the unrestricted one. Dropping it makes the corollary false, and by the
+same mechanism as Remark~\ref{rem:arrow-hyp}: with $a=(1,0)$,
+$b=(-\tfrac{25}{44},\tfrac{\sqrt{1311}}{44})$ and
+$\phi_i=(-\tfrac{17}{40},\tfrac{\sqrt{1311}}{40})$, all unit-norm in $\R^2$, the unique
+representation is $z=(\tfrac15,\tfrac{11}{10})$, so $\kappa_i=+\infty$ and the feature is separable
+at every sparsity --- yet $h_i=5/9$ lies below the uncapped $s=3$ threshold of $2/3$.
 
 Corollary~\ref{cor:failthresh} is a statement about the code alone: no training, no decoder, no
 probe. It predicts affine collapse from a single leverage score. Its cost is looseness --- the
@@ -1455,7 +1482,8 @@ not an estimate of the frontier.
 \label{prop:oneway}
 Let $\Phi=[\,I_d\;\;I_d\,]\in\R^{d\times2d}$. Then $h_i=1/2$ for every $i$, so leverage is
 perfectly uniform and $W_{\star}(\Phi)=W(F,d)$: the analog geometry is optimal. Yet
-$\kappa_i=1$ for every $i$, the worst possible value, so no feature is separable beyond $s=1$.
+$\kappa_i=1$ for every $i$, the smallest value the frontier can take, so no feature is separable at
+any positive sparsity.
 \end{proposition}
 
 \begin{proof}
@@ -1463,8 +1491,11 @@ $\Sigma=2I_d$, so $h_i=\phi_i^{\top}\phi_i/2=1/2$ and Theorem~\ref{thm:codefloor
 Each column $i$ has a duplicate $j$ with $\phi_j=\phi_i$; taking $z=e_j$ gives
 $\Phi_{-i}z=\phi_i$ with $\sum_jz^{+}_j=1$, $\sum_jz^{-}_j=0$ and $\norm{z}_\infty=1$, so
 $\kappa_i\le\max(1,1)=1$. The reverse holds for every code and every feature, since
-$z^{-}\ge0$ forces the objective to be at least $1+\sum_jz^{-}_j\ge1$. Hence $\kappa_i=1$, and
-by Theorem~\ref{thm:frontier} feature $i$ is separable at $s=1$ and at no larger sparsity.
+$z^{-}\ge0$ forces the objective to be at least $1+\sum_jz^{-}_j\ge1$. Hence $\kappa_i=1$.
+Theorem~\ref{thm:frontier} requires $\kappa_i>s$, and $1>1$ is false, so feature $i$ is separable
+at \emph{no} positive sparsity: the largest separable sparsity is $\lceil\kappa_i\rceil-1=0$.
+Directly: the singleton state $e_i$ and the singleton state $e_j$ have identical representations,
+so no rule of any kind can tell them apart.
 \end{proof}
 
 Together, Theorem~\ref{thm:arrow} and Proposition~\ref{prop:oneway} say:
@@ -1943,10 +1974,12 @@ Two limits on what this licenses. The factorisation is arithmetic on
 Theorem~\ref{thm:codefloor} and needs no new assumption, but it reinterprets an existing
 measurement rather than adding evidence --- five seeds at one width remain five seeds at one
 width. And \GoneLtwoLeverageMin{} is the number Corollary~\ref{cor:failthresh} consumes: with
-$s=2$ the threshold $(s-1)^2/((F-1)+(s-1)^2)$ is exactly $1/F$, so at $F=\EfiveF$ it is $0.01$,
-and the measured minimum leverage of the $L^2$ code falls below it. The theory therefore predicts
-that this code loses affine separability at $s=2$ --- from a single leverage score, with no
-decoder and no probe in the argument. Whether that prediction survives at other widths is the
+$s=2$ the threshold $\min\{\tfrac12,(s-1)^2/((F-1)+(s-1)^2)\}$ is exactly $1/F$, so at
+$F=\EfiveF$ it is $0.01$, and the measured minimum leverage of the $L^2$ code falls below it. The
+theory therefore predicts that this code loses affine separability at $s=2$ --- from a single
+leverage score, with no decoder and no probe in the argument. The corollary is applied at the
+minimum leverage, which is where it is strongest and, being below a half, also where its
+hypothesis holds. Whether that prediction survives at other widths is the
 question Section~\ref{sec:limitations} flags as open.
 
 \subsection{E6: a scalability stress test, not a scaling law}
