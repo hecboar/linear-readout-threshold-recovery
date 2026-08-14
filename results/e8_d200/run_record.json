@@ -1,0 +1,76 @@
+{
+  "experiment": "e8_frozen_encoder",
+  "smoke": false,
+  "command": "e8_frozen_encoder.py --device cuda --widths 200 --seeds 10 --workers 8 --out-dir results/e8_d200",
+  "argv": [
+    "experiments/e8_frozen_encoder.py",
+    "--device",
+    "cuda",
+    "--widths",
+    "200",
+    "--seeds",
+    "10",
+    "--workers",
+    "8",
+    "--out-dir",
+    "results/e8_d200"
+  ],
+  "started_utc": "2026-08-13T21:50:16Z",
+  "config": {
+    "tasks": [
+      "relu"
+    ],
+    "steps": 50000,
+    "batch": 2048,
+    "lr": 0.001,
+    "theta": 0.5,
+    "eval_s_max": {
+      "50": 10,
+      "100": 14,
+      "200": 20,
+      "400": 28
+    },
+    "n_fit": 8192,
+    "probe_n_train": 8192,
+    "probe_n_test": 4096,
+    "native_n_train": 8192,
+    "native_n_test": 4096,
+    "probe_n_val": 4096,
+    "probe_steps": 300,
+    "probe_batch": 4096,
+    "include_oracle": true,
+    "frontier_n_low": 24,
+    "frontier_n_random": 8,
+    "frontier_alpha": 1.0,
+    "train_sparsities": [
+      0.01
+    ],
+    "_note": "E8 shares E7's evaluation settings verbatim so the three arms sit beside Stage A without re-derivation. Only train_sparsities is pinned, since E8 has one."
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39",
+    "processor": "aarch64",
+    "cpu_count": 20,
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "git_commit": "da9f675f0ca1da6282cc55dfc9da3603362a6103",
+    "git": {
+      "commit": "da9f675f0ca1da6282cc55dfc9da3603362a6103",
+      "branch": "phase0-reproducibility",
+      "dirty": false,
+      "dirty_files": [],
+      "dirty_file_count": 0,
+      "describe": "da9f675"
+    },
+    "env_omp_num_threads": "18",
+    "matplotlib": "3.11.0",
+    "torch": "2.13.0+cu130",
+    "torch_cuda_available": true,
+    "torch_num_threads": 18
+  },
+  "n_models": 30,
+  "duration_seconds": 7392.032,
+  "finished_utc": "2026-08-13T23:53:28Z",
+  "exit_status": "ok"
+}

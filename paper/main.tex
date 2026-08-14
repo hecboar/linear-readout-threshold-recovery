@@ -2095,36 +2095,48 @@ arms on an identical budget, \EeightSeeds{} seeds each: both trained; a random c
 \emph{frozen} with only $W_{\mathrm{out}}$ trainable; and neither trained.
 
 \begin{center}\small
-\begin{tabular}{lcccccc}
+\begin{tabular}{lccccccccc}
 \toprule
-& \multicolumn{3}{c}{$d=50$} & \multicolumn{3}{c}{$d=100$} \\
-\cmidrule(lr){2-4}\cmidrule(lr){5-7}
-arm & $R_{\mathrm{geom}}$ & $\kappa_{\min}$ & $R_{\mathrm{readout}}$
-    & $R_{\mathrm{geom}}$ & $\kappa_{\min}$ & $R_{\mathrm{readout}}$ \\
+& \multicolumn{3}{c}{$d=50$} & \multicolumn{3}{c}{$d=100$} & \multicolumn{3}{c}{$d=200$} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+arm & $R_{\mathrm{geom}}$ & $\kappa_{\min}$ & $R_{\mathrm{ro}}$
+    & $R_{\mathrm{geom}}$ & $\kappa_{\min}$ & $R_{\mathrm{ro}}$
+    & $R_{\mathrm{geom}}$ & $\kappa_{\min}$ & $R_{\mathrm{ro}}$ \\
 \midrule
 both trained & \EeightTrainedFiftyRgeom & \EeightTrainedFiftyKappa & \EeightTrainedFiftyRreadout
-             & \EeightTrainedHundredRgeom & \EeightTrainedHundredKappa & \EeightTrainedHundredRreadout \\
+             & \EeightTrainedHundredRgeom & \EeightTrainedHundredKappa & \EeightTrainedHundredRreadout
+             & \EeightTrainedTwoHundredRgeom & \EeightTrainedTwoHundredKappa & \EeightTrainedTwoHundredRreadout \\
 frozen code  & \EeightFrozenFiftyRgeom & \EeightFrozenFiftyKappa & \EeightFrozenFiftyRreadout
-             & \EeightFrozenHundredRgeom & \EeightFrozenHundredKappa & \EeightFrozenHundredRreadout \\
+             & \EeightFrozenHundredRgeom & \EeightFrozenHundredKappa & \EeightFrozenHundredRreadout
+             & \EeightFrozenTwoHundredRgeom & \EeightFrozenTwoHundredKappa & \EeightFrozenTwoHundredRreadout \\
 neither      & \EeightRandomFiftyRgeom & \EeightRandomFiftyKappa & \EeightRandomFiftyRreadout
-             & \EeightRandomHundredRgeom & \EeightRandomHundredKappa & \EeightRandomHundredRreadout \\
+             & \EeightRandomHundredRgeom & \EeightRandomHundredKappa & \EeightRandomHundredRreadout
+             & \EeightRandomTwoHundredRgeom & \EeightRandomTwoHundredKappa & \EeightRandomTwoHundredRreadout \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Training the readout alone leaves the frontier where an untrained code puts it:
-\EeightFrozenHundredKappa{} against \EeightRandomHundredKappa{} at $d=100$, while training both
-reaches \EeightTrainedHundredKappa{}. The gain is entirely in $\Phi$. That is unsurprising for
-$\kappa$, which is a function of the code alone --- the frozen and untrained rows must agree up to
-the column normalisation that distinguishes them, and their agreement is a consistency check rather
-than a result --- but it is the point: whatever the training buys for support recovery, it buys by
-moving the code.
+\noindent$R_{\mathrm{ro}}$ abbreviates $R_{\mathrm{readout}}$. The frozen arm is at
+$d\in\{50,100\}$ from one run and $d=200$ from a second, added after review asked for the third
+width; the two carry separate run records rather than being merged.
 
-The readout column is the surprise. The frozen arm trained $W_{\mathrm{out}}$ for the full budget and
-ended at $R_{\mathrm{readout}}=\EeightFrozenHundredRreadout{}$, nearly twice the cross-talk of the
-best readout \emph{of the code it was given}, while the jointly trained arm reaches
-\EeightTrainedHundredRreadout{}. Gradient descent finds a good decoder only when it may also move
-the code; held to a fixed random $\Phi$, on this objective, it does not.
+Training the readout alone leaves the frontier where an untrained code puts it, at all three widths:
+\EeightFrozenHundredKappa{} against \EeightRandomHundredKappa{} at $d=100$ and
+\EeightFrozenTwoHundredKappa{} against \EeightRandomTwoHundredKappa{} at $d=200$, while training both
+reaches \EeightTrainedHundredKappa{} and \EeightTrainedTwoHundredKappa{}. The gain is entirely in
+$\Phi$. That is unsurprising for $\kappa$, which is a function of the code alone --- the frozen and
+untrained rows must agree up to the column normalisation that distinguishes them, and their agreement
+is a consistency check rather than a result --- but it is the point: whatever the training buys for
+support recovery, it buys by moving the code.
+
+The readout column is the surprise, and it is stable across width. The frozen arm trained
+$W_{\mathrm{out}}$ for the full budget and ended at
+$R_{\mathrm{readout}}=\EeightFrozenHundredRreadout{}$ at $d=100$ and
+\EeightFrozenTwoHundredRreadout{} at $d=200$ --- nearly twice the cross-talk of the best readout
+\emph{of the code it was given} --- while the jointly trained arm reaches
+\EeightTrainedHundredRreadout{} and \EeightTrainedTwoHundredRreadout{}. Gradient descent finds a good
+decoder only when it may also move the code; held to a fixed random $\Phi$, on this objective, it
+does not, and the failure does not shrink as the problem gets bigger.
 
 \paragraph{The frontier is now exact.} Earlier we reported $\kappa_{\min}$ over a subset of features
 and called it an upper bound. Evaluating every feature of all 180 models shows the bound was tight:
@@ -2357,11 +2369,11 @@ an untrained code. At $d=100$ and $d=200$ the $L^4$ cells saturate the sampler's
 sides, so their difference is censoring and not measurement, and we report no value there. A larger
 sampling budget would resolve it and we have not spent one.
 
-\item \textbf{Two controls the analysis wants and does not have.} A random \emph{tight frame}, whose
+\item \textbf{One control the analysis wants and does not have.} A random \emph{tight frame}, whose
 $R_{\mathrm{geom}}$ is exactly $1$ rather than the $\approx1.01$ of an i.i.d.\ code, would sharpen
-the claim that near-floor geometry is generic. And Section~\ref{sec:res-primary}'s frozen-encoder arm
-covers $d\in\{50,100\}$ only, so what training the code contributes is measured at two widths of the
-three.
+the claim that near-floor geometry is generic: as it stands the comparison is against a code that
+is close to the floor rather than on it, so a small residual advantage for the trained code could be
+conditioning rather than structure.
 \end{enumerate}
 
 \subsection{Open problem}

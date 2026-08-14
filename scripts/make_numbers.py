@@ -415,8 +415,11 @@ def build() -> Macros:
     import collections
 
     e8 = collections.defaultdict(list)
-    for r in load("e8/raw/e8_runs.json")["runs"]:
-        e8[(r["arm"], r["d"])].append(r)
+    # d=200 was run separately, after the audit asked for the third width, so it has its own run
+    # record and its own provenance. Both are read; neither is merged on disk.
+    for rel in ("e8/raw/e8_runs.json", "e8_d200/raw/e8_runs.json"):
+        for r in load(rel)["runs"]:
+            e8[(r["arm"], r["d"])].append(r)
     ARM = {"trained": "Trained", "frozen": "Frozen", "random": "Random"}
     for (arm, dd), rs in e8.items():
         if dd not in W:
