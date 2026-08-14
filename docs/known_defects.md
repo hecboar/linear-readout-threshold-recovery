@@ -1,7 +1,12 @@
-# Known defects, open
+# Known defects
 
-Defects found and not yet fixed, with what they invalidate. A defect leaves this file only when
-the fix is committed and verified, not when it is understood.
+Every defect found in this work, what it invalidated, and what was done about it. A defect's status
+changes only when the fix is committed and verified, not when it is understood, and no entry is
+deleted once fixed: the record of what was wrong is worth more than a short file, because the pattern
+across entries is the useful part. Twice here the same trap was hit in two different code paths.
+
+All five entries are currently fixed. The file was called *Known defects, open* while some were not;
+it is kept as a register rather than a queue.
 
 ---
 
@@ -56,8 +61,11 @@ comes from that path.
 profile is recomputed from saved weights with no retraining, so Stage A's cells can be re-analysed
 rather than re-run.
 
-**Deliberately not fixed yet.** Changing it mid-campaign would leave the finished cells and the
-remaining ones measured under different criteria. It waits for Stage A to end.
+**Deliberately not fixed yet** — the reasoning at the time, kept as the record and since overtaken.
+Changing it mid-campaign would have left the finished cells and the remaining ones measured under
+different criteria, so it waited for Stage A to end. Stage A ended, and
+`scripts/refresh_native_blocks.py` recomputed the block for all 180 saved models at once; the
+per-cell records in `results/e7/raw/` now carry `kd1_fixed: true`.
 
 **Precedent.** This is the second time this exact trap has been hit in this repository. The first
 was per-feature Boolean thresholds tuned on raw accuracy, which produced "predict everything off";
@@ -68,8 +76,17 @@ propagate to the native path.
 
 ## KD2 — The headline comparison gave the probe a threshold-tuning advantage
 
+**Status: FIXED in the manuscript** 2026-08-13; **the campaign gate is labelled, not repaired.**
+Section 10.5 leads with `tab:primary`, the paired matched comparison from
+`scripts/primary_comparison.py`: same input, same single validation-selected global threshold on both
+sides, bootstrap intervals within seed. `Figure 5(a,b)` shows it under both pre-registered estimands.
+The stage report still prints the old `0%` line, because it is the number the campaign computed and
+deleting it would rewrite history; it now carries an `UNMATCHED` tag, a paragraph naming the three
+asymmetries, and a pointer here and to `primary_comparison.py`. A reader of `results/` cannot now
+mistake it for a decoder comparison, which was the actual hazard.
+
 **Found:** 2026-08-12, while checking whether the audit packet contained enough to answer its own
-question about fairness. Not yet fixed in the reporting code.
+question about fairness.
 
 **Where:** `experiments/e7_scaled_toy.py`, the stage report. `s95(model)` comes from
 `evaluate_network(..., theta=cfg["theta"])` — a **fixed** 0.5, never tuned. `s95(best probe)` is the
@@ -145,6 +162,12 @@ this through is closed.
 ---
 
 ## KD4 — The probe-versus-network headline compares different decoder inputs
+
+**Status: FIXED** 2026-08-13. The primary comparison holds the decoder input fixed to the post-ReLU
+state the network's output layer actually reads, and the pre-ReLU probe is reported separately as
+what it is: a gap between *representations*, not between decoders. The manuscript says so in those
+words, and the `theta = 0.5` scale complaint below is answered by matching a single
+validation-selected global threshold on both sides rather than by asserting a common scale.
 
 **Found:** 2026-08-12, same audit, verified per seed.
 
