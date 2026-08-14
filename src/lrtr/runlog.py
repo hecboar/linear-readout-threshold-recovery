@@ -45,7 +45,12 @@ def git_provenance() -> Dict[str, Any]:
     dirty tree are legitimate during development and must simply say so.
     """
     status = _git("status", "--porcelain")
-    dirty_files = [ln[3:] for ln in status.splitlines()] if status else []
+    # Split on the status field rather than slicing a fixed offset: `_git` strips its output, so a
+    # leading unmodified-index space (" M path") is gone from the *first* line only, and `ln[3:]`
+    # then ate the first character of that one path. A record that misnames the file it warns about
+    # is worse than no warning, and only the first line being wrong is exactly what hides it.
+    dirty_files = [ln.split(maxsplit=1)[1] for ln in status.splitlines() if ln.split(maxsplit=1)[1:]
+                   ] if status else []
     return {
         "commit": _git_commit(),
         "branch": _git("rev-parse", "--abbrev-ref", "HEAD"),

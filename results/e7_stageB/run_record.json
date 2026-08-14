@@ -1,0 +1,167 @@
+{
+  "experiment": "e7_scaled_toy",
+  "smoke": false,
+  "command": "e7_scaled_toy.py --config configs/e7_stageB.json --stage B --device cuda --workers 10 --out-dir results/e7_stageB",
+  "argv": [
+    "experiments/e7_scaled_toy.py",
+    "--config",
+    "configs/e7_stageB.json",
+    "--stage",
+    "B",
+    "--device",
+    "cuda",
+    "--workers",
+    "10",
+    "--out-dir",
+    "results/e7_stageB"
+  ],
+  "started_utc": "2026-08-14T08:22:46Z",
+  "config": {
+    "tasks": [
+      "relu"
+    ],
+    "steps": 50000,
+    "batch": 2048,
+    "lr": 0.001,
+    "theta": 0.5,
+    "eval_s_max": {
+      "50": 10,
+      "100": 14,
+      "200": 20,
+      "400": 28
+    },
+    "n_fit": 8192,
+    "probe_n_train": 8192,
+    "probe_n_test": 4096,
+    "native_n_train": 8192,
+    "native_n_test": 4096,
+    "probe_n_val": 4096,
+    "probe_steps": 300,
+    "probe_batch": 4096,
+    "include_oracle": false,
+    "frontier_n_low": 24,
+    "frontier_n_random": 8,
+    "frontier_alpha": 1.0,
+    "_note": "Stage B, re-scoped. The original design tested robustness of a nonlinear advantage; the matched comparison in Stage A returned a tie, so that framing is dead. These are the cells that test claims which are still live. include_oracle is off: the per-sparsity oracle probes are an upper envelope that feeds no number in the paper (verified: no reference in primary_comparison.py, native_comparison.py, all_feature_frontier.py or main.tex), and measured at d=200 with 20 sparsities they at least double the diagnosis cost.",
+    "stages": {
+      "B": {
+        "note": "feature load and training sparsity, for the two claims that survive Stage A: that near-floor geometry is generic AT THIS LOAD, and that the L2/L4 separation does not depend on training sparsity",
+        "cells": [
+          {
+            "widths": [
+              100,
+              200
+            ],
+            "overcompleteness": 4,
+            "train_sparsities": [
+              0.01
+            ],
+            "losses": [
+              "L2",
+              "L4"
+            ],
+            "n_seeds": 10
+          },
+          {
+            "widths": [
+              50,
+              200
+            ],
+            "overcompleteness": 2,
+            "train_sparsities": [
+              0.02
+            ],
+            "losses": [
+              "L2",
+              "L4"
+            ],
+            "n_seeds": 10
+          }
+        ],
+        "controls": {
+          "widths": [
+            100,
+            200
+          ],
+          "overcompleteness": 4,
+          "n_seeds": 10
+        }
+      }
+    },
+    "threads": 18,
+    "device": "cuda",
+    "stages_run": [
+      "B"
+    ],
+    "resume": false
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39",
+    "processor": "aarch64",
+    "cpu_count": 20,
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "git_commit": "3316f7b6c4da505b815310dbde2bf67513f6ab91",
+    "git": {
+      "commit": "3316f7b6c4da505b815310dbde2bf67513f6ab91",
+      "branch": "phase0-reproducibility",
+      "dirty": true,
+      "dirty_files": [
+        "esults/e7/raw/cell_relu_L2_p0.01_d100.json",
+        "results/e7/raw/cell_relu_L2_p0.01_d200.json",
+        "results/e7/raw/cell_relu_L2_p0.01_d50.json",
+        "results/e7/raw/cell_relu_L4_p0.01_d100.json",
+        "results/e7/raw/cell_relu_L4_p0.01_d200.json",
+        "results/e7/raw/cell_relu_L4_p0.01_d50.json",
+        "results/e7/raw/cell_relu_random_p0.01_d100.json",
+        "results/e7/raw/cell_relu_random_p0.01_d200.json",
+        "results/e7/raw/cell_relu_random_p0.01_d50.json",
+        "results/e8_d200/"
+      ],
+      "dirty_file_count": 10,
+      "describe": "3316f7b-dirty"
+    },
+    "env_omp_num_threads": "18",
+    "matplotlib": "3.11.0",
+    "torch": "2.13.0+cu130",
+    "torch_cuda_available": true,
+    "torch_num_threads": 18
+  },
+  "stage_B": {
+    "stage": "B",
+    "n_models": 100,
+    "widths": [
+      50,
+      100,
+      200
+    ],
+    "network_beats_best_probe_fraction": 0.0,
+    "l2_l4_geometry_separated_by_width": [
+      {
+        "d": 50,
+        "R_geom_L4": 1.0004242902116411,
+        "R_geom_L2": 28.56189568025114,
+        "separated": true
+      },
+      {
+        "d": 100,
+        "R_geom_L4": 1.0003174861538757,
+        "R_geom_L2": 23.859779103254034,
+        "separated": true
+      },
+      {
+        "d": 200,
+        "R_geom_L4": 1.0002254480134471,
+        "R_geom_L2": 47.82552412426696,
+        "separated": true
+      }
+    ],
+    "l2_l4_separates_everywhere": true,
+    "e3_violations": [],
+    "e3_arrow_held": true
+  },
+  "duration_seconds": 11611.194,
+  "finished_utc": "2026-08-14T11:36:17Z",
+  "exit_status": "ok"
+}

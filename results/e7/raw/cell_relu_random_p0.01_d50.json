@@ -80,9 +80,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.196162362776416,
+          "kappa_min": 3.1961623521487077,
           "argmin_feature": 49,
           "argmin_leverage_rank": 10,
           "subset": {
@@ -92,7 +92,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 9.826925337095707,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.2787757231271826
+          "runtime_s": 0.2787757231271826,
+          "kappa_min_subset": 3.196162362776416,
+          "kappa_min_exact_all_features": 3.1961623521487077,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -6559,71 +6562,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 100002,
+        "seed": 90000,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.8611231435687,
-            "energy_per_coord": 0.0033953707714522875,
-            "rms": 0.05826981012026972,
+            "frob_sq_A": 101.86112312222465,
+            "energy_per_coord": 0.0033953707707408205,
+            "rms": 0.05826981011416479,
             "energy_empirical": {
-              "mean": 0.0034344689437600952,
-              "se": 7.304690787548691e-05,
-              "ci_low": 0.0032912996351421257,
-              "ci_high": 0.003577638252378065,
+              "mean": 0.003343017891178396,
+              "se": 6.985570288371141e-05,
+              "ci_low": 0.003206103229411591,
+              "ci_high": 0.003479932552945201,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.8611231435687,
-            "energy_per_coord": 0.0033953707714522875,
-            "rms": 0.05826981012026972,
+            "frob_sq_A": 101.86112312222518,
+            "energy_per_coord": 0.003395370770740837,
+            "rms": 0.058269810114164926,
             "energy_empirical": {
-              "mean": 0.0034344689437600952,
-              "se": 7.304690787548691e-05,
-              "ci_low": 0.0032912996351421257,
-              "ci_high": 0.003577638252378065,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 105.58299151811906,
-            "energy_per_coord": 0.0035194330506039713,
-            "rms": 0.059324809739298545,
-            "energy_empirical": {
-              "mean": 0.0035606887255984648,
-              "se": 7.589521570020796e-05,
-              "ci_low": 0.0034119368362271582,
-              "ci_high": 0.0037094406149697713,
+              "mean": 0.003343017889941809,
+              "se": 6.98557028739411e-05,
+              "ci_low": 0.0032061032281941533,
+              "ci_high": 0.0034799325516894643,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.24365513280134757,
-            "accuracy": 0.99093017578125,
-            "precision": 0.9658848614072495,
-            "recall": 0.10910404624277456,
-            "f1": 0.1960614585587535
+            "accuracy_selected": {
+              "threshold": 0.2481412744431497,
+              "accuracy": 0.9908935546875,
+              "precision": 0.9944289693593314,
+              "recall": 0.08739290085679315,
+              "f1": 0.16066606660666066
+            },
+            "f1_selected": {
+              "threshold": 0.12917654653806826,
+              "accuracy": 0.98990966796875,
+              "precision": 0.4934640522875817,
+              "recall": 0.44357405140758877,
+              "f1": 0.46719092432641485
+            },
+            "ranking": {
+              "topk_exact": 0.767578125,
+              "topk_hit_rate": 0.8669189453124999,
+              "mean_active_per_state": 0.997314453125
+            }
           },
           "probe_pre": {
-            "threshold": 0.1344464993669975,
-            "accuracy": 0.99432861328125,
-            "precision": 0.7195678271308523,
-            "recall": 0.721820809248555,
-            "f1": 0.7206925574125286
+            "accuracy_selected": {
+              "threshold": 0.13715708236596408,
+              "accuracy": 0.994921875,
+              "precision": 0.7572491660251476,
+              "recall": 0.7223990208078336,
+              "f1": 0.739413680781759
+            },
+            "f1_selected": {
+              "threshold": 0.13715708236596408,
+              "accuracy": 0.994921875,
+              "precision": 0.7572491660251476,
+              "recall": 0.7223990208078336,
+              "f1": 0.739413680781759
+            },
+            "ranking": {
+              "topk_exact": 0.896728515625,
+              "topk_hit_rate": 0.9548787434895833,
+              "mean_active_per_state": 0.997314453125
+            }
           },
           "probe_post": {
-            "threshold": 0.12259758348154991,
-            "accuracy": 0.99204345703125,
-            "precision": 0.6082949308755761,
-            "recall": 0.6040462427745664,
-            "f1": 0.6061631419939577
+            "accuracy_selected": {
+              "threshold": 0.1235068198247357,
+              "accuracy": 0.99262939453125,
+              "precision": 0.6368069815195072,
+              "recall": 0.60734394124847,
+              "f1": 0.6217266006766069
+            },
+            "f1_selected": {
+              "threshold": 0.1235068198247357,
+              "accuracy": 0.99262939453125,
+              "precision": 0.6368069815195072,
+              "recall": 0.60734394124847,
+              "f1": 0.6217266006766069
+            },
+            "ranking": {
+              "topk_exact": 0.84033203125,
+              "topk_hit_rate": 0.9232950846354167,
+              "mean_active_per_state": 0.997314453125
+            }
           }
         },
-        "base_rate": 0.01013671875
+        "base_rate": 0.00997314453125,
+        "kd1_fixed": true
       }
     },
     {
@@ -6700,9 +6734,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.170996080655863,
+          "kappa_min": 3.1709960812260705,
           "argmin_feature": 6,
           "argmin_leverage_rank": 1,
           "subset": {
@@ -6712,7 +6746,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 8.99607479828721,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.3256065109744668
+          "runtime_s": 0.3256065109744668,
+          "kappa_min_subset": 3.170996080655863,
+          "kappa_min_exact_all_features": 3.1709960812260705,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -13179,71 +13216,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 100999,
+        "seed": 90013,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.86917868216958,
-            "energy_per_coord": 0.0033956392894056537,
-            "rms": 0.058272114166260124,
+            "frob_sq_A": 101.86917876333038,
+            "energy_per_coord": 0.003395639292111014,
+            "rms": 0.058272114189473284,
             "energy_empirical": {
-              "mean": 0.0032812716335998545,
-              "se": 6.971490358147207e-05,
-              "ci_low": 0.0031446329333944868,
-              "ci_high": 0.0034179103338052223,
+              "mean": 0.0034292088650610154,
+              "se": 7.247621805137329e-05,
+              "ci_low": 0.003287158087944652,
+              "ci_high": 0.003571259642177379,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.86917868216958,
-            "energy_per_coord": 0.0033956392894056537,
-            "rms": 0.058272114166260124,
+            "frob_sq_A": 101.86917876333088,
+            "energy_per_coord": 0.0033956392921110313,
+            "rms": 0.05827211418947344,
             "energy_empirical": {
-              "mean": 0.0032812716335998545,
-              "se": 6.971490358147207e-05,
-              "ci_low": 0.0031446329333944868,
-              "ci_high": 0.0034179103338052223,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 105.97211533380623,
-            "energy_per_coord": 0.003532403844460209,
-            "rms": 0.05943402934733778,
-            "energy_empirical": {
-              "mean": 0.0034063830493045065,
-              "se": 7.246609824050654e-05,
-              "ci_low": 0.0032643521066529724,
-              "ci_high": 0.0035484139919560406,
+              "mean": 0.0034292088649024452,
+              "se": 7.247621806358213e-05,
+              "ci_low": 0.003287158087762153,
+              "ci_high": 0.0035712596420427374,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.25554933884531694,
-            "accuracy": 0.99114501953125,
-            "precision": 0.9633251833740831,
-            "recall": 0.0983524712930604,
-            "f1": 0.1784824462061155
+            "accuracy_selected": {
+              "threshold": 0.25510281740130564,
+              "accuracy": 0.99093994140625,
+              "precision": 0.9619686800894854,
+              "recall": 0.10426770126091174,
+              "f1": 0.1881426383723474
+            },
+            "f1_selected": {
+              "threshold": 0.1379475839287486,
+              "accuracy": 0.98845703125,
+              "precision": 0.42468827930174563,
+              "recall": 0.4129485935984481,
+              "f1": 0.4187361691664618
+            },
+            "ranking": {
+              "topk_exact": 0.736328125,
+              "topk_hit_rate": 0.8409464518229166,
+              "mean_active_per_state": 1.0068359375
+            }
           },
           "probe_pre": {
-            "threshold": 0.13850516546058939,
-            "accuracy": 0.9948046875,
-            "precision": 0.7432642487046632,
-            "recall": 0.7161757363954069,
-            "f1": 0.7294685990338164
+            "accuracy_selected": {
+              "threshold": 0.1370912815650989,
+              "accuracy": 0.9945458984375,
+              "precision": 0.7317312408043158,
+              "recall": 0.7235693501454898,
+              "f1": 0.7276274079492807
+            },
+            "f1_selected": {
+              "threshold": 0.1370912815650989,
+              "accuracy": 0.9945458984375,
+              "precision": 0.7317312408043158,
+              "recall": 0.7235693501454898,
+              "f1": 0.7276274079492807
+            },
+            "ranking": {
+              "topk_exact": 0.891357421875,
+              "topk_hit_rate": 0.9524007161458333,
+              "mean_active_per_state": 1.0068359375
+            }
           },
           "probe_post": {
-            "threshold": 0.12406412780323127,
-            "accuracy": 0.9924853515625,
-            "precision": 0.6212121212121212,
-            "recall": 0.5936095856215676,
-            "f1": 0.60709726831759
+            "accuracy_selected": {
+              "threshold": 0.12371355019945618,
+              "accuracy": 0.99205322265625,
+              "precision": 0.6045224921818619,
+              "recall": 0.6093598448108632,
+              "f1": 0.6069315300084531
+            },
+            "f1_selected": {
+              "threshold": 0.12371355019945618,
+              "accuracy": 0.99205322265625,
+              "precision": 0.6045224921818619,
+              "recall": 0.6093598448108632,
+              "f1": 0.6069315300084531
+            },
+            "ranking": {
+              "topk_exact": 0.834228515625,
+              "topk_hit_rate": 0.92254638671875,
+              "mean_active_per_state": 1.0068359375
+            }
           }
         },
-        "base_rate": 0.0097802734375
+        "base_rate": 0.010068359375,
+        "kd1_fixed": true
       }
     },
     {
@@ -13320,9 +13388,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.137181797647085,
+          "kappa_min": 3.1371818167030368,
           "argmin_feature": 47,
           "argmin_leverage_rank": 1,
           "subset": {
@@ -13332,7 +13400,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 9.203031995685093,
           "e3_first_predicted_failure_s": 10,
           "e3_bound_respected": true,
-          "runtime_s": 0.38218775315908715
+          "runtime_s": 0.38218775315908715,
+          "kappa_min_subset": 3.137181797647085,
+          "kappa_min_exact_all_features": 3.1371818167030368,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -19799,71 +19870,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 101996,
+        "seed": 90026,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.82497144739816,
-            "energy_per_coord": 0.0033941657149132733,
-            "rms": 0.058259468886295844,
+            "frob_sq_A": 101.82497142115838,
+            "energy_per_coord": 0.003394165714038613,
+            "rms": 0.05825946887878925,
             "energy_empirical": {
-              "mean": 0.0033656203707062445,
-              "se": 7.176184326930999e-05,
-              "ci_low": 0.003224969742434189,
-              "ci_high": 0.0035062709989783,
+              "mean": 0.0034182974869808582,
+              "se": 7.156984528431695e-05,
+              "ci_low": 0.003278023167844493,
+              "ci_high": 0.0035585718061172233,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.82497144739816,
-            "energy_per_coord": 0.0033941657149132733,
-            "rms": 0.058259468886295844,
+            "frob_sq_A": 101.82497142115888,
+            "energy_per_coord": 0.0033941657140386296,
+            "rms": 0.05825946887878939,
             "energy_empirical": {
-              "mean": 0.0033656203707062445,
-              "se": 7.176184326930999e-05,
-              "ci_low": 0.003224969742434189,
-              "ci_high": 0.0035062709989783,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 105.70072502014864,
-            "energy_per_coord": 0.0035233575006716196,
-            "rms": 0.059357876483846855,
-            "energy_empirical": {
-              "mean": 0.0034969053730247923,
-              "se": 7.462320850308929e-05,
-              "ci_low": 0.003350646571947914,
-              "ci_high": 0.0036431641741016705,
+              "mean": 0.003418297486109343,
+              "se": 7.15698452429061e-05,
+              "ci_low": 0.003278023167054142,
+              "ci_high": 0.0035585718051645444,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.25042602681237236,
-            "accuracy": 0.99110107421875,
-            "precision": 0.9591836734693877,
-            "recall": 0.10444444444444445,
-            "f1": 0.18837675350701402
+            "accuracy_selected": {
+              "threshold": 0.2506471127338296,
+              "accuracy": 0.990947265625,
+              "precision": 0.9486607142857143,
+              "recall": 0.10340632603406326,
+              "f1": 0.18648530057042562
+            },
+            "f1_selected": {
+              "threshold": 0.1339701949114668,
+              "accuracy": 0.98911376953125,
+              "precision": 0.45526788003076135,
+              "recall": 0.4321167883211679,
+              "f1": 0.4433903382848583
+            },
+            "ranking": {
+              "topk_exact": 0.73779296875,
+              "topk_hit_rate": 0.8359293619791667,
+              "mean_active_per_state": 1.00341796875
+            }
           },
           "probe_pre": {
-            "threshold": 0.13454810648698523,
-            "accuracy": 0.99436767578125,
-            "precision": 0.7112727272727273,
-            "recall": 0.7244444444444444,
-            "f1": 0.7177981651376146
+            "accuracy_selected": {
+              "threshold": 0.1347437129763005,
+              "accuracy": 0.994482421875,
+              "precision": 0.7238625363020329,
+              "recall": 0.7277372262773723,
+              "f1": 0.7257947100218394
+            },
+            "f1_selected": {
+              "threshold": 0.1347437129763005,
+              "accuracy": 0.994482421875,
+              "precision": 0.7238625363020329,
+              "recall": 0.7277372262773723,
+              "f1": 0.7257947100218394
+            },
+            "ranking": {
+              "topk_exact": 0.8955078125,
+              "topk_hit_rate": 0.9543701171875,
+              "mean_active_per_state": 1.00341796875
+            }
           },
           "probe_post": {
-            "threshold": 0.1222139136917176,
-            "accuracy": 0.992197265625,
-            "precision": 0.6038424124513618,
-            "recall": 0.6130864197530864,
-            "f1": 0.608429306542514
+            "accuracy_selected": {
+              "threshold": 0.12333145456339063,
+              "accuracy": 0.99225341796875,
+              "precision": 0.6163975155279503,
+              "recall": 0.6036496350364964,
+              "f1": 0.6099569760295022
+            },
+            "f1_selected": {
+              "threshold": 0.12333145456339063,
+              "accuracy": 0.99225341796875,
+              "precision": 0.6163975155279503,
+              "recall": 0.6036496350364964,
+              "f1": 0.6099569760295022
+            },
+            "ranking": {
+              "topk_exact": 0.83642578125,
+              "topk_hit_rate": 0.9238037109375,
+              "mean_active_per_state": 1.00341796875
+            }
           }
         },
-        "base_rate": 0.0098876953125
+        "base_rate": 0.0100341796875,
+        "kd1_fixed": true
       }
     },
     {
@@ -19940,9 +20042,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.2499400509655914,
+          "kappa_min": 3.249940048854342,
           "argmin_feature": 14,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -19952,7 +20054,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 9.047983460338513,
           "e3_first_predicted_failure_s": 10,
           "e3_bound_respected": true,
-          "runtime_s": 0.22962009208276868
+          "runtime_s": 0.22962009208276868,
+          "kappa_min_subset": 3.2499400509655914,
+          "kappa_min_exact_all_features": 3.249940048854342,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -26419,71 +26524,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 102993,
+        "seed": 90039,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.49740529091486,
-            "energy_per_coord": 0.003383246843030494,
-            "rms": 0.058165684411261714,
+            "frob_sq_A": 101.49740530179076,
+            "energy_per_coord": 0.003383246843393025,
+            "rms": 0.05816568441437808,
             "energy_empirical": {
-              "mean": 0.0035060964235521237,
-              "se": 7.400929389862826e-05,
-              "ci_low": 0.003361040872989572,
-              "ci_high": 0.0036511519741146753,
+              "mean": 0.0032263368207156792,
+              "se": 6.852699744638558e-05,
+              "ci_low": 0.003092026373752095,
+              "ci_high": 0.0033606472676792633,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.49740529091486,
-            "energy_per_coord": 0.003383246843030494,
-            "rms": 0.058165684411261714,
+            "frob_sq_A": 101.49740530179123,
+            "energy_per_coord": 0.003383246843393042,
+            "rms": 0.05816568441437822,
             "energy_empirical": {
-              "mean": 0.0035060964235521237,
-              "se": 7.400929389862826e-05,
-              "ci_low": 0.003361040872989572,
-              "ci_high": 0.0036511519741146753,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 106.06158069689118,
-            "energy_per_coord": 0.003535386023229706,
-            "rms": 0.059459112196783646,
-            "energy_empirical": {
-              "mean": 0.0036640925358533945,
-              "se": 7.769925704273504e-05,
-              "ci_low": 0.0035118047904241136,
-              "ci_high": 0.0038163802812826754,
+              "mean": 0.003226336822013311,
+              "se": 6.85269974971919e-05,
+              "ci_low": 0.0030920263749501485,
+              "ci_high": 0.0033606472690764734,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.25026216074583546,
-            "accuracy": 0.99083740234375,
-            "precision": 0.8862275449101796,
-            "recall": 0.1072463768115942,
-            "f1": 0.19133807369101485
+            "accuracy_selected": {
+              "threshold": 0.2510676095285829,
+              "accuracy": 0.99123046875,
+              "precision": 0.9517766497461929,
+              "recall": 0.09498480243161095,
+              "f1": 0.17273146015660987
+            },
+            "f1_selected": {
+              "threshold": 0.13560398288331094,
+              "accuracy": 0.98940673828125,
+              "precision": 0.44561891515994434,
+              "recall": 0.40577507598784196,
+              "f1": 0.4247646824870741
+            },
+            "ranking": {
+              "topk_exact": 0.756103515625,
+              "topk_hit_rate": 0.8497639973958333,
+              "mean_active_per_state": 0.9638671875
+            }
           },
           "probe_pre": {
-            "threshold": 0.1351190664736153,
-            "accuracy": 0.993994140625,
-            "precision": 0.6931922723091076,
-            "recall": 0.7280193236714976,
-            "f1": 0.7101790763430725
+            "accuracy_selected": {
+              "threshold": 0.13634277064908001,
+              "accuracy": 0.9948193359375,
+              "precision": 0.7391304347826086,
+              "recall": 0.7147922998986829,
+              "f1": 0.7267576616018543
+            },
+            "f1_selected": {
+              "threshold": 0.13634277064908001,
+              "accuracy": 0.9948193359375,
+              "precision": 0.7391304347826086,
+              "recall": 0.7147922998986829,
+              "f1": 0.7267576616018543
+            },
+            "ranking": {
+              "topk_exact": 0.897705078125,
+              "topk_hit_rate": 0.9549269903273809,
+              "mean_active_per_state": 0.9638671875
+            }
           },
           "probe_post": {
-            "threshold": 0.12236869951927046,
-            "accuracy": 0.991640625,
-            "precision": 0.580958842152872,
-            "recall": 0.6205314009661835,
-            "f1": 0.6000934361130577
+            "accuracy_selected": {
+              "threshold": 0.12314248476457515,
+              "accuracy": 0.99275146484375,
+              "precision": 0.6296688741721854,
+              "recall": 0.6020770010131712,
+              "f1": 0.615563900038845
+            },
+            "f1_selected": {
+              "threshold": 0.12314248476457515,
+              "accuracy": 0.99275146484375,
+              "precision": 0.6296688741721854,
+              "recall": 0.6020770010131712,
+              "f1": 0.615563900038845
+            },
+            "ranking": {
+              "topk_exact": 0.847412109375,
+              "topk_hit_rate": 0.926357886904762,
+              "mean_active_per_state": 0.9638671875
+            }
           }
         },
-        "base_rate": 0.010107421875
+        "base_rate": 0.009638671875,
+        "kd1_fixed": true
       }
     },
     {
@@ -26560,9 +26696,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.314064998394071,
+          "kappa_min": 3.3140649740137684,
           "argmin_feature": 8,
           "argmin_leverage_rank": 10,
           "subset": {
@@ -26572,7 +26708,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 9.960809580816065,
           "e3_first_predicted_failure_s": 10,
           "e3_bound_respected": true,
-          "runtime_s": 0.39281909103738144
+          "runtime_s": 0.39281909103738144,
+          "kappa_min_subset": 3.314064998394071,
+          "kappa_min_exact_all_features": 3.3140649740137684,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -33039,71 +33178,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 103990,
+        "seed": 90052,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.47118619656905,
-            "energy_per_coord": 0.0033823728732189674,
-            "rms": 0.058158171164669266,
+            "frob_sq_A": 101.47118617027053,
+            "energy_per_coord": 0.003382372872342348,
+            "rms": 0.05815817115713275,
             "energy_empirical": {
-              "mean": 0.0034453078205485595,
-              "se": 7.025900031580009e-05,
-              "ci_low": 0.0033076027103398032,
-              "ci_high": 0.003583012930757316,
+              "mean": 0.0032511226164467274,
+              "se": 7.029642355569626e-05,
+              "ci_low": 0.0031133441580355895,
+              "ci_high": 0.0033889010748578653,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.47118619656905,
-            "energy_per_coord": 0.0033823728732189674,
-            "rms": 0.058158171164669266,
+            "frob_sq_A": 101.47118617027104,
+            "energy_per_coord": 0.0033823728723423713,
+            "rms": 0.058158171157132954,
             "energy_empirical": {
-              "mean": 0.0034453078205485595,
-              "se": 7.025900031580009e-05,
-              "ci_low": 0.0033076027103398032,
-              "ci_high": 0.003583012930757316,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 105.08176487045668,
-            "energy_per_coord": 0.0035027254956818887,
-            "rms": 0.05918382799111501,
-            "energy_empirical": {
-              "mean": 0.003564682656494151,
-              "se": 7.292131893678206e-05,
-              "ci_low": 0.0034217594976728998,
-              "ci_high": 0.0037076058153154025,
+              "mean": 0.0032511226138062627,
+              "se": 7.029642350157667e-05,
+              "ci_low": 0.0031133441555011975,
+              "ci_high": 0.003388901072111328,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.24882258080372519,
-            "accuracy": 0.99084716796875,
-            "precision": 0.9783132530120482,
-            "recall": 0.09792571152918475,
-            "f1": 0.17803113352335015
+            "accuracy_selected": {
+              "threshold": 0.250128454307067,
+              "accuracy": 0.99110107421875,
+              "precision": 0.9659367396593674,
+              "recall": 0.09856007944389275,
+              "f1": 0.1788691146654652
+            },
+            "f1_selected": {
+              "threshold": 0.13134519099877145,
+              "accuracy": 0.9894091796875,
+              "precision": 0.4583333333333333,
+              "recall": 0.42328699106256207,
+              "f1": 0.44011357769747034
+            },
+            "ranking": {
+              "topk_exact": 0.759033203125,
+              "topk_hit_rate": 0.8568731398809524,
+              "mean_active_per_state": 0.9833984375
+            }
           },
           "probe_pre": {
-            "threshold": 0.13762823351412337,
-            "accuracy": 0.9947998046875,
-            "precision": 0.7490118577075099,
-            "recall": 0.7313072841292813,
-            "f1": 0.7400536978276788
+            "accuracy_selected": {
+              "threshold": 0.13677086109591216,
+              "accuracy": 0.99462646484375,
+              "precision": 0.7346519393783715,
+              "recall": 0.7100297914597815,
+              "f1": 0.7221310440600934
+            },
+            "f1_selected": {
+              "threshold": 0.13677086109591216,
+              "accuracy": 0.99462646484375,
+              "precision": 0.7346519393783715,
+              "recall": 0.7100297914597815,
+              "f1": 0.7221310440600934
+            },
+            "ranking": {
+              "topk_exact": 0.900146484375,
+              "topk_hit_rate": 0.9557425362723214,
+              "mean_active_per_state": 0.9833984375
+            }
           },
           "probe_post": {
-            "threshold": 0.12344878911190311,
-            "accuracy": 0.99224365234375,
-            "precision": 0.6165503969208563,
-            "recall": 0.6181862035697058,
-            "f1": 0.617367216668674
+            "accuracy_selected": {
+              "threshold": 0.12376275956442809,
+              "accuracy": 0.99234130859375,
+              "precision": 0.6137931034482759,
+              "recall": 0.5965739821251241,
+              "f1": 0.6050610600528767
+            },
+            "f1_selected": {
+              "threshold": 0.12376275956442809,
+              "accuracy": 0.99234130859375,
+              "precision": 0.6137931034482759,
+              "recall": 0.5965739821251241,
+              "f1": 0.6050610600528767
+            },
+            "ranking": {
+              "topk_exact": 0.8427734375,
+              "topk_hit_rate": 0.9226428803943452,
+              "mean_active_per_state": 0.9833984375
+            }
           }
         },
-        "base_rate": 0.0101220703125
+        "base_rate": 0.009833984375,
+        "kd1_fixed": true
       }
     },
     {
@@ -33180,9 +33350,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.0401947634163617,
+          "kappa_min": 3.0401947979871076,
           "argmin_feature": 41,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -33192,7 +33362,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 8.602581196707275,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.39562967291567475
+          "runtime_s": 0.39562967291567475,
+          "kappa_min_subset": 3.0401947634163617,
+          "kappa_min_exact_all_features": 3.0401947979871076,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -39659,71 +39832,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 104987,
+        "seed": 90065,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.68656866042318,
-            "energy_per_coord": 0.003389552288680774,
-            "rms": 0.05821986163398857,
+            "frob_sq_A": 101.68656865071317,
+            "energy_per_coord": 0.0033895522883571057,
+            "rms": 0.05821986163120886,
             "energy_empirical": {
-              "mean": 0.0033545164768976924,
-              "se": 6.980602918323808e-05,
-              "ci_low": 0.0032176991737947937,
-              "ci_high": 0.003491333780000591,
+              "mean": 0.0033914431114023683,
+              "se": 7.122864642409374e-05,
+              "ci_low": 0.0032518375297436067,
+              "ci_high": 0.00353104869306113,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.68656866042318,
-            "energy_per_coord": 0.003389552288680774,
-            "rms": 0.05821986163398857,
+            "frob_sq_A": 101.68656865071362,
+            "energy_per_coord": 0.00338955228835712,
+            "rms": 0.058219861631208986,
             "energy_empirical": {
-              "mean": 0.0033545164768976924,
-              "se": 6.980602918323808e-05,
-              "ci_low": 0.0032176991737947937,
-              "ci_high": 0.003491333780000591,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 105.98872693866414,
-            "energy_per_coord": 0.0035329575646221387,
-            "rms": 0.059438687440270234,
-            "energy_empirical": {
-              "mean": 0.0035050720446710105,
-              "se": 7.33395734009602e-05,
-              "ci_low": 0.0033613291221635967,
-              "ci_high": 0.0036488149671784244,
+              "mean": 0.0033914431119289085,
+              "se": 7.122864647150636e-05,
+              "ci_low": 0.00325183753017722,
+              "ci_high": 0.003531048693680597,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.2459047255656149,
-            "accuracy": 0.99094482421875,
-            "precision": 0.9953596287703016,
-            "recall": 0.10372340425531915,
-            "f1": 0.18786949857674623
+            "accuracy_selected": {
+              "threshold": 0.2487025549056949,
+              "accuracy": 0.99114990234375,
+              "precision": 0.988479262672811,
+              "recall": 0.1059520869350457,
+              "f1": 0.1913896944010707
+            },
+            "f1_selected": {
+              "threshold": 0.1229579308957273,
+              "accuracy": 0.98998291015625,
+              "precision": 0.4930555555555556,
+              "recall": 0.4734502346258335,
+              "f1": 0.48305405064885976
+            },
+            "ranking": {
+              "topk_exact": 0.78125,
+              "topk_hit_rate": 0.8761555989583333,
+              "mean_active_per_state": 0.988525390625
+            }
           },
           "probe_pre": {
-            "threshold": 0.1346053883535907,
-            "accuracy": 0.9947119140625,
-            "precision": 0.7479859013091642,
-            "recall": 0.7183268858800773,
-            "f1": 0.7328564380858411
+            "accuracy_selected": {
+              "threshold": 0.13716945538096334,
+              "accuracy": 0.99482177734375,
+              "precision": 0.744421906693712,
+              "recall": 0.7251173129167696,
+              "f1": 0.7346428124609032
+            },
+            "f1_selected": {
+              "threshold": 0.13716945538096334,
+              "accuracy": 0.99482177734375,
+              "precision": 0.744421906693712,
+              "recall": 0.7251173129167696,
+              "f1": 0.7346428124609032
+            },
+            "ranking": {
+              "topk_exact": 0.896484375,
+              "topk_hit_rate": 0.95482177734375,
+              "mean_active_per_state": 0.988525390625
+            }
           },
           "probe_post": {
-            "threshold": 0.1227708332793617,
-            "accuracy": 0.99237060546875,
-            "precision": 0.6268506900878293,
-            "recall": 0.6039651837524178,
-            "f1": 0.6151951730082502
+            "accuracy_selected": {
+              "threshold": 0.12424645095742026,
+              "accuracy": 0.9925048828125,
+              "precision": 0.6224668501376032,
+              "recall": 0.614472709310941,
+              "f1": 0.6184439473030077
+            },
+            "f1_selected": {
+              "threshold": 0.12424645095742026,
+              "accuracy": 0.9925048828125,
+              "precision": 0.6224668501376032,
+              "recall": 0.614472709310941,
+              "f1": 0.6184439473030077
+            },
+            "ranking": {
+              "topk_exact": 0.8408203125,
+              "topk_hit_rate": 0.9243408203125,
+              "mean_active_per_state": 0.988525390625
+            }
           }
         },
-        "base_rate": 0.01009765625
+        "base_rate": 0.00988525390625,
+        "kd1_fixed": true
       }
     },
     {
@@ -39800,9 +40004,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.22064185054247,
+          "kappa_min": 3.220641883041286,
           "argmin_feature": 35,
           "argmin_leverage_rank": 1,
           "subset": {
@@ -39812,7 +40016,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 9.188097900654572,
           "e3_first_predicted_failure_s": 10,
           "e3_bound_respected": true,
-          "runtime_s": 0.4210840759333223
+          "runtime_s": 0.4210840759333223,
+          "kappa_min_subset": 3.22064185054247,
+          "kappa_min_exact_all_features": 3.220641883041286,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -46279,71 +46486,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 105984,
+        "seed": 90078,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.90211261669585,
-            "energy_per_coord": 0.0033967370872231956,
-            "rms": 0.058281532986214385,
+            "frob_sq_A": 101.90211255831883,
+            "energy_per_coord": 0.003396737085277294,
+            "rms": 0.058281532969520405,
             "energy_empirical": {
-              "mean": 0.003420925218850411,
-              "se": 7.27975271579496e-05,
-              "ci_low": 0.003278244687457253,
-              "ci_high": 0.0035636057502435687,
+              "mean": 0.003418363673921917,
+              "se": 7.174468640374546e-05,
+              "ci_low": 0.0032777466724884558,
+              "ci_high": 0.0035589806753553786,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.90211261669585,
-            "energy_per_coord": 0.0033967370872231956,
-            "rms": 0.058281532986214385,
+            "frob_sq_A": 101.90211255831933,
+            "energy_per_coord": 0.0033967370852773116,
+            "rms": 0.05828153296952056,
             "energy_empirical": {
-              "mean": 0.003420925218850411,
-              "se": 7.27975271579496e-05,
-              "ci_low": 0.003278244687457253,
-              "ci_high": 0.0035636057502435687,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 105.98121382934637,
-            "energy_per_coord": 0.0035327071276448794,
-            "rms": 0.059436580719661854,
-            "energy_empirical": {
-              "mean": 0.0035590631728379635,
-              "se": 7.590627715644176e-05,
-              "ci_low": 0.003410289603410822,
-              "ci_high": 0.003707836742265105,
+              "mean": 0.0034183636721248243,
+              "se": 7.174468637536548e-05,
+              "ci_low": 0.0032777466707469864,
+              "ci_high": 0.0035589806735026623,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.24561206832378982,
-            "accuracy": 0.99094970703125,
-            "precision": 0.9712230215827338,
-            "recall": 0.09878048780487805,
-            "f1": 0.1793225592207217
+            "accuracy_selected": {
+              "threshold": 0.24705122435382246,
+              "accuracy": 0.99103515625,
+              "precision": 0.9595505617977528,
+              "recall": 0.10463121783876501,
+              "f1": 0.18868758285461776
+            },
+            "f1_selected": {
+              "threshold": 0.12800024981719166,
+              "accuracy": 0.9893359375,
+              "precision": 0.46397188049209137,
+              "recall": 0.4528301886792453,
+              "f1": 0.4583333333333333
+            },
+            "ranking": {
+              "topk_exact": 0.772705078125,
+              "topk_hit_rate": 0.8686930338541666,
+              "mean_active_per_state": 0.996337890625
+            }
           },
           "probe_pre": {
-            "threshold": 0.13339681074345136,
-            "accuracy": 0.9941650390625,
-            "precision": 0.7007042253521126,
-            "recall": 0.7280487804878049,
-            "f1": 0.7141148325358851
+            "accuracy_selected": {
+              "threshold": 0.13814836292359275,
+              "accuracy": 0.99469482421875,
+              "precision": 0.7325694783032667,
+              "recall": 0.7363391325655476,
+              "f1": 0.7344494684101185
+            },
+            "f1_selected": {
+              "threshold": 0.13814836292359275,
+              "accuracy": 0.99469482421875,
+              "precision": 0.7325694783032667,
+              "recall": 0.7363391325655476,
+              "f1": 0.7344494684101185
+            },
+            "ranking": {
+              "topk_exact": 0.902587890625,
+              "topk_hit_rate": 0.9581013997395833,
+              "mean_active_per_state": 0.996337890625
+            }
           },
           "probe_post": {
-            "threshold": 0.12095293890515302,
-            "accuracy": 0.991982421875,
-            "precision": 0.5959548447789276,
-            "recall": 0.6180487804878049,
-            "f1": 0.6068007662835249
+            "accuracy_selected": {
+              "threshold": 0.12379075718861764,
+              "accuracy": 0.99236328125,
+              "precision": 0.6178580262181549,
+              "recall": 0.6121048762558197,
+              "f1": 0.6149679960610537
+            },
+            "f1_selected": {
+              "threshold": 0.12379075718861764,
+              "accuracy": 0.99236328125,
+              "precision": 0.6178580262181549,
+              "recall": 0.6121048762558197,
+              "f1": 0.6149679960610537
+            },
+            "ranking": {
+              "topk_exact": 0.85205078125,
+              "topk_hit_rate": 0.9317708333333332,
+              "mean_active_per_state": 0.996337890625
+            }
           }
         },
-        "base_rate": 0.010009765625
+        "base_rate": 0.00996337890625,
+        "kd1_fixed": true
       }
     },
     {
@@ -46420,9 +46658,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.183367248473188,
+          "kappa_min": 3.183367262860463,
           "argmin_feature": 23,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -46432,7 +46670,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 9.346931301694408,
           "e3_first_predicted_failure_s": 10,
           "e3_bound_respected": true,
-          "runtime_s": 0.2811745951185003
+          "runtime_s": 0.2811745951185003,
+          "kappa_min_subset": 3.183367248473188,
+          "kappa_min_exact_all_features": 3.183367262860463,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -52899,71 +53140,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 106981,
+        "seed": 90091,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.66190779790242,
-            "energy_per_coord": 0.0033887302599300826,
-            "rms": 0.058212801512468736,
+            "frob_sq_A": 101.66190779075576,
+            "energy_per_coord": 0.0033887302596918613,
+            "rms": 0.058212801510422615,
             "energy_empirical": {
-              "mean": 0.0032914792541721694,
-              "se": 6.927401343757066e-05,
-              "ci_low": 0.0031557046827699873,
-              "ci_high": 0.0034272538255743514,
+              "mean": 0.0032710737563817907,
+              "se": 6.752040191708923e-05,
+              "ci_low": 0.003138736200402627,
+              "ci_high": 0.0034034113123609547,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.66190779790242,
-            "energy_per_coord": 0.0033887302599300826,
-            "rms": 0.058212801512468736,
+            "frob_sq_A": 101.66190779075629,
+            "energy_per_coord": 0.0033887302596918756,
+            "rms": 0.05821280151042273,
             "energy_empirical": {
-              "mean": 0.0032914792541721694,
-              "se": 6.927401343757066e-05,
-              "ci_low": 0.0031557046827699873,
-              "ci_high": 0.0034272538255743514,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 105.48652974093058,
-            "energy_per_coord": 0.003516217658031018,
-            "rms": 0.05929770364888524,
-            "energy_empirical": {
-              "mean": 0.003414238123523213,
-              "se": 7.196530527531279e-05,
-              "ci_low": 0.0032731887170471697,
-              "ci_high": 0.003555287529999256,
+              "mean": 0.0032710737549810093,
+              "se": 6.752040190723852e-05,
+              "ci_low": 0.0031387361990211525,
+              "ci_high": 0.0034034113109408662,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.2529947613685652,
-            "accuracy": 0.9908740234375,
-            "precision": 0.9883381924198251,
-            "recall": 0.08323103363614044,
-            "f1": 0.15353260869565216
+            "accuracy_selected": {
+              "threshold": 0.24610734438504758,
+              "accuracy": 0.9911572265625,
+              "precision": 0.9785714285714285,
+              "recall": 0.10213717693836978,
+              "f1": 0.18496849684968497
+            },
+            "f1_selected": {
+              "threshold": 0.12266257753178866,
+              "accuracy": 0.99025390625,
+              "precision": 0.5043407487791645,
+              "recall": 0.46197813121272363,
+              "f1": 0.482230869001297
+            },
+            "ranking": {
+              "topk_exact": 0.778564453125,
+              "topk_hit_rate": 0.8792236328125,
+              "mean_active_per_state": 0.982421875
+            }
           },
           "probe_pre": {
-            "threshold": 0.13816168224900993,
-            "accuracy": 0.994931640625,
-            "precision": 0.7588799585169821,
-            "recall": 0.718634912840658,
-            "f1": 0.7382093316519546
+            "accuracy_selected": {
+              "threshold": 0.13550602461297837,
+              "accuracy": 0.99482421875,
+              "precision": 0.7417470797359066,
+              "recall": 0.7258946322067594,
+              "f1": 0.7337352424014066
+            },
+            "f1_selected": {
+              "threshold": 0.13550602461297837,
+              "accuracy": 0.99482421875,
+              "precision": 0.7417470797359066,
+              "recall": 0.7258946322067594,
+              "f1": 0.7337352424014066
+            },
+            "ranking": {
+              "topk_exact": 0.893798828125,
+              "topk_hit_rate": 0.9535115559895833,
+              "mean_active_per_state": 0.982421875
+            }
           },
           "probe_post": {
-            "threshold": 0.12435605965451177,
-            "accuracy": 0.9928271484375,
-            "precision": 0.6536691037097211,
-            "recall": 0.5926835256567641,
-            "f1": 0.6216842647437548
+            "accuracy_selected": {
+              "threshold": 0.12202326395301906,
+              "accuracy": 0.9925830078125,
+              "precision": 0.626216077828981,
+              "recall": 0.6078528827037774,
+              "f1": 0.6168978562421186
+            },
+            "f1_selected": {
+              "threshold": 0.12202326395301906,
+              "accuracy": 0.9925830078125,
+              "precision": 0.626216077828981,
+              "recall": 0.6078528827037774,
+              "f1": 0.6168978562421186
+            },
+            "ranking": {
+              "topk_exact": 0.84326171875,
+              "topk_hit_rate": 0.9255045572916667,
+              "mean_active_per_state": 0.982421875
+            }
           }
         },
-        "base_rate": 0.00994384765625
+        "base_rate": 0.00982421875,
+        "kd1_fixed": true
       }
     },
     {
@@ -53040,9 +53312,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.091398743899098,
+          "kappa_min": 3.091398736997874,
           "argmin_feature": 41,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -53052,7 +53324,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 8.747574720867394,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.21331549668684602
+          "runtime_s": 0.21331549668684602,
+          "kappa_min_subset": 3.091398743899098,
+          "kappa_min_exact_all_features": 3.091398736997874,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -59519,71 +59794,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 107978,
+        "seed": 90104,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 102.08051769399103,
-            "energy_per_coord": 0.0034026839231330354,
-            "rms": 0.058332528859402585,
+            "frob_sq_A": 102.08051770767852,
+            "energy_per_coord": 0.0034026839235892837,
+            "rms": 0.05833252886331334,
             "energy_empirical": {
-              "mean": 0.003397284950885483,
-              "se": 7.149025789104449e-05,
-              "ci_low": 0.0032571666201735554,
-              "ci_high": 0.003537403281597411,
+              "mean": 0.0033685560651830274,
+              "se": 7.1312550500959e-05,
+              "ci_low": 0.003228786034555454,
+              "ci_high": 0.0035083260958106008,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 102.08051769399103,
-            "energy_per_coord": 0.0034026839231330354,
-            "rms": 0.058332528859402585,
+            "frob_sq_A": 102.08051770767905,
+            "energy_per_coord": 0.0034026839235893024,
+            "rms": 0.0583325288633135,
             "energy_empirical": {
-              "mean": 0.003397284950885483,
-              "se": 7.149025789104449e-05,
-              "ci_low": 0.0032571666201735554,
-              "ci_high": 0.003537403281597411,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 106.38248745031936,
-            "energy_per_coord": 0.0035460829150106466,
-            "rms": 0.059548995919416196,
-            "energy_empirical": {
-              "mean": 0.003538945355255259,
-              "se": 7.4774027371601e-05,
-              "ci_low": 0.003392390954627909,
-              "ci_high": 0.003685499755882609,
+              "mean": 0.0033685560647113734,
+              "se": 7.13125504594724e-05,
+              "ci_low": 0.003228786034165112,
+              "ci_high": 0.0035083260952576347,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.2523551425924147,
-            "accuracy": 0.99076171875,
-            "precision": 0.9668508287292817,
-            "recall": 0.0849102377486657,
-            "f1": 0.15611061552185548
+            "accuracy_selected": {
+              "threshold": 0.24725035588900465,
+              "accuracy": 0.99107421875,
+              "precision": 0.9740566037735849,
+              "recall": 0.10177427304090685,
+              "f1": 0.18429272646140116
+            },
+            "f1_selected": {
+              "threshold": 0.12991418093418822,
+              "accuracy": 0.9893994140625,
+              "precision": 0.4629242819843342,
+              "recall": 0.43691473632331196,
+              "f1": 0.44954361054766734
+            },
+            "ranking": {
+              "topk_exact": 0.76416015625,
+              "topk_hit_rate": 0.8617297944568452,
+              "mean_active_per_state": 0.99072265625
+            }
           },
           "probe_pre": {
-            "threshold": 0.13672866853619367,
-            "accuracy": 0.99462158203125,
-            "precision": 0.7383850931677018,
-            "recall": 0.7210092188258127,
-            "f1": 0.72959371547809
+            "accuracy_selected": {
+              "threshold": 0.1376064459011529,
+              "accuracy": 0.9945947265625,
+              "precision": 0.7335359675785208,
+              "recall": 0.7136520453425332,
+              "f1": 0.7234574069447914
+            },
+            "f1_selected": {
+              "threshold": 0.1376064459011529,
+              "accuracy": 0.9945947265625,
+              "precision": 0.7335359675785208,
+              "recall": 0.7136520453425332,
+              "f1": 0.7234574069447914
+            },
+            "ranking": {
+              "topk_exact": 0.89208984375,
+              "topk_hit_rate": 0.9520257859002975,
+              "mean_active_per_state": 0.99072265625
+            }
           },
           "probe_post": {
-            "threshold": 0.12258296341985808,
-            "accuracy": 0.99217041015625,
-            "precision": 0.6149208741522231,
-            "recall": 0.5938864628820961,
-            "f1": 0.6042206590151795
+            "accuracy_selected": {
+              "threshold": 0.12235684093507464,
+              "accuracy": 0.99205078125,
+              "precision": 0.5985742379547689,
+              "recall": 0.6000492853622474,
+              "f1": 0.5993108540487324
+            },
+            "f1_selected": {
+              "threshold": 0.12235684093507464,
+              "accuracy": 0.99205078125,
+              "precision": 0.5985742379547689,
+              "recall": 0.6000492853622474,
+              "f1": 0.5993108540487324
+            },
+            "ranking": {
+              "topk_exact": 0.83154296875,
+              "topk_hit_rate": 0.9182849702380952,
+              "mean_active_per_state": 0.99072265625
+            }
           }
         },
-        "base_rate": 0.0100634765625
+        "base_rate": 0.0099072265625,
+        "kd1_fixed": true
       }
     },
     {
@@ -59660,9 +59966,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.071346531560522,
+          "kappa_min": 3.0713465203176216,
           "argmin_feature": 64,
           "argmin_leverage_rank": 2,
           "subset": {
@@ -59672,7 +59978,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 9.204627199879141,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.47916392382467166
+          "runtime_s": 0.47916392382467166,
+          "kappa_min_subset": 3.071346531560522,
+          "kappa_min_exact_all_features": 3.0713465203176216,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -66139,71 +66448,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 108975,
+        "seed": 90117,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.93365298906897,
-            "energy_per_coord": 0.003397788432968967,
-            "rms": 0.05829055183277104,
+            "frob_sq_A": 101.93365303131453,
+            "energy_per_coord": 0.0033977884343771507,
+            "rms": 0.05829055184485004,
             "energy_empirical": {
-              "mean": 0.0033201400150826383,
-              "se": 6.995107662183833e-05,
-              "ci_low": 0.0031830384242240335,
-              "ci_high": 0.003457241605941243,
+              "mean": 0.0034489153836752633,
+              "se": 7.088020671252134e-05,
+              "ci_low": 0.003309992731301967,
+              "ci_high": 0.0035878380360485594,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.93365298906897,
-            "energy_per_coord": 0.003397788432968967,
-            "rms": 0.05829055183277104,
+            "frob_sq_A": 101.93365303131503,
+            "energy_per_coord": 0.0033977884343771698,
+            "rms": 0.05829055184485021,
             "energy_empirical": {
-              "mean": 0.0033201400150826383,
-              "se": 6.995107662183833e-05,
-              "ci_low": 0.0031830384242240335,
-              "ci_high": 0.003457241605941243,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 106.0905399113141,
-            "energy_per_coord": 0.0035363513303771354,
-            "rms": 0.0594672290457285,
-            "energy_empirical": {
-              "mean": 0.0034553135418600015,
-              "se": 7.296769945838997e-05,
-              "ci_low": 0.003312299478886814,
-              "ci_high": 0.003598327604833189,
+              "mean": 0.003448915380860837,
+              "se": 7.088020663010261e-05,
+              "ci_low": 0.003309992728649079,
+              "ci_high": 0.0035878380330725953,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.24784894047271414,
-            "accuracy": 0.99103271484375,
-            "precision": 0.9664268585131894,
-            "recall": 0.09921221073362875,
-            "f1": 0.17995088189327976
+            "accuracy_selected": {
+              "threshold": 0.24947608363684803,
+              "accuracy": 0.99071533203125,
+              "precision": 0.9605568445475638,
+              "recall": 0.09857142857142857,
+              "f1": 0.17879507665730943
+            },
+            "f1_selected": {
+              "threshold": 0.13292661294489636,
+              "accuracy": 0.9888427734375,
+              "precision": 0.4527579162410623,
+              "recall": 0.42214285714285715,
+              "f1": 0.43691473632331196
+            },
+            "ranking": {
+              "topk_exact": 0.74169921875,
+              "topk_hit_rate": 0.8419840494791667,
+              "mean_active_per_state": 1.025390625
+            }
           },
           "probe_pre": {
-            "threshold": 0.13482615021632552,
-            "accuracy": 0.9943310546875,
-            "precision": 0.712091662603608,
-            "recall": 0.7191038897095027,
-            "f1": 0.7155805977462029
+            "accuracy_selected": {
+              "threshold": 0.1380882050070953,
+              "accuracy": 0.994677734375,
+              "precision": 0.7545362903225806,
+              "recall": 0.7128571428571429,
+              "f1": 0.7331047992164544
+            },
+            "f1_selected": {
+              "threshold": 0.1380882050070953,
+              "accuracy": 0.994677734375,
+              "precision": 0.7545362903225806,
+              "recall": 0.7128571428571429,
+              "f1": 0.7331047992164544
+            },
+            "ranking": {
+              "topk_exact": 0.888916015625,
+              "topk_hit_rate": 0.9513387044270833,
+              "mean_active_per_state": 1.025390625
+            }
           },
           "probe_post": {
-            "threshold": 0.12192756862461701,
-            "accuracy": 0.99216796875,
-            "precision": 0.6038424124513618,
-            "recall": 0.6112752338749384,
-            "f1": 0.6075360900415953
+            "accuracy_selected": {
+              "threshold": 0.12403381882053284,
+              "accuracy": 0.9923681640625,
+              "precision": 0.6337151394422311,
+              "recall": 0.6059523809523809,
+              "f1": 0.6195228821811101
+            },
+            "f1_selected": {
+              "threshold": 0.12403381882053284,
+              "accuracy": 0.9923681640625,
+              "precision": 0.6337151394422311,
+              "recall": 0.6059523809523809,
+              "f1": 0.6195228821811101
+            },
+            "ranking": {
+              "topk_exact": 0.83349609375,
+              "topk_hit_rate": 0.92225341796875,
+              "mean_active_per_state": 1.025390625
+            }
           }
         },
-        "base_rate": 0.0099169921875
+        "base_rate": 0.01025390625,
+        "kd1_fixed": true
       }
     },
     {
@@ -66280,9 +66620,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.0535424887494527,
+          "kappa_min": 3.0535424910720215,
           "argmin_feature": 18,
           "argmin_leverage_rank": 1,
           "subset": {
@@ -66292,7 +66632,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 8.62437120437163,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.2521879421547055
+          "runtime_s": 0.2521879421547055,
+          "kappa_min_subset": 3.0535424887494527,
+          "kappa_min_exact_all_features": 3.0535424910720215,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -72759,71 +73102,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 109972,
+        "seed": 90130,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 102.30401078912186,
-            "energy_per_coord": 0.0034101336929707286,
-            "rms": 0.05839634999698807,
+            "frob_sq_A": 102.30401073849416,
+            "energy_per_coord": 0.003410133691283139,
+            "rms": 0.05839634998253863,
             "energy_empirical": {
-              "mean": 0.003418041093065095,
-              "se": 7.267081902041953e-05,
-              "ci_low": 0.0032756089050580443,
-              "ci_high": 0.0035604732810721454,
+              "mean": 0.003488939563703758,
+              "se": 7.29698772511452e-05,
+              "ci_low": 0.003345921232335205,
+              "ci_high": 0.0036319578950723113,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 102.30401078912186,
-            "energy_per_coord": 0.0034101336929707286,
-            "rms": 0.05839634999698807,
+            "frob_sq_A": 102.30401073849461,
+            "energy_per_coord": 0.003410133691283154,
+            "rms": 0.05839634998253875,
             "energy_empirical": {
-              "mean": 0.003418041093065095,
-              "se": 7.267081902041953e-05,
-              "ci_low": 0.0032756089050580443,
-              "ci_high": 0.0035604732810721454,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 106.57470134229588,
-            "energy_per_coord": 0.0035524900447431967,
-            "rms": 0.05960276876742553,
-            "energy_empirical": {
-              "mean": 0.003553191127664582,
-              "se": 7.579591076698357e-05,
-              "ci_low": 0.0034046338723858825,
-              "ci_high": 0.003701748382943281,
+              "mean": 0.0034889395660312504,
+              "se": 7.296987731552677e-05,
+              "ci_low": 0.0033459212345365117,
+              "ci_high": 0.003631957897525989,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.2554693077333064,
-            "accuracy": 0.99109375,
-            "precision": 0.8907922912205567,
-            "recall": 0.10366309494144033,
-            "f1": 0.18571428571428572
+            "accuracy_selected": {
+              "threshold": 0.25569219243511043,
+              "accuracy": 0.99082763671875,
+              "precision": 0.9133333333333333,
+              "recall": 0.09953984015500121,
+              "f1": 0.17951517798645994
+            },
+            "f1_selected": {
+              "threshold": 0.14262250316649253,
+              "accuracy": 0.987822265625,
+              "precision": 0.39592924642597527,
+              "recall": 0.3957374666989586,
+              "f1": 0.3958333333333333
+            },
+            "ranking": {
+              "topk_exact": 0.712158203125,
+              "topk_hit_rate": 0.8111124674479167,
+              "mean_active_per_state": 1.008056640625
+            }
           },
           "probe_pre": {
-            "threshold": 0.13609276344776336,
-            "accuracy": 0.99451416015625,
-            "precision": 0.7159980430528375,
-            "recall": 0.7293795165711437,
-            "f1": 0.7226268361930626
+            "accuracy_selected": {
+              "threshold": 0.1356702586109479,
+              "accuracy": 0.99432373046875,
+              "precision": 0.7181906144170295,
+              "recall": 0.7190603051586341,
+              "f1": 0.7186251966598088
+            },
+            "f1_selected": {
+              "threshold": 0.1356702586109479,
+              "accuracy": 0.99432373046875,
+              "precision": 0.7181906144170295,
+              "recall": 0.7190603051586341,
+              "f1": 0.7186251966598088
+            },
+            "ranking": {
+              "topk_exact": 0.89599609375,
+              "topk_hit_rate": 0.9541585286458334,
+              "mean_active_per_state": 1.008056640625
+            }
           },
           "probe_post": {
-            "threshold": 0.12198830913777955,
-            "accuracy": 0.99213134765625,
-            "precision": 0.5944524151123864,
-            "recall": 0.6194866683279342,
-            "f1": 0.6067114093959731
+            "accuracy_selected": {
+              "threshold": 0.12184839390532244,
+              "accuracy": 0.99189453125,
+              "precision": 0.5963783654991661,
+              "recall": 0.6062000484378784,
+              "f1": 0.6012490992073024
+            },
+            "f1_selected": {
+              "threshold": 0.12184839390532244,
+              "accuracy": 0.99189453125,
+              "precision": 0.5963783654991661,
+              "recall": 0.6062000484378784,
+              "f1": 0.6012490992073024
+            },
+            "ranking": {
+              "topk_exact": 0.8427734375,
+              "topk_hit_rate": 0.9261027018229167,
+              "mean_active_per_state": 1.008056640625
+            }
           }
         },
-        "base_rate": 0.00979736328125
+        "base_rate": 0.01008056640625,
+        "kd1_fixed": true
       }
     },
     {
@@ -72900,9 +73274,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.046263042747524,
+          "kappa_min": 3.046263041000805,
           "argmin_feature": 50,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -72912,7 +73286,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 9.05885555527962,
           "e3_first_predicted_failure_s": 10,
           "e3_bound_respected": true,
-          "runtime_s": 0.3020445707370527
+          "runtime_s": 0.3020445707370527,
+          "kappa_min_subset": 3.046263042747524,
+          "kappa_min_exact_all_features": 3.046263041000805,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -79379,71 +79756,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 110969,
+        "seed": 90143,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.70983877112971,
-            "energy_per_coord": 0.0033903279590376595,
-            "rms": 0.05822652281424385,
+            "frob_sq_A": 101.70983879879171,
+            "energy_per_coord": 0.003390327959959724,
+            "rms": 0.05822652282216176,
             "energy_empirical": {
-              "mean": 0.003481067451772176,
-              "se": 7.19806540110635e-05,
-              "ci_low": 0.003339987962326853,
-              "ci_high": 0.003622146941217499,
+              "mean": 0.0032731341354356727,
+              "se": 6.985480057747256e-05,
+              "ci_low": 0.003136221242156599,
+              "ci_high": 0.0034100470287147465,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.70983877112971,
-            "energy_per_coord": 0.0033903279590376595,
-            "rms": 0.05822652281424385,
+            "frob_sq_A": 101.7098387987922,
+            "energy_per_coord": 0.0033903279599597404,
+            "rms": 0.0582265228221619,
             "energy_empirical": {
-              "mean": 0.003481067451772176,
-              "se": 7.19806540110635e-05,
-              "ci_low": 0.003339987962326853,
-              "ci_high": 0.003622146941217499,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 106.28283099098445,
-            "energy_per_coord": 0.0035427610330328136,
-            "rms": 0.0595210973775922,
-            "energy_empirical": {
-              "mean": 0.003635200627209677,
-              "se": 7.539220815419256e-05,
-              "ci_low": 0.0034874346145125127,
-              "ci_high": 0.003782966639906841,
+              "mean": 0.003273134136035481,
+              "se": 6.985480060809777e-05,
+              "ci_low": 0.0031362212426963828,
+              "ci_high": 0.0034100470293745794,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.2555484674149302,
-            "accuracy": 0.99055908203125,
-            "precision": 0.9007633587786259,
-            "recall": 0.08464849354375897,
-            "f1": 0.15475409836065573
+            "accuracy_selected": {
+              "threshold": 0.25510192942397136,
+              "accuracy": 0.99080078125,
+              "precision": 0.9034090909090909,
+              "recall": 0.07847976307996052,
+              "f1": 0.1444141689373297
+            },
+            "f1_selected": {
+              "threshold": 0.13804096954402487,
+              "accuracy": 0.9892138671875,
+              "precision": 0.44873949579831934,
+              "recall": 0.395360315893386,
+              "f1": 0.42036210968249804
+            },
+            "ranking": {
+              "topk_exact": 0.72314453125,
+              "topk_hit_rate": 0.8249273390997023,
+              "mean_active_per_state": 0.9892578125
+            }
           },
           "probe_pre": {
-            "threshold": 0.13981925105384732,
-            "accuracy": 0.9947021484375,
-            "precision": 0.7501243162605669,
-            "recall": 0.7214251554280249,
-            "f1": 0.735494880546075
+            "accuracy_selected": {
+              "threshold": 0.13797665960811825,
+              "accuracy": 0.99472900390625,
+              "precision": 0.7421335379892555,
+              "recall": 0.7159427443237907,
+              "f1": 0.7288029142067579
+            },
+            "f1_selected": {
+              "threshold": 0.13797665960811825,
+              "accuracy": 0.99472900390625,
+              "precision": 0.7421335379892555,
+              "recall": 0.7159427443237907,
+              "f1": 0.7288029142067579
+            },
+            "ranking": {
+              "topk_exact": 0.894775390625,
+              "topk_hit_rate": 0.9537202380952381,
+              "mean_active_per_state": 0.9892578125
+            }
           },
           "probe_post": {
-            "threshold": 0.12492615448588779,
-            "accuracy": 0.99256103515625,
-            "precision": 0.6416978776529338,
-            "recall": 0.6145384983261597,
-            "f1": 0.627824599975571
+            "accuracy_selected": {
+              "threshold": 0.12395348853442817,
+              "accuracy": 0.99245849609375,
+              "precision": 0.6240020602626835,
+              "recall": 0.5979763079960513,
+              "f1": 0.6107120352867045
+            },
+            "f1_selected": {
+              "threshold": 0.12395348853442817,
+              "accuracy": 0.99245849609375,
+              "precision": 0.6240020602626835,
+              "recall": 0.5979763079960513,
+              "f1": 0.6107120352867045
+            },
+            "ranking": {
+              "topk_exact": 0.84228515625,
+              "topk_hit_rate": 0.9264840262276786,
+              "mean_active_per_state": 0.9892578125
+            }
           }
         },
-        "base_rate": 0.0102099609375
+        "base_rate": 0.009892578125,
+        "kd1_fixed": true
       }
     },
     {
@@ -79520,9 +79928,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.105718166560257,
+          "kappa_min": 3.1057182079889003,
           "argmin_feature": 11,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -79532,7 +79940,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 8.402252028557509,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.21915926993824542
+          "runtime_s": 0.21915926993824542,
+          "kappa_min_subset": 3.105718166560257,
+          "kappa_min_exact_all_features": 3.1057182079889003,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -85999,71 +86410,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 111966,
+        "seed": 90156,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.6858418740702,
-            "energy_per_coord": 0.0033895280624690093,
-            "rms": 0.058219653575652695,
+            "frob_sq_A": 101.68584184674765,
+            "energy_per_coord": 0.0033895280615582578,
+            "rms": 0.05821965356783101,
             "energy_empirical": {
-              "mean": 0.003440682576520846,
-              "se": 6.92482691274055e-05,
-              "ci_low": 0.0033049584630393944,
-              "ci_high": 0.0035764066900022973,
+              "mean": 0.0032461417335417626,
+              "se": 7.061097750206387e-05,
+              "ci_low": 0.0031077467607245495,
+              "ci_high": 0.0033845367063589757,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.6858418740702,
-            "energy_per_coord": 0.0033895280624690093,
-            "rms": 0.058219653575652695,
+            "frob_sq_A": 101.68584184674813,
+            "energy_per_coord": 0.00338952806155827,
+            "rms": 0.05821965356783111,
             "energy_empirical": {
-              "mean": 0.003440682576520846,
-              "se": 6.92482691274055e-05,
-              "ci_low": 0.0033049584630393944,
-              "ci_high": 0.0035764066900022973,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 105.7679206273348,
-            "energy_per_coord": 0.0035255973542444937,
-            "rms": 0.0593767408523278,
-            "energy_empirical": {
-              "mean": 0.0035795178145315958,
-              "se": 7.251067950835224e-05,
-              "ci_low": 0.003437399494200699,
-              "ci_high": 0.0037216361348624927,
+              "mean": 0.0032461417330580064,
+              "se": 7.061097752615414e-05,
+              "ci_low": 0.003107746760193577,
+              "ci_high": 0.0033845367059224356,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.25113403547632285,
-            "accuracy": 0.99077880859375,
-            "precision": 0.960093896713615,
-            "recall": 0.09810506116574719,
-            "f1": 0.17801958650707292
+            "accuracy_selected": {
+              "threshold": 0.2520188698730187,
+              "accuracy": 0.99107666015625,
+              "precision": 0.9405940594059405,
+              "recall": 0.09473946646721516,
+              "f1": 0.17214043035107587
+            },
+            "f1_selected": {
+              "threshold": 0.13447597954782825,
+              "accuracy": 0.98867431640625,
+              "precision": 0.4211847389558233,
+              "recall": 0.41834953876838693,
+              "f1": 0.41976235146966856
+            },
+            "ranking": {
+              "topk_exact": 0.755126953125,
+              "topk_hit_rate": 0.85140380859375,
+              "mean_active_per_state": 0.979248046875
+            }
           },
           "probe_pre": {
-            "threshold": 0.1372954856229735,
-            "accuracy": 0.99481201171875,
-            "precision": 0.7570422535211268,
-            "recall": 0.721995682417846,
-            "f1": 0.7391037446286065
+            "accuracy_selected": {
+              "threshold": 0.13510768833082845,
+              "accuracy": 0.99451904296875,
+              "precision": 0.7189980158730159,
+              "recall": 0.7227624033906757,
+              "f1": 0.7208752952878279
+            },
+            "f1_selected": {
+              "threshold": 0.13510768833082845,
+              "accuracy": 0.99451904296875,
+              "precision": 0.7189980158730159,
+              "recall": 0.7227624033906757,
+              "f1": 0.7208752952878279
+            },
+            "ranking": {
+              "topk_exact": 0.89404296875,
+              "topk_hit_rate": 0.9544392903645833,
+              "mean_active_per_state": 0.979248046875
+            }
           },
           "probe_post": {
-            "threshold": 0.12364035564353455,
-            "accuracy": 0.9921923828125,
-            "precision": 0.6178112108711478,
-            "recall": 0.6106980091148957,
-            "f1": 0.6142340168878166
+            "accuracy_selected": {
+              "threshold": 0.12279440166449948,
+              "accuracy": 0.99216064453125,
+              "precision": 0.5972762645914397,
+              "recall": 0.612316130640738,
+              "f1": 0.604702696048258
+            },
+            "f1_selected": {
+              "threshold": 0.12279440166449948,
+              "accuracy": 0.99216064453125,
+              "precision": 0.5972762645914397,
+              "recall": 0.612316130640738,
+              "f1": 0.604702696048258
+            },
+            "ranking": {
+              "topk_exact": 0.8408203125,
+              "topk_hit_rate": 0.9251424153645833,
+              "mean_active_per_state": 0.979248046875
+            }
           }
         },
-        "base_rate": 0.01017822265625
+        "base_rate": 0.00979248046875,
+        "kd1_fixed": true
       }
     },
     {
@@ -86140,9 +86582,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.2777483242175482,
+          "kappa_min": 3.2777483094575914,
           "argmin_feature": 37,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -86152,7 +86594,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 8.866334713858555,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.24861664028139785
+          "runtime_s": 0.24861664028139785,
+          "kappa_min_subset": 3.2777483242175482,
+          "kappa_min_exact_all_features": 3.2777483094575914,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -92619,71 +93064,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 112963,
+        "seed": 90169,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.95677339155361,
-            "energy_per_coord": 0.0033985591130517878,
-            "rms": 0.058297162135491534,
+            "frob_sq_A": 101.95677339135206,
+            "energy_per_coord": 0.0033985591130450674,
+            "rms": 0.05829716213543389,
             "energy_empirical": {
-              "mean": 0.003384585513268485,
-              "se": 7.165570069214401e-05,
-              "ci_low": 0.0032441429206249007,
-              "ci_high": 0.003525028105912069,
+              "mean": 0.0033969733810296056,
+              "se": 7.27105040353081e-05,
+              "ci_low": 0.0032544634118226476,
+              "ci_high": 0.0035394833502365637,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.95677339155361,
-            "energy_per_coord": 0.0033985591130517878,
-            "rms": 0.058297162135491534,
+            "frob_sq_A": 101.95677339135257,
+            "energy_per_coord": 0.003398559113045085,
+            "rms": 0.058297162135434046,
             "energy_empirical": {
-              "mean": 0.003384585513268485,
-              "se": 7.165570069214401e-05,
-              "ci_low": 0.0032441429206249007,
-              "ci_high": 0.003525028105912069,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 107.45454035223676,
-            "energy_per_coord": 0.0035818180117412257,
-            "rms": 0.05984829163594585,
-            "energy_empirical": {
-              "mean": 0.00356637438847861,
-              "se": 7.564731435975481e-05,
-              "ci_low": 0.003418108376806311,
-              "ci_high": 0.0037146404001509093,
+              "mean": 0.00339697337964068,
+              "se": 7.271050401846604e-05,
+              "ci_low": 0.0032544634104667318,
+              "ci_high": 0.0035394833488146286,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.2521073297403425,
-            "accuracy": 0.99092041015625,
-            "precision": 0.972636815920398,
-            "recall": 0.09538911929738961,
-            "f1": 0.1737391690735392
+            "accuracy_selected": {
+              "threshold": 0.24874252547369616,
+              "accuracy": 0.991025390625,
+              "precision": 0.9669811320754716,
+              "recall": 0.1006876227897839,
+              "f1": 0.18238434163701067
+            },
+            "f1_selected": {
+              "threshold": 0.1308000398151226,
+              "accuracy": 0.989072265625,
+              "precision": 0.45,
+              "recall": 0.44646365422396855,
+              "f1": 0.44822485207100593
+            },
+            "ranking": {
+              "topk_exact": 0.7548828125,
+              "topk_hit_rate": 0.85462646484375,
+              "mean_active_per_state": 0.994140625
+            }
           },
           "probe_pre": {
-            "threshold": 0.13690175613418928,
-            "accuracy": 0.99465576171875,
-            "precision": 0.7422628107559615,
-            "recall": 0.7138326421078312,
-            "f1": 0.7277701778385773
+            "accuracy_selected": {
+              "threshold": 0.1354235033326823,
+              "accuracy": 0.9943408203125,
+              "precision": 0.7106147934678194,
+              "recall": 0.7266699410609038,
+              "f1": 0.7185526954832443
+            },
+            "f1_selected": {
+              "threshold": 0.1354235033326823,
+              "accuracy": 0.9943408203125,
+              "precision": 0.7106147934678194,
+              "recall": 0.7266699410609038,
+              "f1": 0.7185526954832443
+            },
+            "ranking": {
+              "topk_exact": 0.892333984375,
+              "topk_hit_rate": 0.9531087239583333,
+              "mean_active_per_state": 0.994140625
+            }
           },
           "probe_post": {
-            "threshold": 0.12298765545026943,
-            "accuracy": 0.992080078125,
-            "precision": 0.6041920545941993,
-            "recall": 0.6047816540619664,
-            "f1": 0.6044867105584004
+            "accuracy_selected": {
+              "threshold": 0.12208594411030459,
+              "accuracy": 0.99202880859375,
+              "precision": 0.5982468955441929,
+              "recall": 0.6033889980353635,
+              "f1": 0.600806944614256
+            },
+            "f1_selected": {
+              "threshold": 0.12208594411030459,
+              "accuracy": 0.99202880859375,
+              "precision": 0.5982468955441929,
+              "recall": 0.6033889980353635,
+              "f1": 0.600806944614256
+            },
+            "ranking": {
+              "topk_exact": 0.839111328125,
+              "topk_hit_rate": 0.9248331705729167,
+              "mean_active_per_state": 0.994140625
+            }
           }
         },
-        "base_rate": 0.01000732421875
+        "base_rate": 0.00994140625,
+        "kd1_fixed": true
       }
     },
     {
@@ -92760,9 +93236,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.1033740231906517,
+          "kappa_min": 3.103374046651613,
           "argmin_feature": 64,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -92772,7 +93248,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 9.138214708682138,
           "e3_first_predicted_failure_s": 10,
           "e3_bound_respected": true,
-          "runtime_s": 0.23843091970775276
+          "runtime_s": 0.23843091970775276,
+          "kappa_min_subset": 3.1033740231906517,
+          "kappa_min_exact_all_features": 3.103374046651613,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -99239,71 +99718,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 113960,
+        "seed": 90182,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 102.04415203920077,
-            "energy_per_coord": 0.0034014717346400286,
-            "rms": 0.058322137603486625,
+            "frob_sq_A": 102.04415204324593,
+            "energy_per_coord": 0.003401471734774863,
+            "rms": 0.05832213760464257,
             "energy_empirical": {
-              "mean": 0.0033758464494745366,
-              "se": 7.17719275328865e-05,
-              "ci_low": 0.0032351760564090603,
-              "ci_high": 0.003516516842540013,
+              "mean": 0.003442399422758988,
+              "se": 7.179943365546483e-05,
+              "ci_low": 0.003301675118683904,
+              "ci_high": 0.0035831237268340722,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 102.04415203920077,
-            "energy_per_coord": 0.0034014717346400286,
-            "rms": 0.058322137603486625,
+            "frob_sq_A": 102.04415204324644,
+            "energy_per_coord": 0.003401471734774879,
+            "rms": 0.05832213760464271,
             "energy_empirical": {
-              "mean": 0.0033758464494745366,
-              "se": 7.17719275328865e-05,
-              "ci_low": 0.0032351760564090603,
-              "ci_high": 0.003516516842540013,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 105.86621854814604,
-            "energy_per_coord": 0.0035288739516048696,
-            "rms": 0.0594043260344301,
-            "energy_empirical": {
-              "mean": 0.0034985375943465827,
-              "se": 7.455479417619935e-05,
-              "ci_low": 0.0033524128828864353,
-              "ci_high": 0.00364466230580673,
+              "mean": 0.0034423994235468778,
+              "se": 7.179943359637986e-05,
+              "ci_low": 0.003301675119587598,
+              "ci_high": 0.0035831237275061574,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.24582424051538265,
-            "accuracy": 0.991064453125,
-            "precision": 0.9683698296836983,
-            "recall": 0.09839307787391842,
-            "f1": 0.17863554757630162
+            "accuracy_selected": {
+              "threshold": 0.2479225268613461,
+              "accuracy": 0.99093505859375,
+              "precision": 0.9444444444444444,
+              "recall": 0.0995850622406639,
+              "f1": 0.18017222344888498
+            },
+            "f1_selected": {
+              "threshold": 0.12717221988616065,
+              "accuracy": 0.9891796875,
+              "precision": 0.45854986389507546,
+              "recall": 0.45228215767634855,
+              "f1": 0.4553944458097813
+            },
+            "ranking": {
+              "topk_exact": 0.766845703125,
+              "topk_hit_rate": 0.8675130208333334,
+              "mean_active_per_state": 1.000244140625
+            }
           },
           "probe_pre": {
-            "threshold": 0.13696544504366054,
-            "accuracy": 0.99483154296875,
-            "precision": 0.7480699948533196,
-            "recall": 0.7186650185414092,
-            "f1": 0.7330727524902282
+            "accuracy_selected": {
+              "threshold": 0.13758628850971197,
+              "accuracy": 0.9946875,
+              "precision": 0.7383966244725738,
+              "recall": 0.7261410788381742,
+              "f1": 0.7322175732217573
+            },
+            "f1_selected": {
+              "threshold": 0.13758628850971197,
+              "accuracy": 0.9946875,
+              "precision": 0.7383966244725738,
+              "recall": 0.7261410788381742,
+              "f1": 0.7322175732217573
+            },
+            "ranking": {
+              "topk_exact": 0.89306640625,
+              "topk_hit_rate": 0.9534423828125,
+              "mean_active_per_state": 1.000244140625
+            }
           },
           "probe_post": {
-            "threshold": 0.12220792869918229,
-            "accuracy": 0.9923828125,
-            "precision": 0.6153654277874782,
-            "recall": 0.6098887515451175,
-            "f1": 0.6126148497640924
+            "accuracy_selected": {
+              "threshold": 0.12346097362715647,
+              "accuracy": 0.992216796875,
+              "precision": 0.6102887648628974,
+              "recall": 0.6138638027825238,
+              "f1": 0.6120710635191045
+            },
+            "f1_selected": {
+              "threshold": 0.12346097362715647,
+              "accuracy": 0.992216796875,
+              "precision": 0.6102887648628974,
+              "recall": 0.6138638027825238,
+              "f1": 0.6120710635191045
+            },
+            "ranking": {
+              "topk_exact": 0.841796875,
+              "topk_hit_rate": 0.9263834635416667,
+              "mean_active_per_state": 1.000244140625
+            }
           }
         },
-        "base_rate": 0.00987548828125
+        "base_rate": 0.01000244140625,
+        "kd1_fixed": true
       }
     },
     {
@@ -99380,9 +99890,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.0315221900691127,
+          "kappa_min": 3.0315222034749576,
           "argmin_feature": 37,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -99392,7 +99902,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 8.552477352807252,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.2315150690265
+          "runtime_s": 0.2315150690265,
+          "kappa_min_subset": 3.0315221900691127,
+          "kappa_min_exact_all_features": 3.0315222034749576,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -105859,71 +106372,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 114957,
+        "seed": 90195,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 102.17843909466039,
-            "energy_per_coord": 0.0034059479698220147,
-            "rms": 0.058360500082007646,
+            "frob_sq_A": 102.1784391110868,
+            "energy_per_coord": 0.00340594797036956,
+            "rms": 0.05836050008669871,
             "energy_empirical": {
-              "mean": 0.003510745176750988,
-              "se": 7.317250490012766e-05,
-              "ci_low": 0.003367329702488157,
-              "ci_high": 0.003654160651013819,
+              "mean": 0.0034462312657251846,
+              "se": 7.274746981707733e-05,
+              "ci_low": 0.003303648844917298,
+              "ci_high": 0.003588813686533071,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 102.17843909466039,
-            "energy_per_coord": 0.0034059479698220147,
-            "rms": 0.058360500082007646,
+            "frob_sq_A": 102.17843911108727,
+            "energy_per_coord": 0.003405947970369575,
+            "rms": 0.05836050008669884,
             "energy_empirical": {
-              "mean": 0.003510745176750988,
-              "se": 7.317250490012766e-05,
-              "ci_low": 0.003367329702488157,
-              "ci_high": 0.003654160651013819,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 106.08889437341135,
-            "energy_per_coord": 0.0035362964791137126,
-            "rms": 0.05946676785494326,
-            "energy_empirical": {
-              "mean": 0.0036354233420108207,
-              "se": 7.570785276582493e-05,
-              "ci_low": 0.0034870386772429427,
-              "ci_high": 0.0037838080067786987,
+              "mean": 0.0034462312637938298,
+              "se": 7.274746975151965e-05,
+              "ci_low": 0.0033036488431144343,
+              "ci_high": 0.0035888136844732252,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.2525588276456933,
-            "accuracy": 0.990693359375,
-            "precision": 0.9168704156479217,
-            "recall": 0.09029617144233085,
-            "f1": 0.16440157825515125
+            "accuracy_selected": {
+              "threshold": 0.25162754502830115,
+              "accuracy": 0.9909033203125,
+              "precision": 0.9447115384615384,
+              "recall": 0.095947265625,
+              "f1": 0.17420212765957446
+            },
+            "f1_selected": {
+              "threshold": 0.1327244003269426,
+              "accuracy": 0.98899658203125,
+              "precision": 0.4485607008760951,
+              "recall": 0.4375,
+              "f1": 0.442961315041404
+            },
+            "ranking": {
+              "topk_exact": 0.749755859375,
+              "topk_hit_rate": 0.8510375976562501,
+              "mean_active_per_state": 1.0
+            }
           },
           "probe_pre": {
-            "threshold": 0.13586112699016928,
-            "accuracy": 0.9943310546875,
-            "precision": 0.7147548674642271,
-            "recall": 0.7336864916927522,
-            "f1": 0.7240969581749049
+            "accuracy_selected": {
+              "threshold": 0.1356436317244103,
+              "accuracy": 0.99454833984375,
+              "precision": 0.7273614840126922,
+              "recall": 0.7275390625,
+              "f1": 0.7274502624191382
+            },
+            "f1_selected": {
+              "threshold": 0.1356436317244103,
+              "accuracy": 0.99454833984375,
+              "precision": 0.7273614840126922,
+              "recall": 0.7275390625,
+              "f1": 0.7274502624191382
+            },
+            "ranking": {
+              "topk_exact": 0.896240234375,
+              "topk_hit_rate": 0.9541829427083334,
+              "mean_active_per_state": 1.0
+            }
           },
           "probe_post": {
-            "threshold": 0.12248485229799091,
-            "accuracy": 0.9919482421875,
-            "precision": 0.5979381443298969,
-            "recall": 0.6284613532386227,
-            "f1": 0.6128199107771778
+            "accuracy_selected": {
+              "threshold": 0.1232850934305755,
+              "accuracy": 0.992353515625,
+              "precision": 0.6173891865562592,
+              "recall": 0.618896484375,
+              "f1": 0.6181419166057059
+            },
+            "f1_selected": {
+              "threshold": 0.1232850934305755,
+              "accuracy": 0.992353515625,
+              "precision": 0.6173891865562592,
+              "recall": 0.618896484375,
+              "f1": 0.6181419166057059
+            },
+            "ranking": {
+              "topk_exact": 0.849365234375,
+              "topk_hit_rate": 0.9293172200520833,
+              "mean_active_per_state": 1.0
+            }
           }
         },
-        "base_rate": 0.01013916015625
+        "base_rate": 0.01,
+        "kd1_fixed": true
       }
     },
     {
@@ -106000,9 +106544,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.1836012126939908,
+          "kappa_min": 3.1836012383412653,
           "argmin_feature": 82,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -106012,7 +106556,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 8.927958381225757,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.22790013888152316
+          "runtime_s": 0.22790013888152316,
+          "kappa_min_subset": 3.1836012126939908,
+          "kappa_min_exact_all_features": 3.1836012383412653,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -112479,71 +113026,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 115954,
+        "seed": 90208,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.95565255034234,
-            "energy_per_coord": 0.0033985217516780773,
-            "rms": 0.05829684169556767,
+            "frob_sq_A": 101.95565261310482,
+            "energy_per_coord": 0.003398521753770159,
+            "rms": 0.05829684171351102,
             "energy_empirical": {
-              "mean": 0.00330158718453823,
-              "se": 6.871886286216983e-05,
-              "ci_low": 0.0031669006882698303,
-              "ci_high": 0.00343627368080663,
+              "mean": 0.0033886588172114215,
+              "se": 7.239655984993895e-05,
+              "ci_low": 0.0032467641673009427,
+              "ci_high": 0.0035305534671219003,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.95565255034234,
-            "energy_per_coord": 0.0033985217516780773,
-            "rms": 0.05829684169556767,
+            "frob_sq_A": 101.9556526131053,
+            "energy_per_coord": 0.0033985217537701768,
+            "rms": 0.058296841713511176,
             "energy_empirical": {
-              "mean": 0.00330158718453823,
-              "se": 6.871886286216983e-05,
-              "ci_low": 0.0031669006882698303,
-              "ci_high": 0.00343627368080663,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 106.43669790005708,
-            "energy_per_coord": 0.0035478899300019034,
-            "rms": 0.05956416649296709,
-            "energy_empirical": {
-              "mean": 0.0034540119829876374,
-              "se": 7.217112993911055e-05,
-              "ci_low": 0.0033125591675834203,
-              "ci_high": 0.0035954647983918544,
+              "mean": 0.003388658818475915,
+              "se": 7.239655989517856e-05,
+              "ci_low": 0.003246764168476768,
+              "ci_high": 0.003530553468475062,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.24911960478083958,
-            "accuracy": 0.99087646484375,
-            "precision": 0.9741602067183462,
-            "recall": 0.09186159844054581,
-            "f1": 0.1678913382320196
+            "accuracy_selected": {
+              "threshold": 0.2439675153228376,
+              "accuracy": 0.991025390625,
+              "precision": 0.9742388758782201,
+              "recall": 0.1019358000490076,
+              "f1": 0.18456078083407276
+            },
+            "f1_selected": {
+              "threshold": 0.12972895121631287,
+              "accuracy": 0.9888720703125,
+              "precision": 0.44155844155844154,
+              "recall": 0.44155844155844154,
+              "f1": 0.44155844155844154
+            },
+            "ranking": {
+              "topk_exact": 0.760986328125,
+              "topk_hit_rate": 0.8611351376488096,
+              "mean_active_per_state": 0.996337890625
+            }
           },
           "probe_pre": {
-            "threshold": 0.1362019990861182,
-            "accuracy": 0.99481689453125,
-            "precision": 0.7553493168342357,
-            "recall": 0.7139376218323586,
-            "f1": 0.7340598772391331
+            "accuracy_selected": {
+              "threshold": 0.1365742601657568,
+              "accuracy": 0.99436767578125,
+              "precision": 0.7143547607539874,
+              "recall": 0.7243322715020828,
+              "f1": 0.7193089183598979
+            },
+            "f1_selected": {
+              "threshold": 0.1365742601657568,
+              "accuracy": 0.99436767578125,
+              "precision": 0.7143547607539874,
+              "recall": 0.7243322715020828,
+              "f1": 0.7193089183598979
+            },
+            "ranking": {
+              "topk_exact": 0.894775390625,
+              "topk_hit_rate": 0.9533301943824405,
+              "mean_active_per_state": 0.996337890625
+            }
           },
           "probe_post": {
-            "threshold": 0.1224173857814886,
-            "accuracy": 0.992578125,
-            "precision": 0.6370427614631633,
-            "recall": 0.6025828460038987,
-            "f1": 0.6193338342098673
+            "accuracy_selected": {
+              "threshold": 0.12317138404856882,
+              "accuracy": 0.9920654296875,
+              "precision": 0.5999038230343833,
+              "recall": 0.6113697623131585,
+              "f1": 0.6055825242718447
+            },
+            "f1_selected": {
+              "threshold": 0.12317138404856882,
+              "accuracy": 0.9920654296875,
+              "precision": 0.5999038230343833,
+              "recall": 0.6113697623131585,
+              "f1": 0.6055825242718447
+            },
+            "ranking": {
+              "topk_exact": 0.844970703125,
+              "topk_hit_rate": 0.9254080636160714,
+              "mean_active_per_state": 0.996337890625
+            }
           }
         },
-        "base_rate": 0.01001953125
+        "base_rate": 0.00996337890625,
+        "kd1_fixed": true
       }
     },
     {
@@ -112620,9 +113198,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.181809700804462,
+          "kappa_min": 3.181809674053571,
           "argmin_feature": 29,
           "argmin_leverage_rank": 5,
           "subset": {
@@ -112632,7 +113210,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 9.62270976068054,
           "e3_first_predicted_failure_s": 10,
           "e3_bound_respected": true,
-          "runtime_s": 0.21592149586649612
+          "runtime_s": 0.21592149586649612,
+          "kappa_min_subset": 3.181809700804462,
+          "kappa_min_exact_all_features": 3.181809674053571,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -119099,71 +119680,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 116951,
+        "seed": 90221,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.49972587429825,
-            "energy_per_coord": 0.003383324195809941,
-            "rms": 0.05816634934229534,
+            "frob_sq_A": 101.49972593174508,
+            "energy_per_coord": 0.003383324197724838,
+            "rms": 0.05816634935875586,
             "energy_empirical": {
-              "mean": 0.0035120414074561665,
-              "se": 7.362616246384147e-05,
-              "ci_low": 0.0033677367807071422,
-              "ci_high": 0.0036563460342051908,
+              "mean": 0.003474945155753592,
+              "se": 7.236565081201157e-05,
+              "ci_low": 0.0033331110864442477,
+              "ci_high": 0.0036167792250629363,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.49972587429825,
-            "energy_per_coord": 0.003383324195809941,
-            "rms": 0.05816634934229534,
+            "frob_sq_A": 101.49972593174559,
+            "energy_per_coord": 0.0033833241977248535,
+            "rms": 0.05816634935875599,
             "energy_empirical": {
-              "mean": 0.0035120414074561665,
-              "se": 7.362616246384147e-05,
-              "ci_low": 0.0033677367807071422,
-              "ci_high": 0.0036563460342051908,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 104.47088255498927,
-            "energy_per_coord": 0.003482362751832972,
-            "rms": 0.059011547614284544,
-            "energy_empirical": {
-              "mean": 0.0036237058138222167,
-              "se": 7.633764596387164e-05,
-              "ci_low": 0.003474086777068459,
-              "ci_high": 0.0037733248505759744,
+              "mean": 0.0034749451555418065,
+              "se": 7.236565078289773e-05,
+              "ci_low": 0.0033331110862895243,
+              "ci_high": 0.003616779224794089,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.24999683286296917,
-            "accuracy": 0.990927734375,
-            "precision": 0.9549356223175965,
-            "recall": 0.10748792270531402,
-            "f1": 0.1932262266608771
+            "accuracy_selected": {
+              "threshold": 0.25247797459082133,
+              "accuracy": 0.99085205078125,
+              "precision": 0.9674185463659147,
+              "recall": 0.09368932038834951,
+              "f1": 0.17083425536623148
+            },
+            "f1_selected": {
+              "threshold": 0.1311820410110388,
+              "accuracy": 0.988896484375,
+              "precision": 0.44702970297029704,
+              "recall": 0.4383495145631068,
+              "f1": 0.4426470588235294
+            },
+            "ranking": {
+              "topk_exact": 0.74755859375,
+              "topk_hit_rate": 0.8531994047619048,
+              "mean_active_per_state": 1.005859375
+            }
           },
           "probe_pre": {
-            "threshold": 0.13726509992239289,
-            "accuracy": 0.99429931640625,
-            "precision": 0.711407823846334,
-            "recall": 0.7335748792270531,
-            "f1": 0.7223213223926745
+            "accuracy_selected": {
+              "threshold": 0.13844139041084735,
+              "accuracy": 0.9944873046875,
+              "precision": 0.727294921875,
+              "recall": 0.7230582524271845,
+              "f1": 0.7251703992210321
+            },
+            "f1_selected": {
+              "threshold": 0.13844139041084735,
+              "accuracy": 0.9944873046875,
+              "precision": 0.727294921875,
+              "recall": 0.7230582524271845,
+              "f1": 0.7251703992210321
+            },
+            "ranking": {
+              "topk_exact": 0.885986328125,
+              "topk_hit_rate": 0.9496413457961309,
+              "mean_active_per_state": 1.005859375
+            }
           },
           "probe_post": {
-            "threshold": 0.12266524401035506,
-            "accuracy": 0.99186767578125,
-            "precision": 0.5929244199402711,
-            "recall": 0.6234299516908213,
-            "f1": 0.6077946544212881
+            "accuracy_selected": {
+              "threshold": 0.12383773799033776,
+              "accuracy": 0.99218994140625,
+              "precision": 0.6131727697222905,
+              "recall": 0.6055825242718447,
+              "f1": 0.6093540114788131
+            },
+            "f1_selected": {
+              "threshold": 0.12383773799033776,
+              "accuracy": 0.99218994140625,
+              "precision": 0.6131727697222905,
+              "recall": 0.6055825242718447,
+              "f1": 0.6093540114788131
+            },
+            "ranking": {
+              "topk_exact": 0.83154296875,
+              "topk_hit_rate": 0.9200840541294643,
+              "mean_active_per_state": 1.005859375
+            }
           }
         },
-        "base_rate": 0.010107421875
+        "base_rate": 0.01005859375,
+        "kd1_fixed": true
       }
     },
     {
@@ -119240,9 +119852,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.274524098195824,
+          "kappa_min": 3.2745240822881954,
           "argmin_feature": 54,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -119252,7 +119864,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 8.962777804676483,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.18975167494500056
+          "runtime_s": 0.18975167494500056,
+          "kappa_min_subset": 3.274524098195824,
+          "kappa_min_exact_all_features": 3.2745240822881954,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -125719,71 +126334,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 117948,
+        "seed": 90234,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.94636729589371,
-            "energy_per_coord": 0.0033982122431964593,
-            "rms": 0.05829418704464845,
+            "frob_sq_A": 101.94636733641025,
+            "energy_per_coord": 0.0033982122445470053,
+            "rms": 0.058294187056232336,
             "energy_empirical": {
-              "mean": 0.003439018446116055,
-              "se": 7.14339616580264e-05,
-              "ci_low": 0.003299010453993308,
-              "ci_high": 0.003579026438238802,
+              "mean": 0.003310436380595816,
+              "se": 7.030604284757007e-05,
+              "ci_low": 0.0031726390687190488,
+              "ci_high": 0.0034482336924725834,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.94636729589371,
-            "energy_per_coord": 0.0033982122431964593,
-            "rms": 0.05829418704464845,
+            "frob_sq_A": 101.94636733641076,
+            "energy_per_coord": 0.0033982122445470257,
+            "rms": 0.05829418705623251,
             "energy_empirical": {
-              "mean": 0.003439018446116055,
-              "se": 7.14339616580264e-05,
-              "ci_low": 0.003299010453993308,
-              "ci_high": 0.003579026438238802,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 106.3210338079962,
-            "energy_per_coord": 0.00354403446026654,
-            "rms": 0.059531793692669296,
-            "energy_empirical": {
-              "mean": 0.003588677781089896,
-              "se": 7.462447270393629e-05,
-              "ci_low": 0.0034424165022248886,
-              "ci_high": 0.0037349390599549035,
+              "mean": 0.0033104363793090676,
+              "se": 7.030604286139308e-05,
+              "ci_low": 0.003172639067405208,
+              "ci_high": 0.0034482336912129274,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.24896544693358783,
-            "accuracy": 0.9908154296875,
-            "precision": 0.9770114942528736,
-            "recall": 0.10174766578884367,
-            "f1": 0.18430182133564615
+            "accuracy_selected": {
+              "threshold": 0.2503940968426633,
+              "accuracy": 0.99116943359375,
+              "precision": 0.9951100244498777,
+              "recall": 0.10119343610144207,
+              "f1": 0.1837057097720605
+            },
+            "f1_selected": {
+              "threshold": 0.12381948556811388,
+              "accuracy": 0.9899658203125,
+              "precision": 0.4883597883597884,
+              "recall": 0.4589756340129289,
+              "f1": 0.4732119969238657
+            },
+            "ranking": {
+              "topk_exact": 0.7783203125,
+              "topk_hit_rate": 0.8725301106770833,
+              "mean_active_per_state": 0.98193359375
+            }
           },
           "probe_pre": {
-            "threshold": 0.13636036253732756,
-            "accuracy": 0.99452880859375,
-            "precision": 0.7356377799415774,
-            "recall": 0.7234857553267896,
-            "f1": 0.7295111647555824
+            "accuracy_selected": {
+              "threshold": 0.13680199995726405,
+              "accuracy": 0.994736328125,
+              "precision": 0.7395993836671803,
+              "recall": 0.7160616608652411,
+              "f1": 0.7276402223345124
+            },
+            "f1_selected": {
+              "threshold": 0.13680199995726405,
+              "accuracy": 0.994736328125,
+              "precision": 0.7395993836671803,
+              "recall": 0.7160616608652411,
+              "f1": 0.7276402223345124
+            },
+            "ranking": {
+              "topk_exact": 0.89990234375,
+              "topk_hit_rate": 0.95606689453125,
+              "mean_active_per_state": 0.98193359375
+            }
           },
           "probe_post": {
-            "threshold": 0.12294758233389885,
-            "accuracy": 0.99192626953125,
-            "precision": 0.6030805687203792,
-            "recall": 0.6092889633708403,
-            "f1": 0.6061688698344647
+            "accuracy_selected": {
+              "threshold": 0.12296138062842069,
+              "accuracy": 0.99234619140625,
+              "precision": 0.6117409926933737,
+              "recall": 0.6036797613127797,
+              "f1": 0.6076836440996121
+            },
+            "f1_selected": {
+              "threshold": 0.12296138062842069,
+              "accuracy": 0.99234619140625,
+              "precision": 0.6117409926933737,
+              "recall": 0.6036797613127797,
+              "f1": 0.6076836440996121
+            },
+            "ranking": {
+              "topk_exact": 0.84765625,
+              "topk_hit_rate": 0.92733154296875,
+              "mean_active_per_state": 0.98193359375
+            }
           }
         },
-        "base_rate": 0.01019775390625
+        "base_rate": 0.0098193359375,
+        "kd1_fixed": true
       }
     },
     {
@@ -125860,9 +126506,9 @@
           "model": "atmost",
           "alpha": 1.0,
           "features_tested": 32,
-          "is_upper_bound": true,
+          "is_upper_bound": false,
           "s_aff_robust_upper": 3,
-          "kappa_min": 3.291543574033998,
+          "kappa_min": 3.2915435725643976,
           "argmin_feature": 94,
           "argmin_leverage_rank": 0,
           "subset": {
@@ -125872,7 +126518,10 @@
           "leverage_upper_bound_on_kappa_at_argmin": 8.97887401955341,
           "e3_first_predicted_failure_s": 9,
           "e3_bound_respected": true,
-          "runtime_s": 0.1979661249788478
+          "runtime_s": 0.1979661249788478,
+          "kappa_min_subset": 3.291543574033998,
+          "kappa_min_exact_all_features": 3.2915435725643976,
+          "superseded_note": "kappa_min is now the exact minimum over all F features (scripts/all_feature_frontier.py); kappa_min_subset is what the campaign computed over the lowest-leverage subset plus a random sample."
         }
       },
       "linearity": {
@@ -132339,71 +132988,102 @@
         "p": 0.01,
         "n_train": 8192,
         "n_test": 4096,
-        "seed": 118945,
+        "seed": 90247,
         "analog": {
           "second_moment": 0.0033333333333333335,
           "rms_floor_native": 0.05773502691896258,
           "pinv": {
-            "frob_sq_A": 101.52449509557617,
-            "energy_per_coord": 0.0033841498365192063,
-            "rms": 0.05817344614615165,
+            "frob_sq_A": 101.5244950270818,
+            "energy_per_coord": 0.0033841498342360625,
+            "rms": 0.05817344612652806,
             "energy_empirical": {
-              "mean": 0.0033103611726211565,
-              "se": 6.960676992511693e-05,
-              "ci_low": 0.0031739344104877616,
-              "ci_high": 0.0034467879347545513,
+              "mean": 0.0032878997024128193,
+              "se": 6.935553354450742e-05,
+              "ci_low": 0.0031519653545370252,
+              "ci_high": 0.0034238340502886133,
               "n": 4096
             }
           },
           "wout": {
-            "frob_sq_A": 101.52449509557617,
-            "energy_per_coord": 0.0033841498365192063,
-            "rms": 0.05817344614615165,
+            "frob_sq_A": 101.52449502708231,
+            "energy_per_coord": 0.0033841498342360773,
+            "rms": 0.05817344612652819,
             "energy_empirical": {
-              "mean": 0.0033103611726211565,
-              "se": 6.960676992511693e-05,
-              "ci_low": 0.0031739344104877616,
-              "ci_high": 0.0034467879347545513,
-              "n": 4096
-            }
-          },
-          "ls": {
-            "frob_sq_A": 104.74123763904785,
-            "energy_per_coord": 0.0034913745879682624,
-            "rms": 0.059087854826252256,
-            "energy_empirical": {
-              "mean": 0.0034189468304949263,
-              "se": 7.213602210006137e-05,
-              "ci_low": 0.0032775628251908205,
-              "ci_high": 0.003560330835799032,
+              "mean": 0.00328789970348038,
+              "se": 6.93555335709892e-05,
+              "ci_low": 0.0031519653555526824,
+              "ci_high": 0.003423834051408077,
               "n": 4096
             }
           }
         },
         "detection": {
           "model": {
-            "threshold": 0.25244745368672966,
-            "accuracy": 0.9911181640625,
-            "precision": 0.9890710382513661,
-            "recall": 0.09059059059059059,
-            "f1": 0.16597890875745072
+            "accuracy_selected": {
+              "threshold": 0.2498695868732504,
+              "accuracy": 0.9909765625,
+              "precision": 0.9843342036553525,
+              "recall": 0.09269731989181215,
+              "f1": 0.169438202247191
+            },
+            "f1_selected": {
+              "threshold": 0.1227653137848281,
+              "accuracy": 0.99007080078125,
+              "precision": 0.5,
+              "recall": 0.45438898450946646,
+              "f1": 0.47610459873760147
+            },
+            "ranking": {
+              "topk_exact": 0.780517578125,
+              "topk_hit_rate": 0.8797932942708333,
+              "mean_active_per_state": 0.992919921875
+            }
           },
           "probe_pre": {
-            "threshold": 0.1373426970419556,
-            "accuracy": 0.99480712890625,
-            "precision": 0.7440585009140768,
-            "recall": 0.7129629629629629,
-            "f1": 0.7281789137380191
+            "accuracy_selected": {
+              "threshold": 0.13650410039118283,
+              "accuracy": 0.9950634765625,
+              "precision": 0.766206717000781,
+              "recall": 0.7236292107204327,
+              "f1": 0.7443095599393019
+            },
+            "f1_selected": {
+              "threshold": 0.13650410039118283,
+              "accuracy": 0.9950634765625,
+              "precision": 0.766206717000781,
+              "recall": 0.7236292107204327,
+              "f1": 0.7443095599393019
+            },
+            "ranking": {
+              "topk_exact": 0.897216796875,
+              "topk_hit_rate": 0.9558512369791666,
+              "mean_active_per_state": 0.992919921875
+            }
           },
           "probe_post": {
-            "threshold": 0.12382968203324554,
-            "accuracy": 0.99260009765625,
-            "precision": 0.6251621271076524,
-            "recall": 0.6031031031031031,
-            "f1": 0.6139345306330404
+            "accuracy_selected": {
+              "threshold": 0.12228826313858496,
+              "accuracy": 0.992509765625,
+              "precision": 0.6285714285714286,
+              "recall": 0.6004425866732235,
+              "f1": 0.614185110663984
+            },
+            "f1_selected": {
+              "threshold": 0.12228826313858496,
+              "accuracy": 0.992509765625,
+              "precision": 0.6285714285714286,
+              "recall": 0.6004425866732235,
+              "f1": 0.614185110663984
+            },
+            "ranking": {
+              "topk_exact": 0.839599609375,
+              "topk_hit_rate": 0.9252685546874999,
+              "mean_active_per_state": 0.992919921875
+            }
           }
         },
-        "base_rate": 0.009755859375
+        "base_rate": 0.00992919921875,
+        "kd1_fixed": true
       }
     }
   ],
