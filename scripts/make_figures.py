@@ -408,6 +408,83 @@ def figure_frozen_encoder() -> None:
     save(fig, "fig6_frozen_encoder")
 
 
+
+# --------------------------------------------------------------------------------------
+# Figure 7 -- how the frontier scales, and what happens to the margin (E7 stages A + C)
+# --------------------------------------------------------------------------------------
+
+def figure_frontier_scaling() -> None:
+    """The out-of-sample rate test, and the margin it puts in question.
+
+    Everything here is the exact frontier over all F features, never the subset: the shortcut's error
+    is asymmetric between the arms and grows with width, so a margin computed from subset values
+    would be biased along the very axis this figure is about.
+    """
+    cells = {}
+    for rel in ("e7/derived/all_feature_frontier.json",
+                "e7_stageC/derived/all_feature_frontier.json"):
+        for c in load(rel)["cells"]:
+            cells[(c["loss"], c["d"])] = np.array(
+                [x["kappa_min_full"] for x in c["per_model"]], float)
+    ds = [50, 100, 200, 400]
+    tr = np.array([cells[("L4", d)].mean() for d in ds])
+    rn = np.array([cells[("random", d)].mean() for d in ds])
+
+    fig, axes = plt.subplots(1, 3, figsize=(WIDTH_2COL, 2.4))
+
+    # (a) the two power laws, extended to where they meet
+    ax = axes[0]
+    x = np.log(ds)
+    ft, fr = np.polyfit(x, np.log(tr), 1), np.polyfit(x, np.log(rn), 1)
+    cross = float(np.exp((ft[1] - fr[1]) / (fr[0] - ft[0])))
+    grid = np.logspace(np.log10(45), np.log10(cross * 1.35), 100)
+    for vals, fit, kind in ((tr, ft, "L4"), (rn, fr, "random")):
+        colour, marker, label = KIND_STYLE[kind]
+        ax.plot(ds, vals, color=colour, marker=marker, ms=4, lw=0, label=label)
+        ax.plot(grid, np.exp(fit[1]) * grid ** fit[0], color=colour, lw=0.9, ls="--",
+                label=fr"$\propto d^{{{fit[0]:.2f}}}$")
+    ax.axvline(cross, color="k", ls=":", lw=0.9)
+    ax.annotate(fr"meet at $d\approx{cross:.0f}$", (cross, tr[0]), fontsize=5.4, ha="right",
+                textcoords="offset points", xytext=(-3, 0), rotation=90, va="bottom")
+    ax.set_xscale("log"); ax.set_yscale("log")
+    ax.set_xlabel(r"width $d$")
+    ax.set_ylabel(r"$\kappa_{\min}$, exact over all $F$")
+    ax.set_title("(a) the frontier scales as a rate")
+    ax.legend(fontsize=5.4, loc="upper left")
+
+    # (b) the absolute margin, with the interval that makes the fall at d=400 readable
+    ax = axes[1]
+    rng = np.random.default_rng(0)
+    gaps, los, his = [], [], []
+    for d in ds:
+        t, r = cells[("L4", d)], cells[("random", d)]
+        b = (t[rng.integers(0, len(t), (40_000, len(t)))].mean(1)
+             - r[rng.integers(0, len(r), (40_000, len(r)))].mean(1))
+        gaps.append(t.mean() - r.mean())
+        lo, hi = np.quantile(b, [0.025, 0.975])
+        los.append(gaps[-1] - lo); his.append(hi - gaps[-1])
+    ax.errorbar(ds, gaps, yerr=[los, his], color=PALETTE[0], marker="o", ms=4, lw=1.0, capsize=2)
+    ax.set_xscale("log", base=2)
+    ax.set_xticks(ds); ax.set_xticklabels([str(d) for d in ds])
+    ax.set_xlabel(r"width $d$")
+    ax.set_ylabel(r"$\kappa_{\min}$: trained $-$ untrained")
+    ax.set_title("(b) the margin, in sparsity levels")
+
+    # (c) the same margin as a ratio, which falls throughout
+    ax = axes[2]
+    ax.plot(ds, tr / rn, color=PALETTE[3], marker="D", ms=4, lw=1.0)
+    ax.axhline(1.0, color="k", ls="--", lw=0.9)
+    ax.set_xscale("log", base=2)
+    ax.set_xticks(ds); ax.set_xticklabels([str(d) for d in ds])
+    ax.set_ylim(0.95, 1.5)
+    ax.set_xlabel(r"width $d$")
+    ax.set_ylabel(r"$\kappa_{\min}$: trained / untrained")
+    ax.set_title("(c) the same margin, as a ratio")
+
+    fig.tight_layout(w_pad=1.4)
+    save(fig, "fig7_frontier_scaling")
+
+
 def main() -> None:
     setup()
     print("Generating figures from raw results:")
@@ -417,6 +494,7 @@ def main() -> None:
     figure_scaling()
     figure_matched_comparison()
     figure_frozen_encoder()
+    figure_frontier_scaling()
     print("done.")
 
 

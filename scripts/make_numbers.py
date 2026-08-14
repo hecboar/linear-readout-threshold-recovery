@@ -450,6 +450,77 @@ def build() -> Macros:
             m.num(t + "Rreadout", float(np.mean(ro)), 4)
     m.integer("EeightSeeds", len(e8[("trained", 50)]))
 
+    # ---------------- Stage C: the fourth width, and what it costs us ----------------
+    # Every quantity here is derived from the exact all-feature frontier, never the subset, because
+    # the subset's error is asymmetric between the arms and grows with width -- see D20. The fits and
+    # the crossing are computed here rather than typed, so they move if the data moves.
+    scr = load("e7_stageC/raw/e7_stage_C.json")["report"]["per_width"]["400"]
+    afA = {(c["loss"], c["d"]): c for c in load("e7/derived/all_feature_frontier.json")["cells"]}
+    afC = {(c["loss"], c["d"]): c for c in
+           load("e7_stageC/derived/all_feature_frontier.json")["cells"]}
+    af = {**afA, **afC}
+    WIDTHS4 = (50, 100, 200, 400)
+
+    def kap(loss: str, d: int) -> np.ndarray:
+        return np.array([x["kappa_min_full"] for x in af[(loss, d)]["per_model"]], float)
+
+    m.integer("ScSeeds", af[("L4", 400)]["n_models"])
+    # The optimisation budget is fixed across widths, which is one candidate explanation for the
+    # trained arm's decelerating exponent, so the number belongs in the text that raises it.
+    m.integer("EsevenSteps", load("e7_stageC/run_record.json")["config"]["steps"])
+    for loss, lt in (("L4", "Lfour"), ("L2", "Ltwo"), ("random", "Rand")):
+        m.num(f"Sc{lt}Kappa", float(kap(loss, 400).mean()), 4)
+        m.num(f"Sc{lt}Rgeom", scr[loss]["R_geom"], 4)
+
+    # The out-of-sample test: fit on the three widths that existed when d=400 was committed to.
+    lo = np.polyfit(np.log([50, 100, 200]), np.log([kap("L4", d).mean() for d in (50, 100, 200)]), 1)
+    pred = float(np.exp(lo[1] + lo[0] * np.log(400)))
+    meas = float(kap("L4", 400).mean())
+    m.num("ScFitExponent", float(lo[0]), 4)
+    m.num("ScPredicted", pred, 3)
+    m.num("ScMeasured", meas, 3)
+    m.num("ScPredErrorPct", 100.0 * (meas - pred) / pred, 2)
+
+    # Trained against untrained, at all four widths, with the margin summarised both ways.
+    for d in WIDTHS4:
+        t, r = kap("L4", d), kap("random", d)
+        tag = {50: "Fifty", 100: "Hundred", 200: "TwoHundred", 400: "FourHundred"}[d]
+        m.num(f"Margin{tag}Gap", float(t.mean() - r.mean()), 4)
+        m.num(f"Margin{tag}Ratio", float(t.mean() / r.mean()), 4)
+    rng = np.random.default_rng(0)
+
+    def boot_gap(d: int, reps: int = 40_000) -> np.ndarray:
+        t, r = kap("L4", d), kap("random", d)
+        return (t[rng.integers(0, len(t), (reps, len(t)))].mean(1)
+                - r[rng.integers(0, len(r), (reps, len(r)))].mean(1))
+
+    drop = boot_gap(200) - boot_gap(400)
+    m.num("MarginDrop", float(np.mean(drop)), 4)
+    m.num("MarginDropCiLow", float(np.quantile(drop, 0.025)), 4)
+    m.num("MarginDropCiHigh", float(np.quantile(drop, 0.975)), 4)
+
+    x4 = np.log(WIDTHS4)
+    ft = np.polyfit(x4, np.log([kap("L4", d).mean() for d in WIDTHS4]), 1)
+    fr = np.polyfit(x4, np.log([kap("random", d).mean() for d in WIDTHS4]), 1)
+    m.num("ScExpTrained", float(ft[0]), 4)
+    m.num("ScExpRandom", float(fr[0]), 4)
+    m.integer("ScCrossing", int(round(np.exp((ft[1] - fr[1]) / (fr[0] - ft[0])))))
+
+    # The shortcut's justification, and how fast it decays.
+    for d in WIDTHS4:
+        c = af[("L4", d)]
+        tag = {50: "Fifty", 100: "Hundred", 200: "TwoHundred", 400: "FourHundred"}[d]
+        m.num(f"Subset{tag}Over", c["subset_overestimate_mean"], 4)
+        m.integer(f"Subset{tag}Rank", int(c["leverage_rank_of_true_argmin_median"]))
+    m.integer("SubsetFourHundredFound", af[("L4", 400)]["models_where_subset_found_the_argmin"])
+
+    # The matched comparison at the fourth width.
+    pc = {(c["loss"], c["d"]): c for c in
+          load("e7_stageC/derived/primary_comparison.json")["cells"]}
+    v = pc[("L4", 400)]["network_minus_probe"]["post_relu"]["s95"]
+    m.num("ScPrimDiff", v["mean"], 2)
+    m.integer("ScPrimProbeWins", v["n_negative"])
+
     # Whether the cross-talk the frozen arm gives up is bought or lost: its own objective, its own
     # representation, against the readout that attains the code-specific cross-talk optimum.
     # Only the cells the manuscript cites are emitted; all nine are in the derived JSON. The

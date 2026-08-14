@@ -2225,6 +2225,74 @@ where the true argmin sits at leverage rank \FullLfourTwoHundredArgminRankMed{} 
 the window. On untrained codes it succeeds every time. Training pulls the lowest-leverage feature and
 the worst-frontier feature apart, and the numbers above are the exact ones.
 
+\paragraph{A fourth width, committed to in advance.} The frontier over $d\in\{50,100,200\}$ fits
+$\kappa_{\min}\propto d^{\ScFitExponent}$, which extrapolates to \ScPredicted{} at $d=400$. We
+registered that number, then ran the width: \ScSeeds{} models per arm at $F=2d=800$, same protocol.
+The measurement is \ScMeasured{}, an error of \ScPredErrorPct\%. This is the only quantitative
+prediction the work is in a position to make and the only one tested out of sample, and we read it as
+a local rate rather than a law, because the exponent drifts downward across the four widths and
+Section~\ref{sec:res-e6} explains why four points cannot separate the candidates.
+
+Two other things replicate at this width. The loss still decides the interface: $L^2$ reaches
+$R_{\mathrm{geom}}=\ScLtwoRgeom$ with its frontier at \ScLtwoKappa, against $L^4$'s
+\ScLfourRgeom{} and \ScLfourKappa{}, and the untrained code again sits near the floor at
+\ScRandRgeom{} with a frontier of \ScRandKappa{}. And the matched decoder comparison continues in the direction the smaller widths
+established, more sharply: at $d=400$ the affine probe leads the network by \ScPrimDiff{} of a
+sparsity level in \ScPrimProbeWins{} of \ScSeeds{} models, where the three smaller widths gave a tie
+or a fraction of a level. The probe's advantage grows with width, which is the claim
+Section~\ref{sec:res-primary} makes and the opposite of the reading this work began with.
+
+\paragraph{The margin over an untrained code is closing, and that is the finding of this width.}
+Both frontiers grow with width, but not at the same rate: fitted over all four widths the trained
+code gives $d^{\ScExpTrained}$ and the untrained one $d^{\ScExpRandom}$
+(Fig.~\ref{fig:frontierscaling}a). The untrained exponent is the larger, so the advantage of training
+is a decreasing function of width in both readings of ``advantage''. As a ratio it falls throughout
+and faster each time: \MarginFiftyRatio, \MarginHundredRatio, \MarginTwoHundredRatio,
+\MarginFourHundredRatio. In absolute sparsity levels --- the operationally meaningful unit, since the
+frontier licenses supports up to $\lceil\kappa_{\min}\rceil-1$ --- it rises to a peak at $d=200$ and
+then falls: \MarginFiftyGap, \MarginHundredGap, \MarginTwoHundredGap, \MarginFourHundredGap. The fall
+is larger than the sampling noise: paired bootstrap over models gives a drop of \MarginDrop{} with
+interval [\MarginDropCiLow, \MarginDropCiHigh], and the two widths' intervals do not overlap. Taken
+at face value the two fitted laws meet near $d\approx\ScCrossing$.
+
+We state this rather than the extrapolation. Four widths spanning a factor of eight cannot establish
+where two rates cross, and $d\approx\ScCrossing$ is well outside the range measured. What the data
+does support is narrower and still consequential: \emph{training buys frontier at every width we
+measured, and the amount it buys stops growing by $d=400$.} A reader entitled to conclude that
+gradient descent finds structurally better codes would want that margin to be at least stable in
+width, and here it is not. Whether the trained code's deceleration reflects a real ceiling or the
+fixed optimisation budget --- \EsevenSteps{} steps at every width, so the largest models get the
+least optimisation per parameter --- this campaign cannot say, and it is the first thing a larger
+budget should test.
+
+\paragraph{And the shortcut has stopped being defensible.} The same width shows the subset
+heuristic's justification collapsing, which is why every number in the two paragraphs above is the
+exact minimum over all $F$ features. The mean overestimate grows \SubsetFiftyOver, \SubsetHundredOver,
+\SubsetTwoHundredOver, \SubsetFourHundredOver; the median leverage rank of the true argmin grows
+\SubsetFiftyRank, \SubsetHundredRank, \SubsetTwoHundredRank, \SubsetFourHundredRank; and at $d=400$
+the subset locates the true argmin in \SubsetFourHundredFound{} of \ScSeeds{} trained models. The
+error is still small in absolute terms, but it is one-sided and it is asymmetric between the arms:
+untrained codes keep the true argmin at leverage rank 1, so their subset value \emph{is} exact, while
+trained codes drift. A margin computed from subset values is therefore biased in favour of training
+by an amount that grows with exactly the variable under study --- which is why we computed the exact
+frontier for all four widths before making the claim above, and why we would not trust the shortcut
+past $d=200$ in future work.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig7_frontier_scaling.pdf}
+\caption{\textbf{The frontier's rate, and the margin it puts in question.} All values are the exact
+$\kappa_{\min}$ over every one of the $F$ features, never the subset. \textbf{(a)} Both codes'
+frontiers follow a power law over the four widths, and the untrained exponent is the larger; the
+fitted lines meet near $d\approx\ScCrossing$, far outside the measured range, and the crossing is
+drawn to show what the rates imply rather than as a prediction. \textbf{(b)} The margin in sparsity
+levels, with paired bootstrap intervals over models; it peaks at $d=200$ and the fall to $d=400$
+exceeds the sampling noise. \textbf{(c)} The same margin as a ratio, which falls at every step. The
+two panels are shown separately because they are the two honest readings of the same quantity and
+they do not agree until $d=400$.}
+\label{fig:frontierscaling}
+\end{figure}
+
 \subsection{E6: a scalability stress test, not a scaling law}
 \label{sec:res-e6}
 
@@ -2427,16 +2495,23 @@ with width.} Corollary~\ref{cor:failthresh} predicts the $L^2$ collapse from lev
 holds at all three widths of Section~\ref{sec:res-primary}. But it is applied at $h_{\min}$, and it
 is sufficient rather than necessary, which shows up in where the true worst feature sits: the
 lowest-leverage window contains the true $\arg\min\kappa$ in \FullLfourTwoHundredArgminFound{} of 20
-$L^4$ models at $d=200$, against every model of every untrained code. Training pulls the two apart,
-so the theorem localises the failure less and less well as the code improves. Nothing reported
-depends on the heuristic --- the frontiers quoted are exact --- but a reader should not take low
-leverage as a reliable pointer to the binding feature.
+$L^4$ models at $d=200$ and \SubsetFourHundredFound{} of \ScSeeds{} at $d=400$, where the true
+$\arg\min$ sits at leverage rank \SubsetFourHundredRank{} by median --- against every model of every
+untrained code, at every width. Training pulls the two apart, and the gap widens with width, so the
+theorem localises the failure less and less well as the code improves. Nothing reported depends on
+the heuristic --- the frontiers quoted are exact --- but a reader should not take low leverage as a
+reliable pointer to the binding feature, and past $d=200$ should not use it as a sampling window at
+all.
 
-\item \textbf{Beyond $d=200$ the frontier is again a subset estimate.} Every $\kappa_i$ reported
-here is exact: all $F$ features of all 180 models. That costs one linear programme per feature, about
-$0.24$\,s at $d=200$, and it does not extrapolate --- at $d=400$ the same sweep is a hundredfold more
-solver time, so a wider campaign would have to return to a subset and to an upper bound. The
-statistic is exact at the widths we report and would not be at the next one.
+\item \textbf{The exact frontier does not extrapolate much further.} Every $\kappa_i$ reported here is
+exact --- all $F$ features of every model at all four widths, including the \ScSeeds{} models per arm
+at $d=400$, $F=800$. An earlier version of this limitation said the $d=400$ sweep would be
+unaffordable and that a fourth width would have to return to a subset estimate; it was run instead,
+in a few hours on ten CPU workers, and this entry is corrected rather than removed because the
+estimate was wrong in the direction that mattered. What remains true is the shape of the cost: one
+linear programme per feature, about $0.24$\,s at $d=200$, growing steeply in $d$ while $F$ grows with
+it. A fifth width would be a different proposition, and the honest statement is that the statistic is
+exact everywhere we report it and that we do not know where it stops being affordable.
 
 \item \textbf{The nonlinear witness is built but not yet used.} The extractor of
 Section~\ref{sec:witness} is implemented and validated --- every witness it returns is confirmed
@@ -2462,6 +2537,18 @@ $R_{\mathrm{geom}}$ is exactly $1$ rather than the $\approx1.01$ of an i.i.d.\ c
 the claim that near-floor geometry is generic: as it stands the comparison is against a code that
 is close to the floor rather than on it, so a small residual advantage for the trained code could be
 conditioning rather than structure.
+
+\item \textbf{The margin over an untrained code stops growing inside our own range.} This is the
+sharpest limitation on the headline claim, and it comes from our own data rather than from something
+we did not run. Section~\ref{sec:res-primary} reports the trained frontier at $d^{\ScExpTrained}$ and
+the untrained one at $d^{\ScExpRandom}$: the untrained exponent is larger, the ratio falls at every
+step, and the margin in sparsity levels peaks at $d=200$ and falls by \MarginDrop{}
+$[\MarginDropCiLow,\MarginDropCiHigh]$ at $d=400$. ``Training buys the code'' therefore holds at every
+width we measured and is not established as a property that survives scale. Two candidate
+explanations are not separated here: a real ceiling on what the frontier can buy, or the fixed
+optimisation budget of \EsevenSteps{} steps at every width, which gives the largest models the least
+optimisation per parameter. Distinguishing them needs a budget sweep at fixed width, which is cheap,
+and a fifth width, which is not.
 \end{enumerate}
 
 \subsection{Open problem}

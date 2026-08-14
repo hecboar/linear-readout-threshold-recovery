@@ -523,3 +523,56 @@ the quantity the sentence was about — after the `s95` gate read alone, the ReL
 non-comparable units, and KD1's accuracy-selected threshold. In each case a ratio looked large and
 the denominator was not what the prose assumed. The check that catches it is always the same: score
 the alternative under the objective the thing was actually optimising.
+
+---
+
+## D20 — The trained-versus-untrained margin is reported as closing, not as growing
+
+**Date:** 2026-08-14, on the evidence of stage C.
+
+Stage C added `d=400` to test an extrapolation and returned a second result that costs us more than
+the first one gains. Both are in Section 10.5 and the second is now a limitation.
+
+**What the prediction bought.** The exact frontier over `d = 50, 100, 200` fits `d^0.4202` and
+predicts 10.759 at `d=400`. Registered in `configs/e7_stageC.json` before the run; measured 10.510,
+an error of -2.31%. The fit was redone on exact values only, so the test does not mix the exact
+statistic with the subset one.
+
+**What it cost.** The untrained control's frontier grows *faster* than the trained one:
+exponents 0.4101 against 0.4977 fitted over the four widths, and per doubling the trained arm
+decelerates (0.4228, 0.4176, 0.3873) while the untrained arm accelerates (0.4865, 0.4941, 0.5139).
+The ratio falls at every step — 1.4195, 1.3582, 1.2882, 1.1800 — and the margin in sparsity levels
+peaks at `d=200` and falls: 1.3260, 1.5866, 1.7974, 1.6029.
+
+**Decided.** Report the closing margin as a finding and as the sharpest limitation on "training buys
+the code", state the claim as holding at every width measured rather than as a property of training,
+and decline the extrapolated crossing at `d ~ 3000` as outside the measured range. Name the two
+candidate explanations — a real ceiling, or the fixed 50 000-step budget giving the widest models the
+least optimisation per parameter — and say which experiment separates them.
+
+**A correction of my own reassurance, recorded because the reasoning error is the reusable part.**
+When the subset numbers first showed the ratio falling, I checked the absolute gap, found it rising
+(1.33, 1.59, 1.80), and told the principal investigator the claim was safe because sparsity levels
+and not ratios are the operational unit. That was true of three widths and false of four. Choosing
+the reading that survives, and only then arguing that it is the meaningful one, is the same move as
+picking a summary statistic after seeing the result — the thing D1 exists to forbid. The right
+response was to report both readings, which is what the paper now does, and to notice that they
+disagreed until they agreed in the direction I had argued away.
+
+**Why the exact frontier was mandatory before writing any of this.** The subset shortcut's error is
+asymmetric between the arms. It inflates the trained arm by a growing amount (+0.0025, +0.0118,
++0.0206, +0.0398) while the untrained arm's subset is exact at every width, because there the
+lowest-leverage feature really is the `argmin` (rank 1-2, found in every model). So a margin computed
+from subset values is biased *in favour of training* by an amount that grows with width — exactly the
+axis of the claim. Correcting it moves the numbers against us, which is why it was not optional.
+
+**Two limitations retired or corrected by this stage.** "Beyond `d=200` the frontier is again a subset
+estimate" asserted the `d=400` sweep was a hundredfold more solver time and therefore unaffordable;
+it ran in about two hours on ten CPU workers. That entry is corrected in place rather than deleted,
+and `all_feature_frontier.py` now records its own duration so the next such claim is checkable rather
+than remembered. The leverage limitation is sharpened with the `d=400` numbers: the shortcut finds the
+true `argmin` in 2 of 10 trained models, with the true one at leverage rank 131 by median.
+
+**Count.** This is the fifth limitation this project has had to retire or rewrite because later work
+overtook it, and the fifth claim withdrawn or reframed after measurement. Both counts are worth
+keeping visible: they are the argument for the run-record discipline, not an embarrassment.

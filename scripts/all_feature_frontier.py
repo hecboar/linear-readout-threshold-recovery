@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -88,6 +89,10 @@ def main(argv: List[str]) -> int:
     n_low = CFG.get("frontier_n_low", 24)
     n_rand = CFG.get("frontier_n_random", 8)
     rows: List[Dict[str, Any]] = []
+    # Recorded because the paper had a limitation asserting this sweep was unaffordable at
+    # d=400, which turned out to be wrong. A measured duration in the output makes the next
+    # such claim checkable instead of remembered.
+    t0 = time.perf_counter()
     # Discovered from the weights on disk: stage B varies the training sparsity and stage C has a
     # single width, so an enumerated (loss, d) grid would silently skip cells.
     for wf in sorted((ROOT / "results" / CAMPAIGN / "weights").glob("relu_*_d*.npz")):
@@ -125,6 +130,8 @@ def main(argv: List[str]) -> int:
     dest = ROOT / "results" / CAMPAIGN / "derived" / "all_feature_frontier.json"
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps({"campaign": CAMPAIGN, "n_low": n_low, "n_random": n_rand,
+                                "workers": workers,
+                                "duration_seconds": time.perf_counter() - t0,
                                 "cells": rows}, indent=2),
                     encoding="utf-8", newline="\n")
     print(f"\nwrote {dest.relative_to(ROOT).as_posix()}")
