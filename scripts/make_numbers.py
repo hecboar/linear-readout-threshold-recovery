@@ -432,6 +432,19 @@ def build() -> Macros:
         if ro:
             m.num(t + "Rreadout", float(np.mean(ro)), 4)
     m.integer("EeightSeeds", len(e8[("trained", 50)]))
+
+    # Whether the cross-talk the frozen arm gives up is bought or lost: its own objective, its own
+    # representation, against the readout that attains the code-specific cross-talk optimum.
+    # Only the cells the manuscript cites are emitted; all nine are in the derived JSON. The
+    # untrained arm appears once, as the scoring check -- its readout *is* pinv, so its ratio must
+    # come back at 1, and a macro says so with the same provenance as the rest.
+    for c in load("e8/derived/frozen_readout_tradeoff.json")["cells"]:
+        if c["d"] not in W or (c["arm"] == "random" and c["d"] != 200):
+            continue
+        t = f"Eeight{ARM[c['arm']]}{W[c['d']]}"
+        m.num(t + "TaskGain", c["task_gain_over_pinv"], 2)
+        if (c["arm"], c["d"]) == ("frozen", 200):
+            m.integer(t + "TaskWins", c["models_where_wout_wins"])
     return m
 
 

@@ -2134,9 +2134,31 @@ $W_{\mathrm{out}}$ for the full budget and ended at
 $R_{\mathrm{readout}}=\EeightFrozenHundredRreadout{}$ at $d=100$ and
 \EeightFrozenTwoHundredRreadout{} at $d=200$ --- nearly twice the cross-talk of the best readout
 \emph{of the code it was given} --- while the jointly trained arm reaches
-\EeightTrainedHundredRreadout{} and \EeightTrainedTwoHundredRreadout{}. Gradient descent finds a good
-decoder only when it may also move the code; held to a fixed random $\Phi$, on this objective, it
-does not, and the failure does not shrink as the problem gets bigger.
+\EeightTrainedHundredRreadout{} and \EeightTrainedTwoHundredRreadout{}.
+
+It is tempting to read that as gradient descent failing at the conditional problem, and it is not.
+The cross-talk optimum is attained by $\Phi^{+}$ for \emph{every} code, so a readout with
+$R_{\mathrm{readout}}$ near $1$ always exists and its existence settles nothing; what matters is
+whether the arm's own objective prefers its $W_{\mathrm{out}}$ to that optimum. It does, decisively.
+Scored under the loss the arm trained on, in its own post-ReLU representation, on fresh draws from a
+seed no training used (\texttt{scripts/frozen\_readout\_tradeoff.py}), the frozen
+$W_{\mathrm{out}}$ beats $\Phi^{+}$ by a factor of \EeightFrozenHundredTaskGain{} at $d=100$ and
+\EeightFrozenTwoHundredTaskGain{} at $d=200$, on \EeightFrozenTwoHundredTaskWins{} of
+\EeightSeeds{} models at each width. The cross-talk it gives up is bought, not lost. As a check on
+the scoring, the untrained arm --- whose readout \emph{is} $\Phi^{+}$ --- returns a ratio of
+\EeightRandomTwoHundredTaskGain{}.
+
+So the two objectives genuinely pull apart on a fixed random code, and the contrast is about what
+co-adaptation does to them rather than about optimisation difficulty: the jointly trained arm attains
+$R_{\mathrm{readout}}=\EeightTrainedTwoHundredRreadout{}$ \emph{and} a task advantage of
+\EeightTrainedTwoHundredTaskGain{} at $d=200$, so it does not trade one against the other at all,
+while the frozen arm can only buy the second with the first. The joint arm's task advantage also
+grows with width, \EeightTrainedFiftyTaskGain{} to \EeightTrainedHundredTaskGain{} to
+\EeightTrainedTwoHundredTaskGain{}, where the frozen arm's is flat
+(\EeightFrozenFiftyTaskGain{}, \EeightFrozenHundredTaskGain{},
+\EeightFrozenTwoHundredTaskGain{}). Training the code appears to align the task objective with the
+cross-talk objective; freezing it leaves them in conflict that no amount of readout training
+resolves.
 
 \paragraph{The frontier is now exact.} Earlier we reported $\kappa_{\min}$ over a subset of features
 and called it an upper bound. Evaluating every feature of all 180 models shows the bound was tight:
@@ -2273,10 +2295,16 @@ information went with who read it.
 
 \textbf{What training buys is the code.} A random code with only its readout trained keeps an
 untrained code's frontier, \EeightFrozenHundredKappa{} against \EeightRandomHundredKappa{}, while
-training both reaches \EeightTrainedHundredKappa{}. And the frozen arm's own decoder ends at
-$R_{\mathrm{readout}}=\EeightFrozenHundredRreadout{}$ --- worse, after a full training budget, than
-the closed-form optimum for the code it was handed. On this objective the joint problem is easier
-than the conditional one, which is a statement about the optimisation and not about the geometry.
+training both reaches \EeightTrainedHundredKappa{}. The frozen arm's own decoder also ends at
+$R_{\mathrm{readout}}=\EeightFrozenHundredRreadout{}$, near twice the closed-form cross-talk optimum
+for the code it was handed --- but that is not a failed optimisation. It beats that optimum by
+\EeightFrozenHundredTaskGain{} on the loss it was trained under, so on a fixed random code the task
+objective and the cross-talk objective genuinely diverge, and the readout is right to follow the
+former. What the joint arm gains is that it need not choose: it holds
+$R_{\mathrm{readout}}=\EeightTrainedHundredRreadout{}$ while beating the same baseline by
+\EeightTrainedHundredTaskGain{}. Read that way, training the code aligns the two objectives, and
+that is a statement about what co-adaptation buys rather than about the difficulty of the
+conditional problem.
 
 What does not survive is the reading this work began with: that the $L^4$ model's thresholded output
 keeps working past where linear readouts of its own code collapse. Against the fixed readouts of E5

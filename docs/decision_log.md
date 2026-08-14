@@ -466,3 +466,44 @@ anything rather than whether it does.
 never beats the probe in any of the 120 trained models. That was true of `s95` and false of AUC,
 and it came from reading the automated gate, which only computes `s95`. The gate reports its own
 criteria; it does not notice when they are incomplete.
+
+---
+
+## D19 — The frozen arm's `R_readout` is a trade-off, not a failed optimisation
+
+**Date:** 2026-08-14.
+
+E8's frozen arm ends at `R_readout` = 1.92 at `d=100` and 1.93 at `d=200`, stable across width. The
+manuscript read that as an optimisation result: "gradient descent finds a good decoder only when it
+may also move the code; held to a fixed random `Phi`, on this objective, it does not." That sentence
+was written, committed, and is now withdrawn. It had no support.
+
+**Why it was wrong.** `R_readout` scores cross-talk against the code-specific optimum, which
+`pinv(Phi)` attains **by construction, for every code**. So "the code admits a near-optimal readout"
+is a tautology and cannot separate a failure from a trade-off. The question the claim needed answered
+is whether the arm's own objective prefers its `W_out` to that optimum, and nothing in the record
+answered it — `final_mse` is `null` in the E8 run records.
+
+**The check, and a wrong one worth recording.** The first attempt compared `R_readout` of `wout`
+against `ls` and found 1.92 against 1.045, which looked decisive and was not: `ls` is fit on Boolean
+states and reads the linear representation `Phi b`, so it shares neither the objective nor the input
+with the trained readout. The second attempt (`scripts/frozen_readout_tradeoff.py`) scores both
+readouts under the loss the arm trained on, in its own post-ReLU representation, at the training
+sparsity, on a held-out seed.
+
+**Result.** The frozen `W_out` beats `pinv(Phi)` on that loss by 4.39 / 4.70 / 4.50 at
+`d = 50 / 100 / 200`, on 10 of 10 models at every width. The cross-talk is bought, not lost. The
+untrained arm returns 1.00, as it must, since its readout *is* `pinv(Phi)` — that is the scoring
+check.
+
+**Decided.** State the divergence of the two objectives on a fixed code, and make the contrast about
+co-adaptation: the joint arm holds `R_readout` = 1.02 *and* a task advantage of 9.71 at `d=200`, so
+it does not trade one against the other, while the frozen arm can buy the second only with the
+first. The joint arm's task advantage grows with width (6.59 → 8.40 → 9.71) where the frozen arm's is
+flat. This is a stronger claim than the withdrawn one and it is the one the data supports.
+
+**Pattern.** This is the fourth claim in this project withdrawn because the quantity measured was not
+the quantity the sentence was about — after the `s95` gate read alone, the ReLU-robustness claim in
+non-comparable units, and KD1's accuracy-selected threshold. In each case a ratio looked large and
+the denominator was not what the prose assumed. The check that catches it is always the same: score
+the alternative under the objective the thing was actually optimising.
