@@ -39,9 +39,40 @@ from lrtr.probes import _exact_recovery, select_thresholds  # noqa: E402
 from lrtr.splits import make_state_splits, representations  # noqa: E402
 from lrtr.threshold import s95_from_curve  # noqa: E402
 
-RAW = ROOT / "results" / "e7" / "raw"
-CFG = json.loads((ROOT / "configs" / "e7.json").read_text(encoding="utf-8"))
 POLICY = "global"                      # the matched policy; see the module docstring
+
+# Set by main() from the campaign argument. Stage A is the default because it is the campaign the
+# headline rests on, but the matched comparison is the only fair one and every stage deserves it --
+# stage C's unmatched gate reverses sign against stage A's, and a gate is not evidence either way.
+CAMPAIGN = "e7"
+RAW = ROOT / "results" / "e7" / "raw"
+CFG: Dict[str, Any] = {}
+
+
+def configure(campaign: str) -> None:
+    global CAMPAIGN, RAW, CFG
+    CAMPAIGN = campaign
+    RAW = ROOT / "results" / campaign / "raw"
+    # configs/e7.json for stage A, configs/e7_stageB.json for the directory results/e7_stageB.
+    cfg_name = "e7.json" if campaign == "e7" else f"{campaign.replace('e7_', 'e7_')}.json"
+    cfg_path = ROOT / "configs" / cfg_name
+    if not cfg_path.exists():
+        raise SystemExit(f"no config for campaign {campaign!r}: expected {cfg_path}")
+    CFG = json.loads(cfg_path.read_text(encoding="utf-8"))
+
+
+def discover_cells() -> List[Dict[str, Any]]:
+    """Read the cells off disk rather than hardcoding them.
+
+    Stage B varies the training sparsity, so a cell is not identified by (loss, d) alone; and a
+    stage that has not finished should contribute the cells it has rather than nothing.
+    """
+    cells = []
+    for cf in sorted(RAW.glob("cell_*.json")):
+        rec = json.loads(cf.read_text(encoding="utf-8"))
+        cells.append({"loss": rec["loss"], "d": rec["d"],
+                      "name": cf.stem[len("cell_"):], "path": cf})
+    return cells
 
 
 def auc(ss: List[int], pr: List[float]) -> float:
@@ -80,15 +111,16 @@ def boot(diffs: np.ndarray, reps: int = 20000, seed: int = 0) -> Dict[str, float
             "n_negative": int((diffs < 0).sum())}
 
 
-def main() -> int:
-    cells = [(loss, d) for d in (50, 100, 200) for loss in ("L4", "L2", "random")]
+def main(argv: List[str]) -> int:
+    configure(argv[0] if argv else "e7")
     out: List[Dict[str, Any]] = []
-    for loss, d in cells:
-        name = f"relu_{loss}_p0.01_d{d}"
-        wf = ROOT / "results" / "e7" / "weights" / f"{name}.npz"
-        cf = RAW / f"cell_{name}.json"
-        if not (wf.exists() and cf.exists()):
-            print(f"  skipping {name}: missing artefacts", file=sys.stderr)
+    print(f"campaign {CAMPAIGN}, matched policy {POLICY!r}")
+    for cell in discover_cells():
+        loss, d, name = cell["loss"], cell["d"], cell["name"]
+        wf = ROOT / "results" / CAMPAIGN / "weights" / f"{name}.npz"
+        cf = cell["path"]
+        if not wf.exists():
+            print(f"  skipping {name}: no weights", file=sys.stderr)
             continue
         z = np.load(wf, allow_pickle=True)
         recs = json.loads(cf.read_text(encoding="utf-8"))["diagnoses"]
@@ -123,9 +155,10 @@ def main() -> int:
               f"net>probe {p['n_positive']}, tie {p['n_zero']}, probe>net {p['n_negative']}",
               flush=True)
 
-    dest = ROOT / "results" / "e7" / "derived" / "primary_comparison.json"
+    dest = ROOT / "results" / CAMPAIGN / "derived" / "primary_comparison.json"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(json.dumps({"policy": POLICY, "cells": out}, indent=2),
+    dest.write_text(json.dumps({"campaign": CAMPAIGN, "policy": POLICY, "cells": out},
+                               indent=2),
                     encoding="utf-8", newline="\n")
 
     print("\n| cell | input | s95 diff (net - probe) | 95% CI | net/tie/probe | AUC diff | 95% CI |")
@@ -143,4 +176,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))
