@@ -1,0 +1,138 @@
+{
+  "campaign": "e7_stageC",
+  "policy": "global",
+  "cells": [
+    {
+      "loss": "L2",
+      "d": 400,
+      "policy": "global",
+      "n_seeds": 10,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 10,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": -0.0011810257523148147,
+            "ci_low": -0.0013627775969328707,
+            "ci_high": -0.000982961697048611,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 10
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_positive": 0,
+            "n_zero": 10,
+            "n_negative": 0
+          },
+          "auc": {
+            "mean": -0.0013160445601851849,
+            "ci_low": -0.0014979040075231477,
+            "ci_high": -0.001125897894965278,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 10
+          }
+        }
+      }
+    },
+    {
+      "loss": "L4",
+      "d": 400,
+      "policy": "global",
+      "n_seeds": 10,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": -1.0,
+            "ci_low": -1.0,
+            "ci_high": -1.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 10
+          },
+          "auc": {
+            "mean": -0.018452510127314813,
+            "ci_low": -0.02057608145254629,
+            "ci_high": -0.016609225802951356,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 10
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": -3.3,
+            "ci_low": -3.6,
+            "ci_high": -3.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 10
+          },
+          "auc": {
+            "mean": -0.08240107783564815,
+            "ci_low": -0.08429048891420722,
+            "ci_high": -0.08063418918185765,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 10
+          }
+        }
+      }
+    },
+    {
+      "loss": "random",
+      "d": 400,
+      "policy": "global",
+      "n_seeds": 10,
+      "network_minus_probe": {
+        "post_relu": {
+          "s95": {
+            "mean": -2.7,
+            "ci_low": -3.1,
+            "ci_high": -2.3,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 10
+          },
+          "auc": {
+            "mean": -0.13699949363425926,
+            "ci_low": -0.1438880090784144,
+            "ci_high": -0.13095616590711812,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 10
+          }
+        },
+        "pre_relu": {
+          "s95": {
+            "mean": -4.1,
+            "ci_low": -4.3,
+            "ci_high": -4.0,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 10
+          },
+          "auc": {
+            "mean": -0.27902830222800923,
+            "ci_low": -0.28501294894748264,
+            "ci_high": -0.2736961570457176,
+            "n_positive": 0,
+            "n_zero": 0,
+            "n_negative": 10
+          }
+        }
+      }
+    }
+  ]
+}

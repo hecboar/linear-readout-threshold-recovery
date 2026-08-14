@@ -1,0 +1,123 @@
+{
+  "experiment": "e7_scaled_toy",
+  "smoke": false,
+  "command": "e7_scaled_toy.py --config configs/e7_stageC.json --stage C --resume --device cuda --workers 10 --out-dir results/e7_stageC",
+  "argv": [
+    "experiments/e7_scaled_toy.py",
+    "--config",
+    "configs/e7_stageC.json",
+    "--stage",
+    "C",
+    "--resume",
+    "--device",
+    "cuda",
+    "--workers",
+    "10",
+    "--out-dir",
+    "results/e7_stageC"
+  ],
+  "started_utc": "2026-08-14T12:56:35Z",
+  "config": {
+    "_note": "Stage C: one width, for one prediction. The frontier over the main cells goes 4.515, 6.031, 8.069 at d = 50, 100, 200 -- successive ratios 1.337 and 1.338, which is kappa proportional to d^0.42 to within the third digit. Extrapolated, d=400 lands at 10.79. This stage tests that number. It is the only quantitative prediction the work is in a position to make, and a fourth point either sharpens the frontier claim from 'it grows' to a rate, or breaks a pattern that currently rests on two ratios. The protocol matches Stage A's main cells and not Stage B's: F = 2d and p = 0.01, so the four widths are comparable. include_oracle is off for the reason recorded in configs/e7_stageB.json -- the per-sparsity oracle probes feed no number in the paper and at least double the diagnosis cost. Measured cost before launching, because the two prior estimates for this cell were extrapolations that missed by factors of 5 and 10: 988 s per diagnosis at d=400 with s_max=28, single process (scripts-adjacent time_d400.py). Untrained controls are included at this width because 'near-floor geometry is generic' is the control the paper leans on hardest and it has never been checked past d=200.",
+    "tasks": [
+      "relu"
+    ],
+    "steps": 50000,
+    "batch": 2048,
+    "lr": 0.001,
+    "theta": 0.5,
+    "eval_s_max": {
+      "400": 28
+    },
+    "n_fit": 8192,
+    "probe_n_train": 8192,
+    "probe_n_test": 4096,
+    "native_n_train": 8192,
+    "native_n_test": 4096,
+    "probe_n_val": 4096,
+    "probe_steps": 300,
+    "probe_batch": 4096,
+    "include_oracle": false,
+    "frontier_n_low": 24,
+    "frontier_n_random": 8,
+    "frontier_alpha": 1.0,
+    "stages": {
+      "C": {
+        "note": "d=400 at the Stage A protocol, to test the extrapolated frontier of 10.79",
+        "cells": [
+          {
+            "widths": [
+              400
+            ],
+            "overcompleteness": 2,
+            "train_sparsities": [
+              0.01
+            ],
+            "losses": [
+              "L2",
+              "L4"
+            ],
+            "n_seeds": 10
+          }
+        ],
+        "controls": {
+          "widths": [
+            400
+          ],
+          "overcompleteness": 2,
+          "n_seeds": 10
+        }
+      }
+    },
+    "threads": 18,
+    "device": "cuda",
+    "stages_run": [
+      "C"
+    ],
+    "resume": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.17.0-1014-nvidia-aarch64-with-glibc2.39",
+    "processor": "aarch64",
+    "cpu_count": 20,
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "git_commit": "ab68f01335f12780b9ae021749e8318645d57993",
+    "git": {
+      "commit": "ab68f01335f12780b9ae021749e8318645d57993",
+      "branch": "phase0-reproducibility",
+      "dirty": false,
+      "dirty_files": [],
+      "dirty_file_count": 0,
+      "describe": "ab68f01"
+    },
+    "env_omp_num_threads": "18",
+    "matplotlib": "3.11.0",
+    "torch": "2.13.0+cu130",
+    "torch_cuda_available": true,
+    "torch_num_threads": 18
+  },
+  "stage_C": {
+    "stage": "C",
+    "n_models": 30,
+    "widths": [
+      400
+    ],
+    "network_beats_best_probe_fraction": 0.5,
+    "l2_l4_geometry_separated_by_width": [
+      {
+        "d": 400,
+        "R_geom_L4": 1.0001207155575675,
+        "R_geom_L2": 32.31314416853425,
+        "separated": true
+      }
+    ],
+    "l2_l4_separates_everywhere": true,
+    "e3_violations": [],
+    "e3_arrow_held": true
+  },
+  "duration_seconds": 6230.534,
+  "finished_utc": "2026-08-14T14:40:26Z",
+  "exit_status": "ok"
+}
