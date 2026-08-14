@@ -12,9 +12,12 @@ returns how close its gain-normalised linear readout sits to a Welch-type floor,
 range over which a threshold decoder recovers Boolean states exactly, and a witness separating
 *analog reconstruction* from *support recovery*.
 
-**Everything in the manuscript runs on CPU.** Campaigns E1-E6, which are what the paper
-reports, need no accelerator and hide any that is present. E7 is the one exception and is
-opt-in: it is the scaled trained-network campaign described in `SPARK_CAMPAIGN.md`.
+**Every number in the manuscript can be recomputed on a CPU.** Campaigns E1-E6 need no
+accelerator and hide any that is present. E7 and E8 do need one to *train*, but every model they
+produce is committed under `results/*/weights/`, and every figure
+the paper draws from them is computed from those weights by the CPU-only analysis step of
+`scripts/run_all.sh`. So retraining is opt-in (`--with-campaigns`) and is only necessary for a
+reader who doubts the training itself rather than the analysis of it. See `SPARK_CAMPAIGN.md`.
 
 ---
 
@@ -28,7 +31,7 @@ python -m venv .venv
 source .venv/bin/activate           # Windows: .venv\Scripts\activate
 python -m pip install -r requirements.txt
 
-python -m pytest -q tests/          # 104 tests, ~15 s
+python -m pytest -q tests/          # 350 tests, ~75 s
 ```
 
 Run one campaign end to end in seconds to check the installation:
@@ -41,7 +44,12 @@ Reproduce everything — experiments, figures, tables, generated numbers and the
 
 ```bash
 bash scripts/run_all.sh             # Windows: powershell -File scripts\run_all.ps1
+bash scripts/run_all.sh --smoke     # same shape in minutes, to check the plumbing
 ```
+
+That reproduces E1-E6, the CPU analysis of the committed E7 and E8 models, every figure and table,
+all 238 generated numbers, and the PDF. Add `--with-campaigns` to retrain E7 and E8 as well; that
+needs a GPU and takes days.
 
 ---
 
@@ -92,7 +100,8 @@ seeds, environment, wall-clock duration and exit status, plus raw results under
 | E4 | Do *learned* codes attain the floor? | `python experiments/e4_optimized_codes.py` | see `results/e4/run_record.json` |
 | E5 | Does the separation appear inside a *trained* network? | `python experiments/e5_trained_toy.py` | see `results/e5/run_record.json` |
 | E6 | How does the recovery threshold scale, up to `d = 1024`? | `python experiments/e6_threshold_scaling.py` | see `results/e6/run_record.json` |
-| E7 | The same question as E5, across widths, tasks, seeds and distributions | `bash scripts/run_spark.sh` | accelerator campaign, see `SPARK_CAMPAIGN.md` |
+| E7 | The same question as E5, across widths, feature loads, losses and training sparsities | `bash scripts/run_spark.sh` | accelerator campaign, see `SPARK_CAMPAIGN.md` |
+| E8 | Which half of the training does the work: the code, or the readout? | `python experiments/e8_frozen_encoder.py --device cuda --widths 50 100 --seeds 10` | accelerator campaign |
 
 Measured durations are reported in Table 8 of the manuscript and are read from the run records
 — they are not estimates. E4 is by far the most expensive campaign (168 optimisation runs of
@@ -112,13 +121,18 @@ Useful flags, common to every campaign:
 
 E1-E6 are CPU-only by construction: they hide the GPU from the process so that a stray
 accelerator cannot make a published run irreproducible on a CPU-only machine. Passing
-`--device cuda` opts back in, and only E7 does.
+`--device cuda` opts back in, and only E7 and E8 do.
 
-### E7 and the accelerator
+### E7, E8 and the accelerator
 
-E1-E6 run on a laptop. E7 does not: it trains 720 networks across four widths, two tasks, two
-losses and two training sparsities, and it exists because the single-width, five-seed evidence
-of E5 is single-width and five-seed. Seeds within a cell are trained as one
+E1-E6 run on a laptop. E7 and E8 do not. E7 exists because the single-width, five-seed evidence of
+E5 is single-width and five-seed, and it runs in three stages: **A**, the main grid
+of 180 models over three widths and two losses; **B**, 100 models re-scoped after stage A to test the
+two claims that survived it, at four times the feature load and at double the training sparsity; and
+**C**, 30 models at `d = 400`, to test whether the frontier's growth over the first three widths is
+a rate rather than just an increase. E8 adds 90 models in three arms — both parts trained, the code
+frozen with only the readout trained, and neither trained — to separate what training the code
+contributes from what training the readout contributes. Seeds within a cell are trained as one
 batched computation -- at these widths a single model leaves an accelerator idle -- and
 `tests/test_batched_training.py` asserts in float64 that this reproduces individually-trained
 models exactly, so batching is a scheduling decision and not a modelling one.
@@ -128,8 +142,12 @@ verifies that the torch build matches the card's architecture and then retrains 
 on CPU and GPU in float64 and compares the weights, because an accelerator that runs but
 returns different numbers is the failure mode that would otherwise go unnoticed.
 
-E7 persists every trained model to `results/e7/weights/*.npz`, so any of its numbers can be
-recomputed without retraining. E5 now does the same for future runs; the `results/e5/` already
+E7 and E8 persist every trained model to `results/*/weights/*.npz`, so any of their numbers can be
+recomputed without retraining. That is not a convenience. Three of the paper's findings — the
+matched decoder comparison, the exact all-feature frontier, and the readout trade-off in E8's frozen
+arm — were computed well after the runs, from these files alone, and one of them overturned a claim
+the first analysis had made. The seven scripts that do it are wired into `scripts/run_all.sh` in
+dependency order. E5 now does the same for future runs; the `results/e5/` already
 in the repository predates that and has no weights, and re-running it elsewhere is not advised
 — see the determinism warning below.
 
@@ -140,6 +158,26 @@ interruption skips the trials already present and continues; completed results a
 overwritten. E7 checkpoints per cell and continues with `--resume`; because each seed keeps its
 own generator, raising the seed count later leaves the already-trained seeds bit-identical. The
 other campaigns are short enough to simply re-run.
+
+### Re-analysing the trained models without retraining
+
+Several of the paper's numbers are computed from the committed E7/E8 weights rather than during the
+campaigns. They run on a CPU in minutes, in this order — `all_feature_frontier` must precede
+`refresh_native_blocks`, which stamps the former's output into the per-cell records:
+
+```bash
+python scripts/all_feature_frontier.py 8      # exact frontier over all F features, not a subset
+python scripts/refresh_native_blocks.py       # native detection with KD1 fixed; idempotent
+python scripts/primary_comparison.py          # network vs affine probe, matched input and threshold
+python scripts/native_comparison.py           # the same on the network's own input distribution
+python scripts/network_threshold_policies.py  # the network under the probes' threshold policies
+python scripts/relu_frontier_gap.py           # frontier before vs after the ReLU
+python scripts/frozen_readout_tradeoff.py     # is E8's frozen readout losing cross-talk, or buying it?
+```
+
+`refresh_native_blocks.py` rewrites tracked files under `results/e7/raw/`. It is deterministic and
+idempotent, so on a clean checkout it must produce no diff; `run_all.sh` warns if it does, because a
+diff there means the analysis code and the archive have drifted apart.
 
 ### Tables, figures and the numbers in the paper
 
@@ -183,7 +221,8 @@ experiments/            one script per campaign (E1-E6 CPU-only; E7 opt-in accel
 configs/                one JSON per campaign, with a `smoke` override block
 results/                raw results, run records and logs (committed)
 scripts/                figures, tables, generated numbers, verification, run_all
-tests/                  318 tests, including numerical verification of the theorems
+tests/                  350 tests, including numerical verification of the theorems and
+                        counterexamples to two of them that were once stated too broadly
 paper/                  manuscript sources, figures, tables, highlights
 docs/                   decision log and supporting analyses
 internal/               working documents, not part of the release (see internal/README.md)

@@ -2,9 +2,11 @@ cff-version: 1.2.0
 message: "If you use this code, please cite the companion paper."
 title: "Interface Diagnostic: reference implementation for linear-readout floors and threshold recovery"
 abstract: >-
-  Reference implementation of the Interface Diagnostic and of the six CPU-only experimental
-  campaigns reported in the companion paper, together with the manuscript sources, raw
-  results and run records.
+  Reference implementation of the Interface Diagnostic and of the eight experimental campaigns
+  reported in the companion paper, together with the manuscript sources, raw results, run records
+  and the weights of every network the campaigns produce. Campaigns E1-E6 are CPU-only; E7 and E8 need an
+  accelerator to train, but every number the paper draws from them is recomputed from the committed
+  weights by a CPU-only analysis step.
 type: software
 authors:
   - family-names: Borobia

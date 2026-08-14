@@ -14,18 +14,19 @@ import sys
 
 import numpy as np
 
-sys.path.insert(0, "src")
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 from lrtr.probes import _exact_recovery, evaluate_scores, select_thresholds  # noqa: E402
 from lrtr.splits import make_state_splits, representations  # noqa: E402
 from lrtr.threshold import s95_from_curve  # noqa: E402
 
-cfg = json.loads(pathlib.Path("configs/e7.json").read_text(encoding="utf-8"))
+cfg = json.loads((ROOT / "configs" / "e7.json").read_text(encoding="utf-8"))
 CELLS = [("L4", 50), ("L4", 100), ("L4", 200), ("L2", 50), ("L2", 200)]
 rows = []
 
 for loss, d in CELLS:
     name = f"relu_{loss}_p0.01_d{d}"
-    z = np.load(f"results/e7/weights/{name}.npz", allow_pickle=True)
+    z = np.load(ROOT / "results" / "e7" / "weights" / f"{name}.npz", allow_pickle=True)
     W_in_all, W_out_all = z["W_in"], z["W_out"]
     sparsities = z["sparsities"].tolist()
     seeds = z["seeds"].tolist()
@@ -57,7 +58,12 @@ for loss, d in CELLS:
     print(f"{loss} d={d}: network s95 by its own threshold policy -> "
           + "  ".join(f"{p}={np.median(v):.1f}" for p, v in per.items()), flush=True)
 
-pathlib.Path("net_tuned.json").write_text(json.dumps(
+# Written where docs/known_defects.md KD2 says it is. The first version wrote `net_tuned.json`
+# into whatever directory it was launched from, and the file the documentation cites got there by
+# hand -- so the table in KD2 was not reproducible by running the script it names.
+dest = ROOT / "results" / "e7" / "derived" / "network_threshold_policies.json"
+dest.parent.mkdir(parents=True, exist_ok=True)
+dest.write_text(json.dumps(
     [{"loss": l, "d": d, "network_s95_by_policy": v} for l, d, v in rows], indent=2),
-    encoding="utf-8")
-print("wrote net_tuned.json")
+    encoding="utf-8", newline="\n")
+print(f"wrote {dest.relative_to(ROOT)}")
