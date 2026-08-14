@@ -272,6 +272,142 @@ def figure_scaling() -> None:
     save(fig, "fig4_scaling")
 
 
+
+# --------------------------------------------------------------------------------------
+# Figure 5 -- the matched comparison, and the geometry the loss produces (E7 stage A)
+# --------------------------------------------------------------------------------------
+
+ARM_STYLE = {"trained": (PALETTE[0], MARKERS[0], "both trained"),
+             "frozen": (PALETTE[3], MARKERS[3], "code frozen"),
+             "random": (PALETTE[2], MARKERS[2], "neither trained")}
+WIDTHS = (50, 100, 200)
+
+
+def figure_matched_comparison() -> None:
+    """Why the headline is a tie, and where the difference actually lives.
+
+    Panels (a) and (b) are the same paired difference under the two pre-registered estimands, which
+    is the point: they disagree. Panel (c) is the geometry, and it carries its own warning -- the
+    untrained code sits as close to the floor as the trained one, so proximity to the floor is not
+    evidence of learning.
+    """
+    prim = {(c["loss"], c["d"]): c for c in load("e7/derived/primary_comparison.json")["cells"]}
+    per_width = load("e7/raw/e7_stage_A.json")["report"]["per_width"]
+
+    fig, axes = plt.subplots(1, 3, figsize=(WIDTH_2COL, 2.5))
+
+    for ax, estimand, ylab, title in (
+            (axes[0], "s95", r"network $-$ probe, $s_{95}$", "(a) exact recovery"),
+            (axes[1], "auc", r"network $-$ probe, recovery AUC", "(b) recovery AUC")):
+        for loss in ("L4", "L2"):
+            colour, marker, label = KIND_STYLE[loss]
+            for stage, ls, alpha in (("post_relu", "-", 1.0), ("pre_relu", ":", 0.6)):
+                xs, ys, lo, hi = [], [], [], []
+                for d in WIDTHS:
+                    v = prim[(loss, d)]["network_minus_probe"][stage][estimand]
+                    xs.append(d); ys.append(v["mean"])
+                    lo.append(v["mean"] - v["ci_low"]); hi.append(v["ci_high"] - v["mean"])
+                ax.errorbar(xs, ys, yerr=[lo, hi], color=colour, marker=marker, ls=ls,
+                            alpha=alpha, capsize=2, lw=1.0, ms=3.5,
+                            label=f"{label}, {'post' if stage == 'post_relu' else 'pre'}-ReLU")
+        ax.axhline(0.0, color="k", lw=0.9)
+        ax.set_xscale("log", base=2)
+        ax.set_xticks(list(WIDTHS)); ax.set_xticklabels([str(d) for d in WIDTHS])
+        ax.set_xlabel(r"width $d$")
+        ax.set_ylabel(ylab)
+        ax.set_title(title)
+    axes[0].legend(fontsize=5.4, loc="center left")
+    # Both panels are signed the same way, so the annotation goes on the side that is actually
+    # below zero. Putting it at the top would have labelled the tie as the probe winning.
+    for ax in (axes[0], axes[1]):
+        ax.text(0.97, 0.04, "probe better $\\downarrow$", transform=ax.transAxes, ha="right",
+                va="bottom", fontsize=5.6, style="italic")
+
+    ax = axes[2]
+    for kind in ("L2", "L4", "random"):
+        colour, marker, label = KIND_STYLE[kind]
+        ys = [per_width[str(d)][kind]["R_geom"] for d in WIDTHS]
+        ax.plot(WIDTHS, ys, color=colour, marker=marker, ms=3.5, lw=1.0, label=label)
+    ax.axhline(1.0, color="k", ls="--", lw=0.9)
+    ax.set_yscale("log")
+    ax.set_xscale("log", base=2)
+    ax.set_xticks(list(WIDTHS)); ax.set_xticklabels([str(d) for d in WIDTHS])
+    ax.set_xlabel(r"width $d$")
+    ax.set_ylabel(r"$R_{\mathrm{geom}}$")
+    ax.set_title("(c) geometry, by loss")
+    ax.legend(fontsize=6, loc="center right")
+
+    fig.tight_layout(w_pad=1.3)
+    save(fig, "fig5_matched_comparison")
+
+
+# --------------------------------------------------------------------------------------
+# Figure 6 -- which half of the training does the work (E8)
+# --------------------------------------------------------------------------------------
+
+def figure_frozen_encoder() -> None:
+    """The frontier follows the code; the readout column is a trade-off, not a failure.
+
+    Panel (b) exists because R_readout alone invites the wrong reading. The frozen arm sits at twice
+    the code-specific cross-talk optimum, which looks like a failed optimisation until it is scored
+    under the loss it actually trained on, where it beats that optimum outright.
+    """
+    runs = []
+    for rel in ("e8/raw/e8_runs.json", "e8_d200/raw/e8_runs.json"):
+        runs += load(rel)["runs"]
+    trade = {(c["arm"], c["d"]): c
+             for c in load("e8/derived/frozen_readout_tradeoff.json")["cells"]}
+
+    def med(arm: str, d: int, fn) -> float:
+        return float(np.median([fn(r) for r in runs if r["arm"] == arm and r["d"] == d]))
+
+    fig, axes = plt.subplots(1, 2, figsize=(WIDTH_2COL, 2.5))
+
+    ax = axes[0]
+    for arm in ("trained", "frozen", "random"):
+        colour, marker, label = ARM_STYLE[arm]
+        ys = [med(arm, d, lambda r: r["theory"]["affine"]["kappa_min"]) for d in WIDTHS]
+        ax.plot(WIDTHS, ys, color=colour, marker=marker, ms=3.5, lw=1.0, label=label)
+    ax.set_xscale("log", base=2)
+    ax.set_xticks(list(WIDTHS)); ax.set_xticklabels([str(d) for d in WIDTHS])
+    ax.set_xlabel(r"width $d$")
+    ax.set_ylabel(r"$\kappa_{\min}$")
+    ax.set_title("(a) frontier: the code, not the readout")
+    ax.legend(fontsize=6, loc="upper left")
+
+    # A scatter, not two y-axes. The first version drew R_readout as bars against a twinned
+    # task-gain line, and the two scales crossed where the eye reads a trade-off that is not there:
+    # the jointly trained arm is better on *both* axes, and dominance is what a reader should see.
+    ax = axes[1]
+    for arm in ("trained", "frozen"):
+        colour, marker, label = ARM_STYLE[arm]
+        xs = [med(arm, d, lambda r: r["theory"]["analog"]["R_readout"]["wout"]) for d in WIDTHS]
+        ys = [trade[(arm, d)]["task_gain_over_pinv"] for d in WIDTHS]
+        ax.plot(xs, ys, color=colour, marker=marker, ms=4.5, lw=0.9, ls="--", label=label)
+        if arm == "frozen":
+            # Its three widths land on top of one another, and that is the finding rather than a
+            # plotting nuisance: neither coordinate moves as the problem grows. One label for the
+            # cluster says so; three overlapping labels would only have hidden it.
+            ax.annotate(r"$d=50,100,200$", (float(np.mean(xs)), min(ys)),
+                        textcoords="offset points", xytext=(-4, -13), ha="center",
+                        fontsize=5.4, color=colour)
+        else:
+            for d, x, y in zip(WIDTHS, xs, ys):
+                ax.annotate(f"{d}", (x, y), textcoords="offset points", xytext=(6, -2),
+                            fontsize=5.4, color=colour)
+    ax.axvline(1.0, color="k", ls=":", lw=0.9)
+    ax.axhline(1.0, color="k", ls=":", lw=0.9)
+    ax.set_xlim(0.85, 2.15)
+    ax.set_ylim(0.0, 11.0)
+    ax.set_xlabel(r"$R_{\mathrm{readout}}$ (1 = code-specific optimum)")
+    ax.set_ylabel(r"task loss of $\Phi^{+}$ / of $W_{\mathrm{out}}$")
+    ax.set_title("(b) the readout is a trade-off, not a failure")
+    ax.legend(fontsize=6, loc="upper right")
+
+    fig.tight_layout(w_pad=1.6)
+    save(fig, "fig6_frozen_encoder")
+
+
 def main() -> None:
     setup()
     print("Generating figures from raw results:")
@@ -279,6 +415,8 @@ def main() -> None:
     figure_optimized_codes()
     figure_trained_model()
     figure_scaling()
+    figure_matched_comparison()
+    figure_frozen_encoder()
     print("done.")
 
 

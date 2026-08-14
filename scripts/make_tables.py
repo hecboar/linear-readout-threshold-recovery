@@ -158,8 +158,8 @@ def table_traceability() -> None:
 
 
 def table_cost() -> None:
-    out = [r"\begin{tabular}{llrrr}", r"\toprule",
-           r"campaign & question & jobs & workers & wall clock (min) \\", r"\midrule"]
+    out = [r"\begin{tabular}{llrrlr}", r"\toprule",
+           r"campaign & question & jobs & workers & device & wall clock (min) \\", r"\midrule"]
     meta = {
         "e1": ("E1", "floor on random codes"),
         "e2": ("E2", "recovery at $F=d^2$"),
@@ -168,6 +168,17 @@ def table_cost() -> None:
         "e5": ("E5", "trained toy model"),
         "e6": ("E6", "scaling to $d=1024$"),
     }
+    # The accelerator campaigns, in the order the paper introduces them. `jobs` is the number of
+    # models rather than a config field, because that is the quantity a reader wants to divide the
+    # wall clock by. `dagger` marks a duration the run record undercounts: --resume times only the
+    # final invocation, so stage A's figure is the last leg and not the campaign.
+    gpu = [
+        ("e7", "E7-A", "trained-network grid", "cell_*.json", True),
+        ("e7_stageB", "E7-B", "feature load and sparsity", "cell_*.json", False),
+        ("e7_stageC", "E7-C", "$d=400$ frontier rate", "cell_*.json", False),
+        ("e8", "E8", "frozen code vs frozen readout", "e8_runs.json", False),
+        ("e8_d200", "E8", "the same at $d=200$", "e8_runs.json", False),
+    ]
     total = 0.0
     for key, (tag, question) in meta.items():
         rec = load(f"{key}/run_record.json")
@@ -182,8 +193,27 @@ def table_cost() -> None:
             secs = rec["duration_seconds"]
         mins = secs / 60.0
         total += mins
-        out.append(fr"{tag} & {question} & {jobs} & {workers} & {mins:.1f} \\")
-    out += [r"\midrule", fr"\multicolumn{{4}}{{l}}{{total}} & {total:.1f} \\",
+        out.append(fr"{tag} & {question} & {jobs} & {workers} & CPU & {mins:.1f} \\")
+
+    out.append(r"\midrule")
+    for key, tag, question, pattern, resumed in gpu:
+        rec_path = RESULTS / key / "run_record.json"
+        if not rec_path.exists():          # a stage that has not been run yet is simply absent
+            continue
+        rec = json.loads(rec_path.read_text(encoding="utf-8"))
+        argv = rec.get("argv", [])
+        workers = argv[argv.index("--workers") + 1] if "--workers" in argv else "--"
+        device = argv[argv.index("--device") + 1].upper() if "--device" in argv else "CPU"
+        models = 0
+        for f in sorted((RESULTS / key / "raw").glob(pattern)):
+            payload = json.loads(f.read_text(encoding="utf-8"))
+            models += len(payload.get("diagnoses") or payload.get("runs") or [])
+        mins = rec["duration_seconds"] / 60.0
+        total += mins
+        mark = r"$^{\dagger}$" if resumed else ""
+        out.append(fr"{tag} & {question} & {models} & {workers} & {device} & {mins:.1f}{mark} \\")
+
+    out += [r"\midrule", fr"\multicolumn{{5}}{{l}}{{total}} & {total:.1f} \\",
             r"\bottomrule", r"\end{tabular}"]
     write("tab_cost", out)
 

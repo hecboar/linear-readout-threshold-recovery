@@ -467,6 +467,22 @@ never beats the probe in any of the 120 trained models. That was true of `s95` a
 and it came from reading the automated gate, which only computes `s95`. The gate reports its own
 criteria; it does not notice when they are incomplete.
 
+**Resolved, 2026-08-14, against the hypothesis above.** The decision was recorded and then not
+carried out: until today the manuscript reported `s95` only and did not mention the AUC anywhere, so
+"report both" existed in this log and nowhere a reader could see. It is now in Section 10.5 with a
+figure showing both.
+
+The hypothesis does not survive the other two widths. On the matched post-ReLU comparison of the
+`L4` cells, the AUC difference is **+0.0101 at d=50, -0.0164 at d=100 and -0.0198 at d=200**, every
+cell unanimous across all 20 seeds and no interval covering zero. So the network's edge away from the
+crossing exists only at the smallest width and reverses at the two larger ones — the opposite of a
+nonlinear advantage that strengthens with scale. "The network is better in the tail" was read off
+`d=50`, which was the width the reversal happened to favour.
+
+The claim in the paper is now the width-dependence itself, stated as something three widths cannot
+explain, and nothing is built on it. Hedging the hypothesis when it was written is what made this
+cheap to correct; had it gone into the abstract it would not have been.
+
 ---
 
 ## D19 — The frozen arm's `R_readout` is a trade-off, not a failed optimisation

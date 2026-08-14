@@ -2046,6 +2046,27 @@ The two tie in 119 of the 120 trained models. This is the outcome registered bef
 ran, in the words it was registered in: a properly trained, validation-selected affine decoder
 \emph{matches} the network, and we report that rather than looking for a statistic that reverses it.
 
+\paragraph{The second estimand disagrees, and its sign depends on the width.} The analysis plan named
+two co-primary estimands: $s_{95}$ and the recovery AUC, the area under the exact-recovery curve
+over the evaluated sparsities. $s_{95}$ is a floored crossing point and therefore blunt, so a
+difference of less than one level is invisible to it; the AUC sees the whole curve. On the same
+matched post-ReLU comparison, the AUC does not tie, and it does not point one way either.
+At $d=50$ the network leads by \AucFiftyDiff{} (95\% interval
+[\AucFiftyCiLow, \AucFiftyCiHigh]) on \AucFiftyNetWins{} of \EsevenSeeds{} seeds; at $d=100$ the
+probe leads by \AucHundredDiff{} ([\AucHundredCiLow, \AucHundredCiHigh]) on
+\AucHundredProbeWins{} of \EsevenSeeds{}; at $d=200$ the probe leads by \AucTwoHundredDiff{}
+([\AucTwoHundredCiLow, \AucTwoHundredCiHigh]) on \AucTwoHundredProbeWins{} of \EsevenSeeds{}. Every
+cell is unanimous across seeds, no interval covers zero, and the direction reverses between the first
+width and the other two.
+
+We report this because we registered it, and we decline to build on it. The honest reading is that
+the network holds a small edge away from the 95\% crossing at the smallest width and loses it as the
+width grows, which is the opposite of a nonlinear advantage that strengthens with scale. Whether the
+reversal reflects the ReLU truncating a growing fraction of the state or the probe's threshold
+having more room to help at larger $F$, three widths cannot say. Figure~\ref{fig:e7primary}(a,b)
+shows both estimands so that a reader can see the disagreement rather than take our word for which
+one to believe.
+
 \paragraph{What does separate is the stage, not the decoder.} Restoring the pre-ReLU probe recovers a
 gap, and it is a gap between representations rather than between decoders: at $d=50$ the pre-ReLU
 probe leads the network by \PrimLfourFiftyPreDiff{} of a sparsity level on all
@@ -2053,6 +2074,22 @@ probe leads the network by \PrimLfourFiftyPreDiff{} of a sparsity level on all
 preactivation is more affinely decodable than the state the ReLU leaves behind. Read as a decoder
 comparison this looks like a nonlinear disadvantage; read correctly it says what the nonlinearity
 discards, and the network is not entitled to the information it destroys.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig5_matched_comparison.pdf}
+\caption{\textbf{The matched comparison, both estimands, and the geometry the loss produces.}
+Paired within seed; bars are bootstrap intervals over the 20 models of a cell. Negative means the
+affine probe decodes better. \textbf{(a)} Under $s_{95}$ the matched post-ReLU comparison is a tie at
+every width, while the pre-ReLU probe --- reading the state the network's output layer never sees ---
+wins a full level at $d=50$ and $d=200$ and ties at $d=100$. \textbf{(b)} The same models under the
+recovery AUC, which resolves differences smaller than one sparsity level: the sign reverses between
+$d=50$, where the network leads on every seed, and the two larger widths, where the probe does.
+\textbf{(c)} $R_{\mathrm{geom}}$ by loss. $L^2$ leaves the interface one to two orders of magnitude
+above the rank--trace floor; $L^4$ and an \emph{untrained} random code both sit on it, which is why
+proximity to the floor is not by itself evidence of learned structure.}
+\label{fig:e7primary}
+\end{figure}
 
 \paragraph{The loss decides the interface.} The three code families separate cleanly and by a wide
 margin, at every width:
@@ -2129,6 +2166,23 @@ untrained rows must agree up to the column normalisation that distinguishes them
 is a consistency check rather than a result --- but it is the point: whatever the training buys for
 support recovery, it buys by moving the code.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig6_frozen_encoder.pdf}
+\caption{\textbf{Which half of the training does the work.} Medians over
+\EeightSeeds{} models per arm and width. \textbf{(a)} The frontier tracks the code: training only the
+readout leaves $\kappa_{\min}$ where an untrained code puts it --- below it, in fact --- while
+training both lifts it at every width. \textbf{(b)} The same models placed by cross-talk against task
+loss. The horizontal axis is $R_{\mathrm{readout}}$, so $1$ is the best readout \emph{of the code that
+arm was given}; the vertical axis is how much lower the trained readout's own training loss is than
+that optimum's. The frozen arm sits at nearly twice the cross-talk, which invites reading it as a
+failed optimisation, but it beats the cross-talk optimum on the loss it trained under, so the
+cross-talk is bought rather than lost. Its three widths coincide: neither coordinate moves as the
+problem grows. The jointly trained arm is better on both axes at once and pulls further ahead with
+width, so co-adaptation does not trade the two objectives against each other --- it aligns them.}
+\label{fig:e8}
+\end{figure}
+
 The readout column is the surprise, and it is stable across width. The frozen arm trained
 $W_{\mathrm{out}}$ for the full budget and ended at
 $R_{\mathrm{readout}}=\EeightFrozenHundredRreadout{}$ at $d=100$ and
@@ -2146,7 +2200,8 @@ $W_{\mathrm{out}}$ beats $\Phi^{+}$ by a factor of \EeightFrozenHundredTaskGain{
 \EeightFrozenTwoHundredTaskGain{} at $d=200$, on \EeightFrozenTwoHundredTaskWins{} of
 \EeightSeeds{} models at each width. The cross-talk it gives up is bought, not lost. As a check on
 the scoring, the untrained arm --- whose readout \emph{is} $\Phi^{+}$ --- returns a ratio of
-\EeightRandomTwoHundredTaskGain{}.
+\EeightRandomTwoHundredTaskGain{}. Figure~\ref{fig:e8}(b) places both arms in the two coordinates at
+once, which is the only view in which the trade-off is visible as a trade-off.
 
 So the two objectives genuinely pull apart on a fixed random code, and the contrast is about what
 co-adaptation does to them rather than about optimisation difficulty: the jointly trained arm attains
@@ -2247,8 +2302,13 @@ makes the reported quantities auditable rather than merely stated.
 
 \begin{table}[t]
 \centering
-\caption{Measured computational cost. All campaigns are CPU-only; no GPU is used anywhere in
-this work.}
+\caption{Measured computational cost, read from the run records. E1--E6 are CPU-only and hide any
+accelerator that is present, so they cannot silently become irreproducible on a CPU-only machine.
+E7 and E8 train on a GPU; every number this paper draws from them is then recomputed from their
+saved weights on a CPU, so no claim here depends on access to an accelerator. \emph{jobs} counts
+models for the GPU campaigns and configured jobs for the others. $^{\dagger}$Stage~A was resumed,
+and a run record times only the final invocation, so this figure is the last leg rather than the
+campaign.}
 \label{tab:cost}
 \small
 \input{tables/tab_cost}

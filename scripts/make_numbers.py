@@ -394,6 +394,23 @@ def build() -> Macros:
             m.num(t + "CiHigh", v["ci_high"], 2)
             m.integer(t + "Ties", v["n_zero"])
             m.integer(t + "ProbeWins", v["n_negative"])
+    # The second pre-registered estimand. D17 decided to report both because they disagree; only
+    # `s95` reached the manuscript, so these close that gap. The direction of the AUC difference
+    # itself depends on the width, which is why all three widths get macros rather than a summary.
+    m.integer("EsevenSeeds", prim[("L4", 200)]["n_seeds"])
+    for d, tag in W.items():
+        v = prim[("L4", d)]["network_minus_probe"]["post_relu"]["auc"]
+        t = f"Auc{tag}"
+        m.num(t + "Diff", v["mean"], 4)
+        m.num(t + "CiLow", v["ci_low"], 4)
+        m.num(t + "CiHigh", v["ci_high"], 4)
+        # Only the winning side's count, since the cells are unanimous and the loser's count is 0.
+        # Emitting both would leave a macro nobody reads, which the number check rightly rejects.
+        if v["mean"] > 0:
+            m.integer(t + "NetWins", v["n_positive"])
+        else:
+            m.integer(t + "ProbeWins", v["n_negative"])
+
     pre50 = prim[("L4", 50)]["network_minus_probe"]["pre_relu"]["s95"]
     pre200 = prim[("L4", 200)]["network_minus_probe"]["pre_relu"]["s95"]
     m.num("PrimLfourFiftyPreDiff", pre50["mean"], 2)
