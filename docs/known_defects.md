@@ -206,3 +206,62 @@ at what the space contains, remainder distributed proportionally, exhausted spar
 draws recorded, an empty split raised rather than returned -- and gives the measured consequence,
 that the `s = 1` test set holds 50 states at `F = 100` and that `s` in `{1, 2}` are flagged
 exhausted, so their intervals are wider than the nominal budget implies.
+
+---
+
+## KD6 — The "matched" threshold policy never evaluated the threshold it was matching against
+
+**Status: FIXED in the selection routine** 2026-08-14, in `lrtr.probes.select_thresholds`, with
+`tests/test_threshold_selection.py` asserting the post-condition and reproducing the old failure.
+**The affected measurements are being recomputed**; until `scripts/refresh_probe_blocks.py` and
+`scripts/primary_comparison.py` have been re-run on all three stages, every decoder comparison in
+Section 10.5 is withdrawn.
+
+**Found:** 2026-08-14 by an internal adversarial audit, verified per model at four widths.
+
+**Where.** `select_thresholds`, the `global` and `per_feature` branches. The candidate set was
+`np.quantile(Z_val, linspace(0.01, 0.999, n_grid))` and `best` was initialised to `-1.0`, with
+`theta_fixed` as the initial `best_theta`. Since any attainable score exceeds `-1.0`, the first grid
+point always displaced `theta_fixed`: **it was never scored.**
+
+**Why a quantile grid is the wrong candidate set here.** The scores are bimodal — most coordinates
+inactive and near zero, a few active and near one — so the quantiles crowd into the two modes and
+sample the decision region between them sparsely or not at all. The routine then returns the best of
+a bad set and reports it as a maximum.
+
+**Measured.** On the `L4` cells, comparing the selected threshold against `theta = 0.5` on the
+validation objective the selection claims to maximise:
+
+| `d` | selected `theta` | validation objective, selected | at `theta=0.5` | `theta=0.5` wins |
+|---|---|---|---|---|
+| 50 | 0.4834 | 0.4766 | 0.4867 | 20/20 |
+| 200 | 0.3613 | 0.4453 | 0.6280 | 20/20 |
+| 400 | 0.5981 | 0.5056 | 0.7490 | 10/10 |
+
+100% of models at every width. The cost in `s95` grows with width: none at `d=50`, one level at
+`d=200`, **five levels at `d=400`** (8.0 against 13.0).
+
+**What it invalidates.** Everything downstream of a selected threshold: the probes' `s95` and
+recovery AUC under `global` and `per_feature`, the matched comparison of
+`scripts/primary_comparison.py`, the claim that the affine probe's advantage grows with width, the
+AUC reversal, and the `d=400` pre-ReLU gap. Note the direction is not simply "the network was
+robbed": the same routine sets the probes' thresholds, so both sides were handicapped and the
+recomputation could land anywhere.
+
+**What it does not invalidate.** Anything computed without a selected threshold: `R_geom`, the exact
+frontier `kappa_min` and everything built on it (the rate, the out-of-sample prediction, the closing
+margin), E8's arms and its readout trade-off, the `L2`/`L4` separation, the untrained control's
+proximity to the floor, and all of E1-E6. Those are functions of the code, not of a decision rule.
+
+**Fix.** The candidate set is now the quantile grid, plus a uniform grid across the observed score
+range, plus `theta_fixed`, which is scored first so that ties resolve toward the registered value.
+The post-condition — the returned threshold is never worse than `theta_fixed` on validation — is
+asserted by tests, one of which re-implements the old search and requires it to fail the case.
+
+**Precedent, and this one is mine.** This defect was introduced by the fix for KD2. KD2 was an
+asymmetry that favoured the probe; the correction was to give both decoders "the same
+validation-selected threshold", and the routine chosen to do that was broken in a way that favoured
+the probe again. That is the third time a threshold-selection criterion has produced a wrong
+comparison in this repository, after per-feature accuracy tuning and after KD1's accuracy-selected
+operating point. The lesson that did not propagate: a selection routine needs a post-condition
+against the baseline it replaces, not just an objective to maximise.

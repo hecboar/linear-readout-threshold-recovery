@@ -195,6 +195,27 @@ def select_thresholds(Z_val: np.ndarray, val: StateSplit, policy: str, theta_fix
     per-feature optima each accept a few false positives, and those compound. Both raw and
     balanced per-feature accuracy came out *worse* than a single fixed threshold for that reason.
     Selecting one shared quantile level fixes it without giving up the per-feature scale.
+
+    **`theta_fixed` is always a candidate, and it is evaluated first.** The first version of this
+    routine searched only quantiles of `Z_val` and initialised `best = -1.0`, so `theta_fixed` was
+    the initial `best_theta` but was never scored: the first grid point always displaced it. A
+    quantile grid is not guaranteed to contain a good threshold. When the score distribution is
+    bimodal -- most coordinates inactive and near zero, a few active and near one -- the quantiles
+    crowd into the two modes and sample the decision region sparsely, and the routine could return a
+    threshold that *loses to `theta_fixed` on the very objective it maximises*. Measured on the
+    trained networks of E7: at every width, on 100% of models, `theta = 0.5` beat the selected
+    threshold on validation exact recovery (0.749 against 0.506 at `d=400`), costing the network up
+    to five sparsity levels of `s95`. That made a decoder comparison built on this policy a handicap
+    dressed as a fairness correction -- the mirror image of the asymmetry it was introduced to fix
+    (KD2, KD4, and now KD6).
+
+    The candidate set is therefore the quantile grid, plus a uniform grid across the observed score
+    range so the decision region is sampled even when the quantiles do not reach it, plus
+    `theta_fixed` itself. Ties resolve toward `theta_fixed`, because moving away from a registered,
+    semantically meaningful threshold should require evidence, not a numerical coin-flip.
+
+    Post-condition, asserted by `tests/test_threshold_selection.py`: the returned threshold is never
+    worse than `theta_fixed` on the validation objective.
     """
     if policy not in THRESHOLD_POLICIES:
         raise ValueError(f"unknown policy {policy!r}; use one of {THRESHOLD_POLICIES}")
@@ -202,21 +223,31 @@ def select_thresholds(Z_val: np.ndarray, val: StateSplit, policy: str, theta_fix
         return float(theta_fixed)
 
     Y = one_hot_targets(val) > 0.5
+
+    def objective(theta: np.ndarray | float) -> float:
+        return float(np.all((Z_val >= theta) == Y, axis=1).mean())
+
     if policy == "global":
-        grid = np.quantile(Z_val, np.linspace(0.01, 0.999, n_grid))
-        best, best_theta = -1.0, float(theta_fixed)
-        for t in grid:
-            score = float(np.all((Z_val >= t) == Y, axis=1).mean())
+        lo, hi = float(np.min(Z_val)), float(np.max(Z_val))
+        candidates = np.concatenate([
+            np.quantile(Z_val, np.linspace(0.01, 0.999, n_grid)),
+            np.linspace(lo, hi, n_grid) if hi > lo else np.array([lo]),
+        ])
+        # theta_fixed scored first, so a strict `>` keeps it on ties.
+        best, best_theta = objective(float(theta_fixed)), float(theta_fixed)
+        for t in candidates:
+            score = objective(float(t))
             if score > best:
                 best, best_theta = score, float(t)
         return best_theta
 
-    # per_feature: one shared quantile level, per-feature absolute thresholds.
-    qs = np.linspace(0.5, 0.9995, n_grid)
-    best, best_thetas = -1.0, np.full(Z_val.shape[1], float(theta_fixed))
-    for q in qs:
+    # per_feature: one shared quantile level, per-feature absolute thresholds. The constant
+    # theta_fixed vector is a candidate here for the same reason, and is likewise scored first.
+    flat = np.full(Z_val.shape[1], float(theta_fixed))
+    best, best_thetas = objective(flat), flat
+    for q in np.linspace(0.5, 0.9995, n_grid):
         thetas = np.quantile(Z_val, q, axis=0)
-        score = float(np.all((Z_val >= thetas) == Y, axis=1).mean())
+        score = objective(thetas)
         if score > best:
             best, best_thetas = score, thetas
     return best_thetas
