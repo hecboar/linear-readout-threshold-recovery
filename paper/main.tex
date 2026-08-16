@@ -2225,13 +2225,22 @@ where the true argmin sits at leverage rank \FullLfourTwoHundredArgminRankMed{} 
 the window. On untrained codes it succeeds every time. Training pulls the lowest-leverage feature and
 the worst-frontier feature apart, and the numbers above are the exact ones.
 
-\paragraph{A fourth width, committed to in advance.} The frontier over $d\in\{50,100,200\}$ fits
-$\kappa_{\min}\propto d^{\ScFitExponent}$, which extrapolates to \ScPredicted{} at $d=400$. We
-registered that number, then ran the width: \ScSeeds{} models per arm at $F=2d=800$, same protocol.
-The measurement is \ScMeasured{}, an error of \ScPredErrorPct\%. This is the only quantitative
-prediction the work is in a position to make and the only one tested out of sample, and we read it as
-a local rate rather than a law, because the exponent drifts downward across the four widths and
-Section~\ref{sec:res-e6} explains why four points cannot separate the candidates.
+\paragraph{A fourth width, committed to in advance.} Before running it we extrapolated the frontier
+from $d\in\{50,100,200\}$ and registered $\kappa_{\min}=\ScRegistered$ at $d=400$ in
+\texttt{configs/e7\_stageC.json}. Then we ran the width --- \ScSeeds{} models per arm at $F=2d=800$,
+same protocol --- and measured \ScMeasured{}, an error of \ScRegisteredErrorPct\% against the
+registered value.
+
+Two caveats on that number, both of which make it weaker than it first reads. The registered
+extrapolation used the subset frontier, the only statistic available when it was written; refitting
+on the exact frontier gives $\kappa_{\min}\propto d^{\ScFitExponent}$ and \ScPredicted{}, an error of
+\ScPredErrorPct\%. We report the registered comparison as the primary one and the refit beside it,
+because the refit was computed after seeing the measurement and is the more flattering of the two;
+the three defensible pairings of predicted and measured all fall between $-2.2\%$ and $-2.6\%$, so
+nothing here turns on the choice. And a prediction from three points fitting two parameters is a
+weak instrument: it tests that the growth is regular, not that any particular law holds. We read the
+result as a local rate rather than a law, because the exponent drifts downward across the four widths
+and Section~\ref{sec:res-e6} explains why four points cannot separate the candidate shapes.
 
 Two other things replicate at this width. The loss still decides the interface: $L^2$ reaches
 $R_{\mathrm{geom}}=\ScLtwoRgeom$ with its frontier at \ScLtwoKappa, against $L^4$'s
@@ -2251,7 +2260,9 @@ and faster each time: \MarginFiftyRatio, \MarginHundredRatio, \MarginTwoHundredR
 \MarginFourHundredRatio. In absolute sparsity levels --- the operationally meaningful unit, since the
 frontier licenses supports up to $\lceil\kappa_{\min}\rceil-1$ --- it rises to a peak at $d=200$ and
 then falls: \MarginFiftyGap, \MarginHundredGap, \MarginTwoHundredGap, \MarginFourHundredGap. The fall
-is larger than the sampling noise: paired bootstrap over models gives a drop of \MarginDrop{} with
+is larger than the sampling noise: a two-sample bootstrap over models --- the arms are separately
+trained, so the difference is between independent groups and not paired --- gives a drop of
+\MarginDrop{} with
 interval [\MarginDropCiLow, \MarginDropCiHigh], and the two widths' intervals do not overlap. Taken
 at face value the two fitted laws meet near $d\approx\ScCrossing$.
 
@@ -2283,10 +2294,12 @@ past $d=200$ in future work.
 \includegraphics[width=\linewidth]{figures/fig7_frontier_scaling.pdf}
 \caption{\textbf{The frontier's rate, and the margin it puts in question.} All values are the exact
 $\kappa_{\min}$ over every one of the $F$ features, never the subset. \textbf{(a)} Both codes'
-frontiers follow a power law over the four widths, and the untrained exponent is the larger; the
-fitted lines meet near $d\approx\ScCrossing$, far outside the measured range, and the crossing is
-drawn to show what the rates imply rather than as a prediction. \textbf{(b)} The margin in sparsity
-levels, with paired bootstrap intervals over models; it peaks at $d=200$ and the fall to $d=400$
+frontiers are close to straight on these axes over the four widths, and the untrained slope is the
+steeper. The power-law fits meet near $d\approx\ScCrossing$, drawn to show what the two slopes imply
+and not offered as a prediction: it lies far outside the measured range, and four points do not
+identify the shape --- other forms fit as well and move the meeting point by a factor of two. The
+robust statement is the ordering of the slopes, not where they cross. \textbf{(b)} The margin in sparsity
+levels, with two-sample bootstrap intervals over models; it peaks at $d=200$ and the fall to $d=400$
 exceeds the sampling noise. \textbf{(c)} The same margin as a ratio, which falls at every step. The
 two panels are shown separately because they are the two honest readings of the same quantity and
 they do not agree until $d=400$.}

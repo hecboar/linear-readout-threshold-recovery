@@ -472,13 +472,27 @@ def build() -> Macros:
         m.num(f"Sc{lt}Kappa", float(kap(loss, 400).mean()), 4)
         m.num(f"Sc{lt}Rgeom", scr[loss]["R_geom"], 4)
 
-    # The out-of-sample test: fit on the three widths that existed when d=400 was committed to.
+    # The out-of-sample test. Two numbers, and the difference between them matters.
+    #
+    # REGISTERED is what `configs/e7_stageC.json` committed to before the width was run. It came
+    # from the subset frontier, the only statistic available at the time. It is a historical
+    # constant, not a measurement, so it is written here rather than derived -- deriving it would
+    # let it drift when the data does, which is the opposite of what a pre-registration is for.
+    #
+    # The refit below is on exact values, and it is the honest thing to report *alongside*, never
+    # instead: it was computed after seeing the measurement, and it happens to give a smaller error.
+    # An earlier version of this file emitted only the refit and the manuscript called it "the
+    # number we registered", which it was not.
+    SC_REGISTERED = 10.79
+    m.num("ScRegistered", SC_REGISTERED, 2)
+    meas = float(kap("L4", 400).mean())
+    m.num("ScMeasured", meas, 3)
+    m.num("ScRegisteredErrorPct", 100.0 * (meas - SC_REGISTERED) / SC_REGISTERED, 2)
+
     lo = np.polyfit(np.log([50, 100, 200]), np.log([kap("L4", d).mean() for d in (50, 100, 200)]), 1)
     pred = float(np.exp(lo[1] + lo[0] * np.log(400)))
-    meas = float(kap("L4", 400).mean())
     m.num("ScFitExponent", float(lo[0]), 4)
     m.num("ScPredicted", pred, 3)
-    m.num("ScMeasured", meas, 3)
     m.num("ScPredErrorPct", 100.0 * (meas - pred) / pred, 2)
 
     # Trained against untrained, at all four widths, with the margin summarised both ways.
