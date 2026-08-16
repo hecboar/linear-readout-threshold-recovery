@@ -3,10 +3,13 @@
 Every defect found in this work, what it invalidated, and what was done about it. A defect's status
 changes only when the fix is committed and verified, not when it is understood, and no entry is
 deleted once fixed: the record of what was wrong is worth more than a short file, because the pattern
-across entries is the useful part. Twice here the same trap was hit in two different code paths.
+across entries is the useful part. **Three of these six are the same trap in three different code
+paths**: a threshold or operating point chosen by maximising something, with no check that the
+choice beats the baseline it replaced. That pattern is the most useful thing in this file.
 
-All five entries are currently fixed. The file was called *Known defects, open* while some were not;
-it is kept as a register rather than a queue.
+KD1-KD5 are fixed. KD6's fix is in the code and its measurements are being recomputed; the decoder
+comparisons it invalidates are withdrawn until they are. The file was called *Known defects, open*
+while some were not; it is kept as a register rather than a queue.
 
 ---
 
