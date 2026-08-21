@@ -93,6 +93,26 @@ def decoder_from_pt(path):
                               weights_only=True)["W_dec"].to(torch.float64).numpy())
 
 
+def lfm_codes(path):
+    """Phi = the MLP down-projection of each LFM2.5 layer: (d_model, d_ff), an overcomplete code.
+
+    Its columns are neurons, not the monosemantic units the superposition literature means, and that
+    is stated wherever the row is used. What it buys is an architecture axis no SAE suite covers:
+    LFM2.5 is a hybrid, most of its layers being convolution blocks rather than attention, so the
+    block type is recorded per layer and can be compared within one model.
+    """
+    t = read_safetensors(path)
+    attn = {int(m.group(1)) for k in t
+            if (m := re.match(r"model\.layers\.(\d+)\.self_attn\.", k))}
+    out = []
+    for k in sorted(t, key=lambda x: (len(x), x)):
+        m = re.match(r"model\.layers\.(\d+)\.feed_forward\.w2\.weight$", k)
+        if m:
+            L = int(m.group(1))
+            out.append((L, "attn" if L in attn else "conv", as_code(t[k])))
+    return sorted(out)
+
+
 def first_failure_s(h_min, F, s_max=32768):
     for s in range(2, s_max + 1):
         if h_min <= affine_failure_threshold(F, s):
@@ -125,8 +145,21 @@ def measure(Phi, label, axis, s_op, kind, rows):
     d, F = Phi.shape
     h = leverage(Phi)
     thr = affine_failure_threshold(F, s_op)
+    # R_geom = d(sum 1/h - F) / (F(F-d)). Since sum(h) = d, Cauchy-Schwarz gives
+    # sum 1/h >= F^2/d with equality iff h is constant, and substituting the minimum returns exactly
+    # 1. So R_geom - 1 IS a measure of leverage dispersion, not merely correlated with one, and it is
+    # driven by sum 1/h -- dominated by the LOWER tail of h, not by the variance. `identity_gap`
+    # checks that reading against the implementation to machine precision; the quantiles are there to
+    # separate "the spread grew" from "the lower tail grew", which the cv alone cannot do.
+    inv = float(np.sum(1.0 / h))
+    identity = d * (inv - F) / (F * (F - d))
+    r_geom = code_specific_floor(Phi) / welch_floor(F, d)
     row = {"label": label, "axis": axis, "kind": kind, "d": d, "F": F, "load": F / d,
-           "s_operating": s_op, "R_geom": code_specific_floor(Phi) / welch_floor(F, d),
+           "s_operating": s_op, "R_geom": r_geom,
+           "R_geom_from_identity": identity, "identity_gap": abs(identity - r_geom),
+           "h_harmonic_mean": float(F / inv),
+           "h_q001": float(np.quantile(h, 0.001)), "h_q01": float(np.quantile(h, 0.01)),
+           "h_q05": float(np.quantile(h, 0.05)), "h_q50": float(np.quantile(h, 0.50)),
            "h_min": float(h.min()), "h_mean": float(h.mean()), "h_max": float(h.max()),
            "h_cv": float(h.std() / h.mean()),
            "fraction_ruled_out_at_s_op": float((h <= thr).mean()),
@@ -155,6 +188,8 @@ for arm in ("trained", "random"):
         JOBS.append((f"SmolLM2 {arm} {Path(p).stem.split('_')[-1]}", "causal", Path(p),
                      decoder_from_safetensors, 64, 576))
 
+LFM = DIR / "lfm25_350m.safetensors"
+
 rows, prov, controls, rng = [], {}, {}, np.random.default_rng(0)
 for label, axis, path, loader, s_op, exp_d in JOBS:
     if not path.exists():
@@ -169,6 +204,22 @@ for label, axis, path, loader, s_op, exp_d in JOBS:
     if key not in controls:
         controls[key] = measure(unit_cols(rng.standard_normal(Phi.shape)),
                                 f"i.i.d. {Phi.shape[0]}x{Phi.shape[1]}", axis, s_op, "control", rows)
+
+if LFM.exists():
+    prov["LFM2.5-350M"] = {"file": LFM.name, "sha256": sha256(LFM),
+                           "bytes": LFM.stat().st_size}
+    for L, block, W in lfm_codes(LFM):
+        Phi = unit_cols(W)
+        if not validated(Phi, f"LFM2.5-350M L{L}", 1024):
+            continue
+        measure(Phi, f"LFM2.5-350M L{L} ({block})", "architecture", 64, "dictionary", rows)
+        key = (Phi.shape, 64)
+        if key not in controls:
+            controls[key] = measure(unit_cols(rng.standard_normal(Phi.shape)),
+                                    f"i.i.d. {Phi.shape[0]}x{Phi.shape[1]}", "architecture",
+                                    64, "control", rows)
+else:
+    print(f"  (falta {LFM.name}: eje de arquitectura omitido)", flush=True)
 
 commit = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],
                         capture_output=True, text=True).stdout.strip() or None
