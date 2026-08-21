@@ -18,12 +18,12 @@
             "n_negative": 0
           },
           "auc": {
-            "mean": -0.0011810257523148147,
-            "ci_low": -0.0013627775969328707,
-            "ci_high": -0.000982961697048611,
-            "n_positive": 0,
+            "mean": 0.0008010706018518506,
+            "ci_low": 0.0005634042245370368,
+            "ci_high": 0.001065502025462962,
+            "n_positive": 10,
             "n_zero": 0,
-            "n_negative": 10
+            "n_negative": 0
           }
         },
         "pre_relu": {
@@ -36,12 +36,12 @@
             "n_negative": 0
           },
           "auc": {
-            "mean": -0.0013160445601851849,
-            "ci_low": -0.0014979040075231477,
-            "ci_high": -0.001125897894965278,
-            "n_positive": 0,
+            "mean": 0.0007728226273148134,
+            "ci_low": 0.000548608398437499,
+            "ci_high": 0.001019642469618053,
+            "n_positive": 10,
             "n_zero": 0,
-            "n_negative": 10
+            "n_negative": 0
           }
         }
       }
@@ -54,35 +54,35 @@
       "network_minus_probe": {
         "post_relu": {
           "s95": {
-            "mean": -1.0,
-            "ci_low": -1.0,
-            "ci_high": -1.0,
-            "n_positive": 0,
+            "mean": 2.0,
+            "ci_low": 1.5,
+            "ci_high": 2.5,
+            "n_positive": 10,
             "n_zero": 0,
-            "n_negative": 10
+            "n_negative": 0
           },
           "auc": {
-            "mean": -0.018452510127314813,
-            "ci_low": -0.02057608145254629,
-            "ci_high": -0.016609225802951356,
-            "n_positive": 0,
+            "mean": 0.06989836516203701,
+            "ci_low": 0.06700752540870947,
+            "ci_high": 0.0726490275065104,
+            "n_positive": 10,
             "n_zero": 0,
-            "n_negative": 10
+            "n_negative": 0
           }
         },
         "pre_relu": {
           "s95": {
-            "mean": -3.3,
-            "ci_low": -3.6,
-            "ci_high": -3.0,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 10
+            "mean": 0.6,
+            "ci_low": 0.2,
+            "ci_high": 1.0,
+            "n_positive": 7,
+            "n_zero": 2,
+            "n_negative": 1
           },
           "auc": {
-            "mean": -0.08240107783564815,
-            "ci_low": -0.08429048891420722,
-            "ci_high": -0.08063418918185765,
+            "mean": -0.02100830078125001,
+            "ci_low": -0.02322773121021413,
+            "ci_high": -0.018833154748987273,
             "n_positive": 0,
             "n_zero": 0,
             "n_negative": 10
@@ -99,16 +99,16 @@
         "post_relu": {
           "s95": {
             "mean": -2.7,
-            "ci_low": -3.1,
-            "ci_high": -2.3,
+            "ci_low": -3.2,
+            "ci_high": -2.2,
             "n_positive": 0,
             "n_zero": 0,
             "n_negative": 10
           },
           "auc": {
-            "mean": -0.13699949363425926,
-            "ci_low": -0.1438880090784144,
-            "ci_high": -0.13095616590711812,
+            "mean": -0.17824931278935185,
+            "ci_low": -0.1858867892795139,
+            "ci_high": -0.17142930410879628,
             "n_positive": 0,
             "n_zero": 0,
             "n_negative": 10
@@ -116,17 +116,17 @@
         },
         "pre_relu": {
           "s95": {
-            "mean": -4.1,
-            "ci_low": -4.3,
-            "ci_high": -4.0,
+            "mean": -10.9,
+            "ci_low": -11.2,
+            "ci_high": -10.6,
             "n_positive": 0,
             "n_zero": 0,
             "n_negative": 10
           },
           "auc": {
-            "mean": -0.27902830222800923,
-            "ci_low": -0.28501294894748264,
-            "ci_high": -0.2736961570457176,
+            "mean": -0.6052499095775463,
+            "ci_low": -0.611746597403067,
+            "ci_high": -0.5991509535047742,
             "n_positive": 0,
             "n_zero": 0,
             "n_negative": 10

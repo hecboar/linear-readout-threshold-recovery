@@ -1,0 +1,1159 @@
+{
+  "campaign": "e7_stageB",
+  "n_low": 24,
+  "n_random": 8,
+  "workers": 10,
+  "duration_seconds": 2027.996421570977,
+  "cells": [
+    {
+      "loss": "L2",
+      "d": 100,
+      "p_train": 0.01,
+      "n_models": 10,
+      "kappa_min_full_mean": 1.0002898417910981,
+      "kappa_min_subset_mean": 1.0010004965967982,
+      "subset_overestimate_mean": 0.0007106548057002505,
+      "subset_overestimate_max": 0.0017074038733582153,
+      "models_where_subset_found_the_argmin": 1,
+      "leverage_rank_of_true_argmin_median": 67.0,
+      "leverage_rank_of_true_argmin_max": 139,
+      "per_model": [
+        {
+          "kappa_min_full": 1.000702577793759,
+          "kappa_min_subset": 1.0024099816671173,
+          "subset_overestimate": 0.0017074038733582153,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 76,
+          "n_features": 400,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.0065720849441410255
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0006983393279352,
+          "subset_overestimate": 0.0006983393279351713,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 139,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.00975405545967978
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0010157378957127,
+          "subset_overestimate": 0.0010157378957127428,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 114,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.008805447859315594
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 16,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.004496228409309059
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0004612168657367,
+          "subset_overestimate": 0.0004612168657367466,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 76,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.006784162386222787
+        },
+        {
+          "kappa_min_full": 1.0004055678471018,
+          "kappa_min_subset": 1.0009084394316166,
+          "subset_overestimate": 0.0005028715845147858,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 57,
+          "n_features": 400,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.006005637988497542
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0011754335573653,
+          "subset_overestimate": 0.0011754335573652686,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 63,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.006467877707499067
+        },
+        {
+          "kappa_min_full": 1.0007420134999678,
+          "kappa_min_subset": 1.001479238983133,
+          "subset_overestimate": 0.0007372254831652381,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 29,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.0050324739247623864
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.000545423342608,
+          "subset_overestimate": 0.0005454233426080979,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 71,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.0065495636430330005
+        },
+        {
+          "kappa_min_full": 1.0010482587701524,
+          "kappa_min_subset": 1.0013111548967586,
+          "subset_overestimate": 0.00026289612660623796,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 24,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.00450289624986739
+        }
+      ]
+    },
+    {
+      "loss": "L2",
+      "d": 200,
+      "p_train": 0.01,
+      "n_models": 10,
+      "kappa_min_full_mean": 1.0076184516702815,
+      "kappa_min_subset_mean": 1.0183230929801605,
+      "subset_overestimate_mean": 0.010704641309878938,
+      "subset_overestimate_max": 0.01364725837603098,
+      "models_where_subset_found_the_argmin": 0,
+      "leverage_rank_of_true_argmin_median": 222.0,
+      "leverage_rank_of_true_argmin_max": 382,
+      "per_model": [
+        {
+          "kappa_min_full": 1.0054429925985509,
+          "kappa_min_subset": 1.0162500607391927,
+          "subset_overestimate": 0.010807068140641807,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 382,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.016310429659676964
+        },
+        {
+          "kappa_min_full": 1.0071612175511568,
+          "kappa_min_subset": 1.0202351354457522,
+          "subset_overestimate": 0.013073917894595333,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 128,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.0044903171890805
+        },
+        {
+          "kappa_min_full": 1.0053208131340465,
+          "kappa_min_subset": 1.0185897574636675,
+          "subset_overestimate": 0.013268944329621002,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 53,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.003650690925383897
+        },
+        {
+          "kappa_min_full": 1.0057608452910092,
+          "kappa_min_subset": 1.0194081036670402,
+          "subset_overestimate": 0.01364725837603098,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 266,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.006280570842343501
+        },
+        {
+          "kappa_min_full": 1.0079643628000434,
+          "kappa_min_subset": 1.0112475622668884,
+          "subset_overestimate": 0.003283199466844966,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 248,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.006195717733950884
+        },
+        {
+          "kappa_min_full": 1.0080053261156208,
+          "kappa_min_subset": 1.0199284361669017,
+          "subset_overestimate": 0.011923110051280883,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 135,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.004519010569667341
+        },
+        {
+          "kappa_min_full": 1.0082707162431659,
+          "kappa_min_subset": 1.0209792549471697,
+          "subset_overestimate": 0.012708538704003791,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 142,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.004704744161899011
+        },
+        {
+          "kappa_min_full": 1.0095393235663,
+          "kappa_min_subset": 1.0145343989900335,
+          "subset_overestimate": 0.004995075423733564,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 202,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.005190604672008034
+        },
+        {
+          "kappa_min_full": 1.007709296065746,
+          "kappa_min_subset": 1.0206586438701803,
+          "subset_overestimate": 0.012949347804434241,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 265,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.006385705154721644
+        },
+        {
+          "kappa_min_full": 1.011009623337176,
+          "kappa_min_subset": 1.0213995762447787,
+          "subset_overestimate": 0.010389952907602806,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 242,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.005798144513308962
+        }
+      ]
+    },
+    {
+      "loss": "L2",
+      "d": 200,
+      "p_train": 0.02,
+      "n_models": 10,
+      "kappa_min_full_mean": 1.003107062171045,
+      "kappa_min_subset_mean": 1.0078512053066155,
+      "subset_overestimate_mean": 0.004744143135570811,
+      "subset_overestimate_max": 0.008418892485047236,
+      "models_where_subset_found_the_argmin": 1,
+      "leverage_rank_of_true_argmin_median": 82.5,
+      "leverage_rank_of_true_argmin_max": 144,
+      "per_model": [
+        {
+          "kappa_min_full": 1.0034459986592414,
+          "kappa_min_subset": 1.0118648911442887,
+          "subset_overestimate": 0.008418892485047236,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 59,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.007021908812442883
+        },
+        {
+          "kappa_min_full": 1.0054083129909346,
+          "kappa_min_subset": 1.0054083129909346,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 16,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.0053741033254219965
+        },
+        {
+          "kappa_min_full": 1.0020070074558922,
+          "kappa_min_subset": 1.0058580235750163,
+          "subset_overestimate": 0.0038510161191240844,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 62,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.006755381589450496
+        },
+        {
+          "kappa_min_full": 1.0021379821164234,
+          "kappa_min_subset": 1.0064967859442544,
+          "subset_overestimate": 0.004358803827831048,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 71,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.0071950458297351015
+        },
+        {
+          "kappa_min_full": 1.0011258967678545,
+          "kappa_min_subset": 1.006451668250574,
+          "subset_overestimate": 0.00532577148271951,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 118,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.00838650655299233
+        },
+        {
+          "kappa_min_full": 1.0051564037445377,
+          "kappa_min_subset": 1.0078475271532774,
+          "subset_overestimate": 0.0026911234087396707,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 94,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.007663704756923439
+        },
+        {
+          "kappa_min_full": 1.0025226250095423,
+          "kappa_min_subset": 1.0087335425610648,
+          "subset_overestimate": 0.006210917551522588,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 144,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.009725943084625635
+        },
+        {
+          "kappa_min_full": 1.0034558740472705,
+          "kappa_min_subset": 1.008906162726571,
+          "subset_overestimate": 0.005450288679300419,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 138,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.009763662750334893
+        },
+        {
+          "kappa_min_full": 1.003069706886282,
+          "kappa_min_subset": 1.0069253051118807,
+          "subset_overestimate": 0.0038555982255987775,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 58,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.006586157072874894
+        },
+        {
+          "kappa_min_full": 1.0027408140324694,
+          "kappa_min_subset": 1.0100198336082942,
+          "subset_overestimate": 0.0072790195758247744,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 99,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.00809595043917823
+        }
+      ]
+    },
+    {
+      "loss": "L2",
+      "d": 50,
+      "p_train": 0.02,
+      "n_models": 10,
+      "kappa_min_full_mean": 1.0,
+      "kappa_min_subset_mean": 1.0,
+      "subset_overestimate_mean": 0.0,
+      "subset_overestimate_max": 0.0,
+      "models_where_subset_found_the_argmin": 4,
+      "leverage_rank_of_true_argmin_median": 24.5,
+      "leverage_rank_of_true_argmin_max": 46,
+      "per_model": [
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 25,
+          "n_features": 100,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.01967333996168868
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 32,
+          "n_features": 100,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.018957208049602426
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 25,
+          "n_features": 100,
+          "n_subset": 28,
+          "leverage_of_true_argmin": 0.018580799011984665
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 46,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.03866856768756118
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 100,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.011655282712807507
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 44,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.031476694841612196
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 6,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.013680483950977032
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.009222218512647722
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 24,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.018657279358092905
+        },
+        {
+          "kappa_min_full": 1.0,
+          "kappa_min_subset": 1.0,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 17,
+          "n_features": 100,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.015873569508181157
+        }
+      ]
+    },
+    {
+      "loss": "L4",
+      "d": 100,
+      "p_train": 0.01,
+      "n_models": 10,
+      "kappa_min_full_mean": 4.307247167288959,
+      "kappa_min_subset_mean": 4.3197726348808425,
+      "subset_overestimate_mean": 0.012525467591883022,
+      "subset_overestimate_max": 0.044121317879723954,
+      "models_where_subset_found_the_argmin": 5,
+      "leverage_rank_of_true_argmin_median": 35.5,
+      "leverage_rank_of_true_argmin_max": 248,
+      "per_model": [
+        {
+          "kappa_min_full": 4.3090371488539825,
+          "kappa_min_subset": 4.3090371488539825,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.2416967419160668
+        },
+        {
+          "kappa_min_full": 4.28506110777658,
+          "kappa_min_subset": 4.310100084649752,
+          "subset_overestimate": 0.025038976873172025,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 248,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.2509129664900401
+        },
+        {
+          "kappa_min_full": 4.297142117690071,
+          "kappa_min_subset": 4.297142117690071,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 3,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.24119388375143297
+        },
+        {
+          "kappa_min_full": 4.322503629650843,
+          "kappa_min_subset": 4.322503629650843,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 17,
+          "n_features": 400,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.2433237502486068
+        },
+        {
+          "kappa_min_full": 4.289952159068695,
+          "kappa_min_subset": 4.289952159068695,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 8,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.24345219136897053
+        },
+        {
+          "kappa_min_full": 4.320756272530738,
+          "kappa_min_subset": 4.364877590410462,
+          "subset_overestimate": 0.044121317879723954,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 60,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.2461480175241423
+        },
+        {
+          "kappa_min_full": 4.328566537872611,
+          "kappa_min_subset": 4.328566537872611,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 11,
+          "n_features": 400,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.24248813013552697
+        },
+        {
+          "kappa_min_full": 4.314069659411346,
+          "kappa_min_subset": 4.356440514445994,
+          "subset_overestimate": 0.042370855034648436,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 118,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.2475990938781485
+        },
+        {
+          "kappa_min_full": 4.317658603917893,
+          "kappa_min_subset": 4.326453896717117,
+          "subset_overestimate": 0.008795292799224086,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 84,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.2467714725988228
+        },
+        {
+          "kappa_min_full": 4.287724436116835,
+          "kappa_min_subset": 4.292652669448897,
+          "subset_overestimate": 0.0049282333320617155,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 54,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.24552222249321787
+        }
+      ]
+    },
+    {
+      "loss": "L4",
+      "d": 200,
+      "p_train": 0.01,
+      "n_models": 10,
+      "kappa_min_full_mean": 5.621185642955688,
+      "kappa_min_subset_mean": 5.652899053436551,
+      "subset_overestimate_mean": 0.03171341048086349,
+      "subset_overestimate_max": 0.09040393607098896,
+      "models_where_subset_found_the_argmin": 4,
+      "leverage_rank_of_true_argmin_median": 52.5,
+      "leverage_rank_of_true_argmin_max": 296,
+      "per_model": [
+        {
+          "kappa_min_full": 5.655095447294363,
+          "kappa_min_subset": 5.655095447294363,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 22,
+          "n_features": 800,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.24358254925115802
+        },
+        {
+          "kappa_min_full": 5.632678892962905,
+          "kappa_min_subset": 5.6980053468460925,
+          "subset_overestimate": 0.0653264538831877,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 135,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.24692119281022057
+        },
+        {
+          "kappa_min_full": 5.661509010298905,
+          "kappa_min_subset": 5.661509010298905,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.24052901565565493
+        },
+        {
+          "kappa_min_full": 5.568384328584429,
+          "kappa_min_subset": 5.568384328584429,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.2398106790276794
+        },
+        {
+          "kappa_min_full": 5.623398257672184,
+          "kappa_min_subset": 5.672317664576748,
+          "subset_overestimate": 0.04891940690456398,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 296,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.24890418412350238
+        },
+        {
+          "kappa_min_full": 5.623827124250144,
+          "kappa_min_subset": 5.704373756580264,
+          "subset_overestimate": 0.08054663233011983,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 49,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.2446854145466416
+        },
+        {
+          "kappa_min_full": 5.604269688929184,
+          "kappa_min_subset": 5.615881111229445,
+          "subset_overestimate": 0.011611422300260799,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 58,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.24503994496562637
+        },
+        {
+          "kappa_min_full": 5.628505741429671,
+          "kappa_min_subset": 5.628505741429671,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 11,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.2428162616889844
+        },
+        {
+          "kappa_min_full": 5.5872956031223335,
+          "kappa_min_subset": 5.6776995391933225,
+          "subset_overestimate": 0.09040393607098896,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 281,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.24852027588230885
+        },
+        {
+          "kappa_min_full": 5.626892335012761,
+          "kappa_min_subset": 5.647218588332275,
+          "subset_overestimate": 0.020326253319513654,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 56,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.24491305232243032
+        }
+      ]
+    },
+    {
+      "loss": "L4",
+      "d": 200,
+      "p_train": 0.02,
+      "n_models": 10,
+      "kappa_min_full_mean": 7.647888079167368,
+      "kappa_min_subset_mean": 7.691006848080676,
+      "subset_overestimate_mean": 0.043118768913307015,
+      "subset_overestimate_max": 0.09039544372631259,
+      "models_where_subset_found_the_argmin": 2,
+      "leverage_rank_of_true_argmin_median": 83.5,
+      "leverage_rank_of_true_argmin_max": 246,
+      "per_model": [
+        {
+          "kappa_min_full": 7.638592021411945,
+          "kappa_min_subset": 7.702294448539484,
+          "subset_overestimate": 0.06370242712753882,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 246,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.5016156286688115
+        },
+        {
+          "kappa_min_full": 7.706337482014759,
+          "kappa_min_subset": 7.763603950726351,
+          "subset_overestimate": 0.05726646871159158,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 154,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4986223214590511
+        },
+        {
+          "kappa_min_full": 7.628527471887829,
+          "kappa_min_subset": 7.682366552186276,
+          "subset_overestimate": 0.05383908029844697,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 61,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4948645235982113
+        },
+        {
+          "kappa_min_full": 7.62111734619031,
+          "kappa_min_subset": 7.686178665719648,
+          "subset_overestimate": 0.06506131952933814,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 119,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4968662987107478
+        },
+        {
+          "kappa_min_full": 7.59714145141588,
+          "kappa_min_subset": 7.59714145141588,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 7,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.48876051330278963
+        },
+        {
+          "kappa_min_full": 7.6740377213969815,
+          "kappa_min_subset": 7.721048052082061,
+          "subset_overestimate": 0.04701033068507954,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 64,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4951957277059254
+        },
+        {
+          "kappa_min_full": 7.69216716458587,
+          "kappa_min_subset": 7.69216716458587,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 16,
+          "n_features": 400,
+          "n_subset": 30,
+          "leverage_of_true_argmin": 0.49112710711673585
+        },
+        {
+          "kappa_min_full": 7.600876764998464,
+          "kappa_min_subset": 7.691272208724777,
+          "subset_overestimate": 0.09039544372631259,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 25,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4920029726408909
+        },
+        {
+          "kappa_min_full": 7.692903916330236,
+          "kappa_min_subset": 7.715627208385192,
+          "subset_overestimate": 0.022723292054956268,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 174,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.49889623676140044
+        },
+        {
+          "kappa_min_full": 7.62717945144141,
+          "kappa_min_subset": 7.658368778441217,
+          "subset_overestimate": 0.031189326999806255,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 103,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4964440063386799
+        }
+      ]
+    },
+    {
+      "loss": "L4",
+      "d": 50,
+      "p_train": 0.02,
+      "n_models": 10,
+      "kappa_min_full_mean": 4.507366332683676,
+      "kappa_min_subset_mean": 4.516701363542323,
+      "subset_overestimate_mean": 0.009335030858647198,
+      "subset_overestimate_max": 0.07382166843671012,
+      "models_where_subset_found_the_argmin": 8,
+      "leverage_rank_of_true_argmin_median": 16.0,
+      "leverage_rank_of_true_argmin_max": 71,
+      "per_model": [
+        {
+          "kappa_min_full": 4.534518440351127,
+          "kappa_min_subset": 4.534518440351127,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 14,
+          "n_features": 100,
+          "n_subset": 28,
+          "leverage_of_true_argmin": 0.4930618857276144
+        },
+        {
+          "kappa_min_full": 4.545637877191151,
+          "kappa_min_subset": 4.545637877191151,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 7,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4901025970341061
+        },
+        {
+          "kappa_min_full": 4.5627672156124754,
+          "kappa_min_subset": 4.5627672156124754,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 18,
+          "n_features": 100,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.493576511416855
+        },
+        {
+          "kappa_min_full": 4.441623114239894,
+          "kappa_min_subset": 4.441623114239894,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 14,
+          "n_features": 100,
+          "n_subset": 28,
+          "leverage_of_true_argmin": 0.4916972667473488
+        },
+        {
+          "kappa_min_full": 4.497286755745626,
+          "kappa_min_subset": 4.497286755745626,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 71,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.5051177088330439
+        },
+        {
+          "kappa_min_full": 4.531579343684179,
+          "kappa_min_subset": 4.605401012120889,
+          "subset_overestimate": 0.07382166843671012,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 44,
+          "n_features": 100,
+          "n_subset": 29,
+          "leverage_of_true_argmin": 0.49910260651086985
+        },
+        {
+          "kappa_min_full": 4.575780829854193,
+          "kappa_min_subset": 4.575780829854193,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.4895918305194894
+        },
+        {
+          "kappa_min_full": 4.49658466626371,
+          "kappa_min_subset": 4.516113306413472,
+          "subset_overestimate": 0.019528640149761856,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 39,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.49871388812114453
+        },
+        {
+          "kappa_min_full": 4.510723169757456,
+          "kappa_min_subset": 4.510723169757456,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 100,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.48784811951194323
+        },
+        {
+          "kappa_min_full": 4.37716191413695,
+          "kappa_min_subset": 4.37716191413695,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 28,
+          "n_features": 100,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.4958068795872609
+        }
+      ]
+    },
+    {
+      "loss": "random",
+      "d": 100,
+      "p_train": 0.01,
+      "n_models": 10,
+      "kappa_min_full_mean": 3.399898148672611,
+      "kappa_min_subset_mean": 3.401096488979347,
+      "subset_overestimate_mean": 0.0011983403067361564,
+      "subset_overestimate_max": 0.011983403067361564,
+      "models_where_subset_found_the_argmin": 9,
+      "leverage_rank_of_true_argmin_median": 4.5,
+      "leverage_rank_of_true_argmin_max": 46,
+      "per_model": [
+        {
+          "kappa_min_full": 3.4266633368973953,
+          "kappa_min_subset": 3.4266633368973953,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.22083314840425813
+        },
+        {
+          "kappa_min_full": 3.4491206950887516,
+          "kappa_min_subset": 3.4491206950887516,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 7,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.22103933595058184
+        },
+        {
+          "kappa_min_full": 3.3841931584322884,
+          "kappa_min_subset": 3.3841931584322884,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.20057928208871637
+        },
+        {
+          "kappa_min_full": 3.429677047059232,
+          "kappa_min_subset": 3.429677047059232,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.21164009191617011
+        },
+        {
+          "kappa_min_full": 3.4569005399872723,
+          "kappa_min_subset": 3.468883943054634,
+          "subset_overestimate": 0.011983403067361564,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 46,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.23325124547829817
+        },
+        {
+          "kappa_min_full": 3.275111234289803,
+          "kappa_min_subset": 3.275111234289803,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.2092574738716588
+        },
+        {
+          "kappa_min_full": 3.421948229743292,
+          "kappa_min_subset": 3.421948229743292,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.21610634145627303
+        },
+        {
+          "kappa_min_full": 3.4175829122097885,
+          "kappa_min_subset": 3.4175829122097885,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 15,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.2254453120383464
+        },
+        {
+          "kappa_min_full": 3.3943055431749936,
+          "kappa_min_subset": 3.3943055431749936,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 5,
+          "n_features": 400,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.2164319727169481
+        },
+        {
+          "kappa_min_full": 3.3434787898432945,
+          "kappa_min_subset": 3.3434787898432945,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 0,
+          "n_features": 400,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.19887471257219133
+        }
+      ]
+    },
+    {
+      "loss": "random",
+      "d": 200,
+      "p_train": 0.01,
+      "n_models": 10,
+      "kappa_min_full_mean": 4.723046469023716,
+      "kappa_min_subset_mean": 4.723575934007336,
+      "subset_overestimate_mean": 0.0005294649836206311,
+      "subset_overestimate_max": 0.005294649836206311,
+      "models_where_subset_found_the_argmin": 9,
+      "leverage_rank_of_true_argmin_median": 10.0,
+      "leverage_rank_of_true_argmin_max": 28,
+      "per_model": [
+        {
+          "kappa_min_full": 4.7225758515909515,
+          "kappa_min_subset": 4.727870501427158,
+          "subset_overestimate": 0.005294649836206311,
+          "subset_found_true_argmin": false,
+          "leverage_rank_of_true_argmin": 28,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.2318732731383463
+        },
+        {
+          "kappa_min_full": 4.639126522228342,
+          "kappa_min_subset": 4.639126522228342,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 3,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.22231293435385088
+        },
+        {
+          "kappa_min_full": 4.763233334983455,
+          "kappa_min_subset": 4.763233334983455,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 20,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.22949523476010802
+        },
+        {
+          "kappa_min_full": 4.779053686845027,
+          "kappa_min_subset": 4.779053686845027,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 9,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.22726105197088006
+        },
+        {
+          "kappa_min_full": 4.7000978440916725,
+          "kappa_min_subset": 4.7000978440916725,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 11,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.22798764221135748
+        },
+        {
+          "kappa_min_full": 4.732785840112796,
+          "kappa_min_subset": 4.732785840112796,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 2,
+          "n_features": 800,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.22357596101046748
+        },
+        {
+          "kappa_min_full": 4.689656960771312,
+          "kappa_min_subset": 4.689656960771312,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 4,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.2208621907576136
+        },
+        {
+          "kappa_min_full": 4.70936599876978,
+          "kappa_min_subset": 4.70936599876978,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 1,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.21992239081609302
+        },
+        {
+          "kappa_min_full": 4.7481677962122175,
+          "kappa_min_subset": 4.7481677962122175,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 21,
+          "n_features": 800,
+          "n_subset": 32,
+          "leverage_of_true_argmin": 0.2305530039271498
+        },
+        {
+          "kappa_min_full": 4.746400854631599,
+          "kappa_min_subset": 4.746400854631599,
+          "subset_overestimate": 0.0,
+          "subset_found_true_argmin": true,
+          "leverage_rank_of_true_argmin": 20,
+          "n_features": 800,
+          "n_subset": 31,
+          "leverage_of_true_argmin": 0.23108155596610513
+        }
+      ]
+    }
+  ]
+}
