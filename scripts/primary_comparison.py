@@ -21,7 +21,14 @@ information that was affinely accessible in the preactivation.
 Nothing is retrained. The network is rescored from the saved weights; the probe numbers are read
 from the per-seed records the campaign already wrote.
 
-Outputs `results/e7/derived/primary_comparison.json` and a markdown table on stdout.
+The probe's *configuration* is selected on validation, and the test-set maximum over families is
+reported beside it. The first version used only the test maximum, which gives the probe a selection
+advantage the network does not get -- worth half a sparsity level at `d=100`, enough to flip that
+cell's sign. Both are kept: the validation-selected figure is the protocol, the test maximum is the
+conservative bound on how good the probe could look.
+
+Outputs `results/<campaign>/derived/primary_comparison.json` and a markdown table on stdout.
+Usage: `primary_comparison.py [campaign]`, defaulting to stage A.
 """
 from __future__ import annotations
 
@@ -117,6 +124,7 @@ def main(argv: List[str]) -> int:
     print(f"campaign {CAMPAIGN}, matched policy {POLICY!r}")
     for cell in discover_cells():
         loss, d, name = cell["loss"], cell["d"], cell["name"]
+        p_train = float(name.split("_p")[1].split("_d")[0])
         wf = ROOT / "results" / CAMPAIGN / "weights" / f"{name}.npz"
         cf = cell["path"]
         if not wf.exists():
@@ -126,7 +134,9 @@ def main(argv: List[str]) -> int:
         recs = json.loads(cf.read_text(encoding="utf-8"))["diagnoses"]
         sparsities = z["sparsities"].tolist()
         F = int(z["W_in"].shape[2])
-        ds95_post, dauc_post, ds95_pre, dauc_pre = [], [], [], []
+        FIELDS = ("s95", "auc", "s95_test_max", "auc_test_max")
+        post = {f: [] for f in FIELDS}
+        pre = {f: [] for f in FIELDS}
         for k, seed in enumerate(z["seeds"].tolist()):
             W_in = z["W_in"][k].astype(np.float64)
             W_out = z["W_out"][k].astype(np.float64)
@@ -137,17 +147,28 @@ def main(argv: List[str]) -> int:
             ss, pr = network_curve(W_in, W_out, bundle, sparsities, POLICY)
             n_s95, n_auc = s95_from_curve(ss, pr), auc(ss, pr)
             pg = recs[k]["probes_global"]
-            for tag, s95_acc, auc_acc in (("post", ds95_post, dauc_post),
-                                          ("pre", ds95_pre, dauc_pre)):
+            for tag, acc in (("post", post), ("pre", pre)):
                 ks = [key for key in pg if f"_{tag}_" in key and key.endswith("_" + POLICY)]
-                s95_acc.append(n_s95 - max(pg[key]["s95"] for key in ks))
-                auc_acc.append(n_auc - max(pg[key]["recovery_auc"] for key in ks))
-        row = {"loss": loss, "d": d, "policy": POLICY, "n_seeds": len(ds95_post),
-               "network_minus_probe": {
-                   "post_relu": {"s95": boot(np.array(ds95_post, float)),
-                                 "auc": boot(np.array(dauc_post, float))},
-                   "pre_relu": {"s95": boot(np.array(ds95_pre, float)),
-                                "auc": boot(np.array(dauc_pre, float))}}}
+                # The probe family is chosen on VALIDATION, by the criterion the campaign recorded
+                # for that purpose. The first version took the maximum over families on the *test*
+                # set, which hands the probe a selection advantage the network does not get: it was
+                # worth 0.5 of a sparsity level at d=100, enough to flip that cell's sign. The
+                # test-set maximum is still reported, separately and labelled, because as an
+                # over-generous bound on the probe it is the conservative reading of the comparison.
+                best = max(ks, key=lambda key: pg[key]["val_criterion"])
+                acc["s95"].append(n_s95 - pg[best]["s95"])
+                acc["auc"].append(n_auc - pg[best]["recovery_auc"])
+                acc["s95_test_max"].append(n_s95 - max(pg[key]["s95"] for key in ks))
+                acc["auc_test_max"].append(n_auc - max(pg[key]["recovery_auc"] for key in ks))
+        def blk(acc):
+            return {f: boot(np.array(acc[f], float)) for f in FIELDS}
+
+        # p_train identifies the cell alongside (loss, d): stage B runs two training sparsities at
+        # one width, so the pair alone collides there and the two rows were indistinguishable.
+        row = {"loss": loss, "d": d, "p_train": p_train, "policy": POLICY,
+               "n_seeds": len(post["s95"]),
+               "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
+               "network_minus_probe": {"post_relu": blk(post), "pre_relu": blk(pre)}}
         out.append(row)
         p = row["network_minus_probe"]["post_relu"]["s95"]
         print(f"  {loss:6s} d={d:<4d} post-ReLU s95 diff mean={p['mean']:+.2f} "
