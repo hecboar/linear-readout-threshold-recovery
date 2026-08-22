@@ -1,0 +1,675 @@
+{
+ "campaign": "e7_stageC",
+ "with_refit": false,
+ "cells": [
+  {
+   "campaign": "e7_stageC",
+   "arm": "L2",
+   "p_train": 0.01,
+   "d": 400,
+   "F": 800,
+   "n_models": 10,
+   "duration_seconds": 94.5,
+   "validation_gap_net_minus_probe": {
+    "mean": 0.007895353842842427,
+    "ci_low": 0.0071733541382514015,
+    "ci_high": 0.0087428419605931,
+    "n_positive": 10,
+    "n_zero": 0,
+    "n_negative": 0
+   },
+   "models_where_selection_missed_the_network": 10,
+   "net_test_s95_mean": 0.0,
+   "net_test_s95_at_fixed_theta_mean": 0.0,
+   "probe_test_s95_mean": 0.0,
+   "per_model": [
+    {
+     "seed": 100000,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.03643331554290458,
+     "net_val": 0.03667793393820791,
+     "net_theta": 0.5145504612025917,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.03607805524553571
+     },
+     "net_test": {
+      "s95": 0.0,
+      "auc": 0.036051897321428564
+     },
+     "probe_val": 0.02941899973863444,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 0.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 100997,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.033987131589871315,
+     "net_val": 0.033987131589871315,
+     "net_theta": 0.5,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.03569022042410714
+     },
+     "net_test": {
+      "s95": 0.0,
+      "auc": 0.03569022042410714
+     },
+     "probe_val": 0.02688221637993327,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 0.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 101994,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.040866097372946684,
+     "net_val": 0.040866097372946684,
+     "net_theta": 0.5,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.03550990513392857
+     },
+     "net_test": {
+      "s95": 0.0,
+      "auc": 0.03550990513392857
+     },
+     "probe_val": 0.03019540919084298,
+     "probe_family": "ridge_fixed",
+     "probe_test_s95": 0.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 102991,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.030510585305105857,
+     "net_val": 0.030510585305105857,
+     "net_theta": 0.5,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.03700823102678571
+     },
+     "net_test": {
+      "s95": 0.0,
+      "auc": 0.03700823102678571
+     },
+     "probe_val": 0.023784265793398214,
+     "probe_family": "ridge_fixed",
+     "probe_test_s95": 0.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 103988,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.03609974500385459,
+     "net_val": 0.03609974500385459,
+     "net_theta": 0.5042523436433751,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.03463588169642857
+     },
+     "net_test": {
+      "s95": 0.0,
+      "auc": 0.034502999441964284
+     },
+     "probe_val": 0.029019264179081534,
+     "probe_family": "ridge_fixed",
+     "probe_test_s95": 0.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 104985,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.03237858032378581,
+     "net_val": 0.03237858032378581,
+     "net_theta": 0.5,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.034505092075892856
+     },
+     "net_test": {
+      "s95": 0.0,
+      "auc": 0.034505092075892856
+     },
+     "probe_val": 0.024399243577325768,
+     "probe_family": "svm_global",
+     "probe_test_s95": 0.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 105982,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0357661744648046,
+     "net_val": 0.0357661744648046,
+     "net_theta": 0.5,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0347314453125
+     },
+     "net_test": {
+      "s95": 0.0,
+      "auc": 0.0347314453125
+     },
+     "probe_val": 0.02628261304060391,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 0.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 106979,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.03012512601553697,
+     "net_val": 0.03012512601553697,
+     "net_theta": 0.5,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.03403494698660715
+     },
+     "net_test": {
+      "s95": 0.0,
+      "auc": 0.03403494698660715
+     },
+     "probe_val": 0.023130851897975185,
+     "probe_family": "svm_global",
+     "probe_test_s95": 0.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 107976,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.035121271422641286,
+     "net_val": 0.035121271422641286,
+     "net_theta": 0.5,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.03618861607142857
+     },
+     "net_test": {
+      "s95": 0.0,
+      "auc": 0.03618861607142857
+     },
+     "probe_val": 0.026201897206463418,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 0.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 108973,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.029532111723892546,
+     "net_val": 0.029532111723892546,
+     "net_theta": 0.5,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.03699497767857143
+     },
+     "net_test": {
+      "s95": 0.0,
+      "auc": 0.03699497767857143
+     },
+     "probe_val": 0.022796457727964577,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 0.0,
+     "campaign_network_s95": 0.0
+    }
+   ]
+  },
+  {
+   "campaign": "e7_stageC",
+   "arm": "L4",
+   "p_train": 0.01,
+   "d": 400,
+   "F": 800,
+   "n_models": 10,
+   "duration_seconds": 98.6,
+   "validation_gap_net_minus_probe": {
+    "mean": 0.06377382764369063,
+    "ci_low": 0.059901586395593294,
+    "ci_high": 0.06706711603971868,
+    "n_positive": 10,
+    "n_zero": 0,
+    "n_negative": 0
+   },
+   "models_where_selection_missed_the_network": 10,
+   "net_test_s95_mean": 14.7,
+   "net_test_s95_at_fixed_theta_mean": 13.2,
+   "probe_test_s95_mean": 12.7,
+   "per_model": [
+    {
+     "seed": 100000,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.7578277886497063,
+     "net_val": 0.7886497064579256,
+     "net_theta": 0.4519876713336858,
+     "net_test_at_fixed_theta": {
+      "s95": 14.0,
+      "auc": 0.7598005022321429
+     },
+     "net_test": {
+      "s95": 15.0,
+      "auc": 0.78558349609375
+     },
+     "probe_val": 0.7271689497716894,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 13.0,
+     "campaign_network_s95": 14.0
+    },
+    {
+     "seed": 100997,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.7585616438356164,
+     "net_val": 0.7891389432485322,
+     "net_theta": 0.4628474414280952,
+     "net_test_at_fixed_theta": {
+      "s95": 13.0,
+      "auc": 0.7574550083705357
+     },
+     "net_test": {
+      "s95": 15.0,
+      "auc": 0.7894461495535714
+     },
+     "probe_val": 0.7275494672754946,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 13.0,
+     "campaign_network_s95": 13.0
+    },
+    {
+     "seed": 101994,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.7561154598825833,
+     "net_val": 0.7815557729941291,
+     "net_theta": 0.45499136634205284,
+     "net_test_at_fixed_theta": {
+      "s95": 13.0,
+      "auc": 0.75537109375
+     },
+     "net_test": {
+      "s95": 15.0,
+      "auc": 0.7857491629464286
+     },
+     "probe_val": 0.7123287671232879,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 13.0,
+     "campaign_network_s95": 13.0
+    },
+    {
+     "seed": 102991,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.7561154598825832,
+     "net_val": 0.7884050880626223,
+     "net_theta": 0.4516317762505515,
+     "net_test_at_fixed_theta": {
+      "s95": 13.0,
+      "auc": 0.7558506556919643
+     },
+     "net_test": {
+      "s95": 15.0,
+      "auc": 0.7813895089285714
+     },
+     "probe_val": 0.7212075088787416,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 12.0,
+     "campaign_network_s95": 13.0
+    },
+    {
+     "seed": 103988,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.7600293542074362,
+     "net_val": 0.7962328767123287,
+     "net_theta": 0.4660450269708658,
+     "net_test_at_fixed_theta": {
+      "s95": 13.0,
+      "auc": 0.7582746233258929
+     },
+     "net_test": {
+      "s95": 14.0,
+      "auc": 0.7887747628348214
+     },
+     "probe_val": 0.7328767123287669,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 13.0,
+     "campaign_network_s95": 13.0
+    },
+    {
+     "seed": 104985,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.7551369863013698,
+     "net_val": 0.7832681017612525,
+     "net_theta": 0.4634898207623753,
+     "net_test_at_fixed_theta": {
+      "s95": 13.0,
+      "auc": 0.7583356584821429
+     },
+     "net_test": {
+      "s95": 15.0,
+      "auc": 0.7888881138392857
+     },
+     "probe_val": 0.7248858447488585,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 13.0,
+     "campaign_network_s95": 13.0
+    },
+    {
+     "seed": 105982,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.7568493150684932,
+     "net_val": 0.7881604696673189,
+     "net_theta": 0.4685331207025504,
+     "net_test_at_fixed_theta": {
+      "s95": 14.0,
+      "auc": 0.7585797991071429
+     },
+     "net_test": {
+      "s95": 15.0,
+      "auc": 0.7885044642857143
+     },
+     "probe_val": 0.7204464738711315,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 12.0,
+     "campaign_network_s95": 14.0
+    },
+    {
+     "seed": 106979,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.75440313111546,
+     "net_val": 0.7891389432485322,
+     "net_theta": 0.4542374455818894,
+     "net_test_at_fixed_theta": {
+      "s95": 13.0,
+      "auc": 0.7548653738839286
+     },
+     "net_test": {
+      "s95": 15.0,
+      "auc": 0.7845720563616071
+     },
+     "probe_val": 0.7198122780314561,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 12.0,
+     "campaign_network_s95": 13.0
+    },
+    {
+     "seed": 107976,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.7632093933463795,
+     "net_val": 0.7859589041095891,
+     "net_theta": 0.4466803889116461,
+     "net_test_at_fixed_theta": {
+      "s95": 13.0,
+      "auc": 0.7559552873883929
+     },
+     "net_test": {
+      "s95": 14.0,
+      "auc": 0.7787562779017857
+     },
+     "probe_val": 0.7356671740233384,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 13.0,
+     "campaign_network_s95": 13.0
+    },
+    {
+     "seed": 108973,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.7634540117416827,
+     "net_val": 0.7898727984344421,
+     "net_theta": 0.47538066803338475,
+     "net_test_at_fixed_theta": {
+      "s95": 13.0,
+      "auc": 0.7579520089285714
+     },
+     "net_test": {
+      "s95": 14.0,
+      "auc": 0.78533935546875
+     },
+     "probe_val": 0.7207001522070015,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 13.0,
+     "campaign_network_s95": 13.0
+    }
+   ]
+  },
+  {
+   "campaign": "e7_stageC",
+   "arm": "random",
+   "p_train": 0.01,
+   "d": 400,
+   "F": 800,
+   "n_models": 10,
+   "duration_seconds": 103.4,
+   "validation_gap_net_minus_probe": {
+    "mean": -0.17068928027832136,
+    "ci_low": -0.1786195821555411,
+    "ci_high": -0.16322909871711244,
+    "n_positive": 0,
+    "n_zero": 0,
+    "n_negative": 10
+   },
+   "models_where_selection_missed_the_network": 0,
+   "net_test_s95_mean": 2.8,
+   "net_test_s95_at_fixed_theta_mean": 0.0,
+   "probe_test_s95_mean": 5.4,
+   "per_model": [
+    {
+     "seed": 100000,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0,
+     "net_val": 0.21844422700587085,
+     "net_theta": 0.16539047104275004,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0
+     },
+     "net_test": {
+      "s95": 3.0,
+      "auc": 0.21959577287946427
+     },
+     "probe_val": 0.38102486047691525,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 5.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 100997,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0,
+     "net_val": 0.21771037181996084,
+     "net_theta": 0.16341905602978335,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0
+     },
+     "net_test": {
+      "s95": 3.0,
+      "auc": 0.22186279296875
+     },
+     "probe_val": 0.38153221714865543,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 6.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 101994,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0,
+     "net_val": 0.20621330724070447,
+     "net_theta": 0.16834393664004452,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0
+     },
+     "net_test": {
+      "s95": 3.0,
+      "auc": 0.20695068359375002
+     },
+     "probe_val": 0.38736681887366825,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 5.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 102991,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0,
+     "net_val": 0.20083170254403132,
+     "net_theta": 0.1693743407881776,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0
+     },
+     "net_test": {
+      "s95": 3.0,
+      "auc": 0.19874790736607142
+     },
+     "probe_val": 0.389142567224759,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 5.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 103988,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0,
+     "net_val": 0.2191780821917808,
+     "net_theta": 0.17275735237130682,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0
+     },
+     "net_test": {
+      "s95": 3.0,
+      "auc": 0.21898542131696427
+     },
+     "probe_val": 0.3807711821410451,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 5.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 104985,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0,
+     "net_val": 0.22407045009784735,
+     "net_theta": 0.17642728829073095,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0
+     },
+     "net_test": {
+      "s95": 2.0,
+      "auc": 0.21910539899553574
+     },
+     "probe_val": 0.37950279046169455,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 6.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 105982,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0,
+     "net_val": 0.22137964774951074,
+     "net_theta": 0.16814566806689288,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0
+     },
+     "net_test": {
+      "s95": 3.0,
+      "auc": 0.21783238002232144
+     },
+     "probe_val": 0.3817858954845257,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 5.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 106979,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0,
+     "net_val": 0.2191780821917808,
+     "net_theta": 0.1671563950090345,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0
+     },
+     "net_test": {
+      "s95": 3.0,
+      "auc": 0.22365025111607142
+     },
+     "probe_val": 0.3807711821410451,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 6.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 107976,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0,
+     "net_val": 0.21306262230919765,
+     "net_theta": 0.16973686652369213,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0
+     },
+     "net_test": {
+      "s95": 3.0,
+      "auc": 0.21415492466517858
+     },
+     "probe_val": 0.3932014205986809,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 5.0,
+     "campaign_network_s95": 0.0
+    },
+    {
+     "seed": 108973,
+     "d": 400,
+     "F": 800,
+     "net_val_at_fixed_theta": 0.0,
+     "net_val": 0.20083170254403132,
+     "net_theta": 0.18114119705814588,
+     "net_test_at_fixed_theta": {
+      "s95": 0.0,
+      "auc": 0.0
+     },
+     "net_test": {
+      "s95": 2.0,
+      "auc": 0.19622593470982144
+     },
+     "probe_val": 0.3926940639269407,
+     "probe_family": "ridge_global",
+     "probe_test_s95": 6.0,
+     "campaign_network_s95": 0.0
+    }
+   ]
+  }
+ ]
+}

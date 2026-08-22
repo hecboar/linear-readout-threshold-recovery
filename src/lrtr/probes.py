@@ -85,12 +85,18 @@ def _xty(X: np.ndarray, split: StateSplit) -> np.ndarray:
 # Fitting
 # --------------------------------------------------------------------------------------
 
-def _fit_ridge(X: np.ndarray, split: StateSplit, grid: Sequence[float]) -> Dict[float, np.ndarray]:
+def _fit_ridge(X: np.ndarray, split: StateSplit, grid: Sequence[float],
+               W0: Optional[np.ndarray] = None) -> Dict[float, np.ndarray]:
     """Ridge for every penalty on the grid, from one pass over the data.
 
     The intercept is never penalised. `X^T X` is `(d+1) x (d+1)` and `X^T Y` is `(d+1) x F`, both
     accumulated once; each penalty then costs one small solve, so the size of the grid is never a
     reason to shrink it.
+
+    `W0` shrinks toward a given point instead of toward zero, which is the closed-form analogue of
+    a warm start: the penalty becomes `lam * ||W - W0||^2` on the non-intercept rows. At `lam -> 0`
+    both agree, so the comparison is only informative where the penalty binds -- which is the point,
+    since a probe that must be regularised has to be told what to regularise toward.
     """
     XtX = X.T @ X
     XtY = _xty(X, split)
@@ -99,12 +105,14 @@ def _fit_ridge(X: np.ndarray, split: StateSplit, grid: Sequence[float]) -> Dict[
     mask[-1] = 0.0                                     # intercept unpenalised
     out: Dict[float, np.ndarray] = {}
     for lam in grid:
-        out[float(lam)] = np.linalg.solve(XtX + lam * np.diag(mask), XtY)
+        rhs = XtY if W0 is None else XtY + lam * (mask[:, None] * W0)
+        out[float(lam)] = np.linalg.solve(XtX + lam * np.diag(mask), rhs)
     return out
 
 
 def _fit_margin_family(X: np.ndarray, split: StateSplit, grid: Sequence[float], kind: str,
-                       steps: int, batch: int, lr: float, seed: int) -> Dict[float, np.ndarray]:
+                       steps: int, batch: int, lr: float, seed: int,
+                       W0: Optional[np.ndarray] = None) -> Dict[float, np.ndarray]:
     """Logistic or squared-hinge fit, minibatched over states, vectorised over all `F` features.
 
     Both are multi-label problems sharing one design matrix, so the weights are a single
@@ -123,7 +131,9 @@ def _fit_margin_family(X: np.ndarray, split: StateSplit, grid: Sequence[float], 
     rng = np.random.default_rng(seed)
     out: Dict[float, np.ndarray] = {}
     for lam in grid:
-        W = np.zeros((p, F))
+        # `W0` is a warm start. The random stream is untouched by it, so a cold and a warm run see
+        # exactly the same minibatches and differ only in where they began.
+        W = np.zeros((p, F)) if W0 is None else np.array(W0, dtype=float)
         vel = np.zeros_like(W)
         for t in range(steps):
             idx = rng.integers(0, n, size=min(batch, n))
@@ -148,16 +158,24 @@ def _fit_margin_family(X: np.ndarray, split: StateSplit, grid: Sequence[float], 
 
 def fit_probe(W_in: np.ndarray, split: StateSplit, family: str, representation: str,
               grid: Sequence[float] = DEFAULT_RIDGE_GRID, steps: int = 300, batch: int = 4096,
-              lr: float = 0.5, seed: int = 0) -> Dict[float, np.ndarray]:
-    """Fit one probe family over a regularisation grid. Returns `{penalty: W (d+1, F)}`."""
+              lr: float = 0.5, seed: int = 0,
+              W0: Optional[np.ndarray] = None) -> Dict[float, np.ndarray]:
+    """Fit one probe family over a regularisation grid. Returns `{penalty: W (d+1, F)}`.
+
+    `W0` is an optional `(d+1, F)` starting point, used by `scripts/probe_ceiling.py` to start the
+    fit at the network's own output layer. It defaults to `None`, which is the campaigns' behaviour
+    and leaves every published number unchanged.
+    """
     if family not in PROBE_FAMILIES:
         raise ValueError(f"unknown family {family!r}; use one of {PROBE_FAMILIES}")
     if representation not in REPRESENTATIONS:
         raise ValueError(f"unknown representation {representation!r}; use 'pre' or 'post'")
     X = _design(representations(W_in, split, post_relu=(representation == "post")))
+    if W0 is not None and W0.shape != (X.shape[1], split.F):
+        raise ValueError(f"W0 has shape {W0.shape}, expected {(X.shape[1], split.F)}")
     if family == "ridge":
-        return _fit_ridge(X, split, grid)
-    return _fit_margin_family(X, split, grid, family, steps, batch, lr, seed)
+        return _fit_ridge(X, split, grid, W0=W0)
+    return _fit_margin_family(X, split, grid, family, steps, batch, lr, seed, W0=W0)
 
 
 def score_probe(W_in: np.ndarray, split: StateSplit, W: np.ndarray,

@@ -568,6 +568,59 @@ def build() -> Macros:
     # Seconds per linear programme at d = 200, from the recorded sweep time and the feature count.
     m.num("FrontierLpSecondsTwoHundred", float(np.mean(lp_cost)), 2)
 
+    # ---------------- The probe ceiling, tested rather than asserted ----------------
+    # The probe reads the post-ReLU state through a design matrix that appends only an intercept, so
+    # its hypothesis class contains W_out: a probe attaining the network's score exists in every
+    # cell. `scripts/probe_ceiling.py` evaluates the campaign's own selection objective -- the
+    # validation curve-AUC stored as `val_criterion` -- at that map. Where the selected
+    # configuration scores below it, the selection provably missed a better member of its own class
+    # using data it was allowed to see, so the gap is a search failure and not a representational
+    # limit. The untrained arm is the control: there the sign reverses.
+    ceil = {}
+    for camp in ("e7", "e7_stageB", "e7_stageC"):
+        for c in load(f"{camp}/derived/probe_ceiling.json")["cells"]:
+            ceil[(camp, c["arm"], c["p_train"], c["d"])] = c
+    CEIL = {("e7", "L4", 0.01, 50): "CeilLfourFifty",
+            ("e7", "L4", 0.01, 100): "CeilLfourHundred",
+            ("e7", "L4", 0.01, 200): "CeilLfourTwoHundred",
+            ("e7_stageC", "L4", 0.01, 400): "CeilLfourFourHundred",
+            ("e7_stageB", "L4", 0.01, 100): "CeilSbLfourHundred",
+            ("e7_stageB", "L4", 0.01, 200): "CeilSbLfourTwoHundred",
+            ("e7", "random", 0.01, 50): "CeilRandFifty",
+            ("e7", "random", 0.01, 200): "CeilRandTwoHundred",
+            ("e7_stageC", "random", 0.01, 400): "CeilRandFourHundred"}
+    # Intervals only where a sentence quotes one; the per-cell counts are aggregated below, and
+    # the full per-model table is in results/*/derived/probe_ceiling.json.
+    WITH_CI = {"CeilLfourFifty", "CeilLfourHundred", "CeilLfourTwoHundred",
+               "CeilLfourFourHundred"}
+    for key, tag in CEIL.items():
+        g = ceil[key]["validation_gap_net_minus_probe"]
+        m.num(tag + "ValGap", g["mean"], 4)
+        if tag in WITH_CI:
+            m.num(tag + "ValCiLow", g["ci_low"], 4)
+            m.num(tag + "ValCiHigh", g["ci_high"], 4)
+    # The two totals that carry the claim: every trained cell above the tie width, and the control.
+    l4 = [c for k, c in ceil.items() if k[1] == "L4" and k[3] >= 100]
+    rnd = [c for k, c in ceil.items() if k[1] == "random"]
+    m.integer("CeilLfourCells", len(l4))
+    m.integer("CeilLfourModels", sum(c["n_models"] for c in l4))
+    m.integer("CeilLfourMissed",
+              sum(c["models_where_selection_missed_the_network"] for c in l4))
+    m.integer("CeilRandModels", sum(c["n_models"] for c in rnd))
+    m.integer("CeilRandMissed",
+              sum(c["models_where_selection_missed_the_network"] for c in rnd))
+    # Independent reproduction: this script rebuilds the split bundle from the campaign's own seed
+    # and recomputes both sides, so the difference it gets must match the published one. It does,
+    # to a tenth of a sparsity level in the worst cell -- which is the resolution of the statistic.
+    prim_all = {}
+    for camp in ("e7", "e7_stageC"):
+        for c in load(f"{camp}/derived/primary_comparison.json")["cells"]:
+            prim_all[(c["loss"], c["d"])] = c["network_minus_probe"]["post_relu"]["s95"]["mean"]
+    worst = max(abs((c["net_test_s95_mean"] - c["probe_test_s95_mean"]) - prim_all[(k[1], k[3])])
+                for k, c in ceil.items()
+                if k[0] in ("e7", "e7_stageC") and k[2] == 0.01 and (k[1], k[3]) in prim_all)
+    m.num("CeilReproMaxDelta", worst, 2)
+
     # ---------------- E8: which half of the training does the work ----------------
     import collections
 

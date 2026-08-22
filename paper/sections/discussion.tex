@@ -61,13 +61,24 @@ $s_{95}=0$, which is joint failure and not agreement --- with \PrimNetWins{} to 
 \PrimProbeWins{} to the probe, and a difference that grows with width to \ScPrimDiff{} levels in
 \ScPrimNetWins{} of \ScSeeds{} models at $d=400$.
 
-We decline to claim that as a nonlinear advantage, because the probe's hypothesis class contains the
-network's own output layer: a probe attaining the network's score exists in every cell, so the gap
-bounds our fitting procedure rather than what an affine map can express
-(Section~\ref{sec:probes}). What the comparison does support is a property of the code, because the
+We decline to claim that as a nonlinear advantage, and not merely on principle. The probe's
+hypothesis class contains the network's own output layer, so a probe attaining the network's score
+exists in every cell; writing that map in the probe's parameterisation and scoring it under the very
+objective the selection maximises shows that the selection missed it in \CeilLfourMissed{} of
+\CeilLfourModels{} models across every $L^4$ cell above the tie width, by
+\CeilLfourHundredValGap{} to \CeilLfourFourHundredValGap{} of validation objective. The gap is a
+search failure, measured. The untrained arm is the control that makes this a finding rather than a
+tautology: there the same selection beats the network's own map by \CeilRandFourHundredValGap{} and
+fails to do so in \CeilRandMissed{} of \CeilRandModels{} models (Section~\ref{sec:probes}).
+
+What the comparison does support is a property of the code, because the
 protocol is held fixed while the code varies: the sign is positive under $L^4$, zero under $L^2$, and
 negative by up to \PrimRandFourHundredDiff{} levels on a code that was never trained. A single cell
-of that table says little; the ordering across the three is the result.
+of that table says little; the ordering across the three is the result. And it comes with a
+mechanism: on a trained code the network's own readout sits where a supervised fit of the same class
+on the same data does not reach, while on an untrained code that fit comfortably beats it. The
+trained readout is not merely better --- it is hard to find by fitting, which is co-adaptation seen
+from the decoder's side.
 
 \textbf{And second: the representation gap.} An earlier version located the effect in what the ReLU
 discards, reporting that a probe reading the preactivation beats the network by a full sparsity level.

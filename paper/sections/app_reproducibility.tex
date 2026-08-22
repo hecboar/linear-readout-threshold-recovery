@@ -31,8 +31,12 @@ which is why a reader can check the paper's main empirical claim without rerunni
 The identity of Proposition~\ref{prop:leverage} against the implementation, from the released
 \code{results/sae/derived/sae\_axes.json} alone. The dictionary measurements, by downloading the
 listed checkpoints and running one script. And the controlled campaigns, either from the released
-weights --- which is how three of the analyses in Section~\ref{sec:campaigns} were computed, months
-after the runs --- or by retraining from the recorded seeds.
+weights --- which is how four of the analyses in Section~\ref{sec:campaigns} were computed, months
+after the runs --- or by retraining from the recorded seeds. The probe-ceiling analysis of
+Section~\ref{sec:probes} is the cheapest of the four and the most useful to re-run adversarially: it
+recomputes both sides of the paper's own decoder comparison from the released weights and the
+campaign's own seeds, so reproducing Table~\ref{tab:primary} to within \CeilReproMaxDelta{} of a
+sparsity level is a check on that comparison as much as on the ceiling.
 
 \paragraph{Known defects.} A register of every defect found during this work, what each invalidated
 and what was done about it, is released with the code. The manuscript-level consequences are in

@@ -115,6 +115,10 @@ if [ -z "$SMOKE" ]; then
   python scripts/native_comparison.py            2>&1 | tee "$LOGS/native_comparison.log"
   python scripts/network_threshold_policies.py   2>&1 | tee "$LOGS/threshold_policies.log"
   python scripts/relu_frontier_gap.py            2>&1 | tee "$LOGS/relu_frontier_gap.log"
+  # Cheap and load-bearing: recomputes both sides of the decoder comparison from the released
+  # weights and scores the network own map under the probe selection objective. Pass
+  # --with-refit for the expensive follow-up, which the paper does not use.
+  python scripts/probe_ceiling.py 8              2>&1 | tee "$LOGS/probe_ceiling.log"
   python scripts/frozen_readout_tradeoff.py      2>&1 | tee "$LOGS/frozen_tradeoff.log"
 
   # refresh_native_blocks rewrites tracked files in results/e7/raw/. On a clean checkout it is

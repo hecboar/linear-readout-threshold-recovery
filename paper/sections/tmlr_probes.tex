@@ -2,44 +2,95 @@
 \label{sec:probes}
 
 The comparison in the previous subsections is easy to over-read, and the direction of the
-over-reading is the flattering one, so we state the ceiling on it explicitly.
+over-reading is the flattering one. This subsection states the ceiling on it and then measures
+where the comparison actually sits against that ceiling, because a ceiling one has only argued for
+is a caveat and a ceiling one has measured is a result.
 
 \paragraph{The probe class contains the network's own decoder.} The affine probe is fitted on the
 post-ReLU state $z=\mathrm{ReLU}(\Phi b)$ with a design matrix that appends an intercept and nothing
 else (\code{\_design} in \code{src/lrtr/probes.py}), so its hypothesis class is every affine map of
-$z$ --- which includes $W_{\mathrm{out}}$, the map the network's own output layer applies, together
-with the network's threshold. It follows that there \emph{exists} a probe configuration attaining the
-network's score exactly, for every model in every cell. Whenever the network scores higher, what the
-gap measures is that our fitting procedure did not find that map: a fixed ridge grid, a fixed number
-of steps, and $8{,}192$ training states. It is not a statement that an affine readout cannot
-represent what the network computes, because it demonstrably can.
+$z$ --- which includes $W_{\mathrm{out}}$, the map the network's own output layer applies. Writing
+that map in the probe's own parameterisation,
+\[
+  W_{\mathrm{net}} \;=\; \begin{bmatrix} W_{\mathrm{out}}^{\top} \\ 0 \end{bmatrix}
+  \;\in\;\R^{(d+1)\times F},
+\]
+scoring $W_{\mathrm{net}}$ as a probe reproduces the network's own evaluation exactly. It follows
+that a probe configuration attaining the network's score \emph{exists} for every model in every
+cell. Whenever the network scores higher, what the gap measures is that our fitting and selection
+procedure did not find that map: a fixed ridge grid, a fixed number of steps, and $8{,}192$ training
+states. It is not a statement that an affine readout cannot represent what the network computes,
+because it demonstrably can.
 
-This is why the $L^4$ differences of \PrimLfourHundredPostDiff{} to \ScPrimDiff{} are reported and
-nothing is built on them. They are evidence about supervised recovery under a stated budget. A
-reader who wants the claim ``the network's nonlinearity buys expressive power'' will not find it
-here, and should not: the experiment as designed cannot supply it.
+\paragraph{The selection misses it, and we can say so by how much.} That argument bounds the
+comparison without telling us whether the bound is tight, so we tested it. The campaign selects a
+probe configuration by maximising a validation objective --- the area under the per-sparsity
+validation recovery curve, stored for every configuration in the saved records --- and $W_{\mathrm{net}}$
+is a member of the class that objective ranges over. Evaluating the same objective at
+$W_{\mathrm{net}}$ therefore asks whether the selection missed something it had the data to find. It
+needs no refitting, so it runs over the released weights in seconds per model
+(\code{scripts/probe\_ceiling.py}).
 
-\paragraph{What the comparison does support.} The informative content is not any single cell but the
-ordering across code families, because the protocol's asymmetries are held fixed while the code
-varies. Both sides read the same state, both get one validation-selected global threshold, both are
-scored on the same held-out supports. Under that fixed protocol the sign of the difference is set by
-how the code was produced: positive and growing with width for $L^4$, exactly zero for $L^2$, and
-negative by one to two and a half levels for an untrained code. A protocol that systematically
-favoured the network could not produce a two-and-a-half-level loss on any arm.
+It did miss it, in every cell where the network leads and in every model of those cells. The
+validation gap between the network's own map and the selected probe is
+\CeilLfourHundredValGap{} ([\CeilLfourHundredValCiLow, \CeilLfourHundredValCiHigh]) at $d=100$,
+\CeilLfourTwoHundredValGap{} ([\CeilLfourTwoHundredValCiLow, \CeilLfourTwoHundredValCiHigh]) at
+$d=200$ and \CeilLfourFourHundredValGap{}
+([\CeilLfourFourHundredValCiLow, \CeilLfourFourHundredValCiHigh]) at $d=400$, all positive, and
+positive in \CeilLfourMissed{} of \CeilLfourModels{} models across the \CeilLfourCells{} $L^4$ cells
+at $d\ge100$ in both campaigns. Stage B replicates it independently
+(\CeilSbLfourHundredValGap{} and \CeilSbLfourTwoHundredValGap). At $d=50$, the width where the paper
+reports a tie, the gap is \CeilLfourFiftyValGap{}
+([\CeilLfourFiftyValCiLow, \CeilLfourFiftyValCiHigh]) --- indistinguishable from zero, which is what
+a tie should look like on this measurement and is a check that the quantity tracks the reported one.
 
-So the comparison is usable as a property of the code and not as a claim about decoders. Read that
-way it says something we did not expect: on an untrained code, a fitted affine probe recovers
-supports the network's own thresholded readout misses by a wide margin, and on a code trained under
-$L^4$ it does not. Training does not only improve the geometry the code presents
-(Section~\ref{sec:res-primary}); it also brings the network's own readout close to the best one a
-supervised fit of the same class will find, which is a form of the co-adaptation E8 isolates.
+So the residual $L^4$ difference is a search failure, measured rather than assumed. A better member
+of the probe's own class was available, validation could see that it was better, and the procedure
+returned something else.
 
-\paragraph{The check that would settle it, and why it is not here.} One experiment would decide
-whether the residual $L^4$ gap is a fitting artefact: initialise the probe at the network's own
-$(W_{\mathrm{out}},\theta)$ and refit. If the fitted probe then matches or exceeds the network, the
-gap was optimisation; if the fit moves away and scores worse, the objective the probe minimises is
-not aligned with exact support recovery, which would be a different and more interesting statement.
-We did not run it, for the honest reason that we identified the confound after the campaigns were
-complete and chose to report the ceiling rather than spend the remaining budget widening a result
-the paper does not lean on. It is the first thing we would run next, and it costs a single pass over
-saved weights, which are released.
+\paragraph{The control rules out the obvious objection to that.} One could suspect this of being an
+artefact --- that the network's own map simply always looks good on a validation objective computed
+from the network's own states. The untrained arm says otherwise, and by a wide margin in the
+opposite direction: there the selected probe beats $W_{\mathrm{net}}$ on validation by
+\CeilRandFiftyValGap{} at $d=50$, \CeilRandTwoHundredValGap{} at $d=200$ and
+\CeilRandFourHundredValGap{} at $d=400$, and the selection fails to beat it in
+\CeilRandMissed{} of \CeilRandModels{} models. On a code that was never trained the fitting procedure
+finds a far better affine map than the network's own readout, which is exactly what it fails to do on
+a trained one.
+
+As a validity check, this analysis rebuilds each cell's split bundle from the campaign's own seed and
+recomputes both sides from the released weights; the differences it obtains reproduce the published
+ones in Table~\ref{tab:primary} to within \CeilReproMaxDelta{} of a sparsity level in the worst cell,
+which is the resolution of a floored crossing point.
+
+\paragraph{What the comparison does and does not support.} It does not support ``the network's
+nonlinearity buys expressive power'': the class contains its decoder, and the gap is now
+\emph{known} to be a search failure rather than merely arguably one. We report the $L^4$ differences
+of \PrimLfourHundredPostDiff{} to \ScPrimDiff{} and build nothing on them.
+
+What the comparison does support is a property of the code, because the protocol's asymmetries are
+held fixed while the code varies. Both sides read the same state, both get one validation-selected
+global threshold, both are scored on the same held-out supports. Under that fixed protocol the sign
+of the difference is set by how the code was produced: positive and growing with width for $L^4$,
+exactly zero for $L^2$, and negative by one to two and a half levels for an untrained code. A
+protocol that systematically favoured the network could not produce a two-and-a-half-level loss on
+any arm.
+
+Read that way the comparison says something we did not expect. Training does not only improve the
+geometry the code presents (Section~\ref{sec:res-primary}); it also puts the network's own readout
+somewhere a supervised fit of the same class, on the same data, with a standard grid, does not
+reach --- while on an untrained code that same fit comfortably outperforms the network's readout.
+The trained readout is not merely good; it is hard to find by fitting. That is a form of the
+co-adaptation E8 isolates, seen from the decoder's side rather than the code's.
+
+\paragraph{The question this leaves open.} Knowing that the selection misses $W_{\mathrm{net}}$ does
+not say why. Two mechanisms are consistent with it and this experiment does not separate them: the
+optimiser and grid may simply be too coarse to reach that region, or the probe's surrogate objective
+--- ridge, logistic or squared hinge --- may have its optimum somewhere other than at the map that
+maximises exact support recovery, in which case no amount of better optimisation of \emph{that}
+objective would find it. Separating them needs a refit \emph{started} at $W_{\mathrm{net}}$: if the
+fit stays, the grid was too coarse; if it walks away and scores worse, the objective is misaligned.
+That is the expensive direction --- the full grid and the margin fits for every model, where the
+measurement above needs neither --- so \code{fit\_probe} accepts a starting point and
+\code{probe\_ceiling.py --with-refit} wires it up, and we report the question rather than a partial
+answer to it.

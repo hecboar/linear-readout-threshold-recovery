@@ -104,6 +104,10 @@ if (-not $Smoke) {
   python scripts\native_comparison.py;           if (-not $?) { throw "native comparison failed" }
   python scripts\network_threshold_policies.py;  if (-not $?) { throw "threshold policies failed" }
   python scripts\relu_frontier_gap.py;           if (-not $?) { throw "relu frontier gap failed" }
+  # Cheap and load-bearing: recomputes both sides of the decoder comparison from the released
+  # weights and scores the network's own map under the probe selection objective. Pass
+  # --with-refit for the expensive follow-up, which the paper does not use.
+  python scripts\probe_ceiling.py 8;             if (-not $?) { throw "probe ceiling failed" }
   python scripts\frozen_readout_tradeoff.py;     if (-not $?) { throw "frozen tradeoff failed" }
 
   # refresh_native_blocks rewrites tracked files in results\e7\raw\. On a clean checkout it is

@@ -122,7 +122,9 @@ Three limits apply throughout and we state them here rather than at the end. Eve
 the affine recovery frontier is a worst case over feature amplitudes: it says what no affine rule can
 guarantee, not what fails in typical use. The comparison between a network's own decoder and a fitted
 affine probe (Section~\ref{sec:probes}) measures what supervised fitting recovers rather than what an
-affine map can express, because the probe class contains the network's decoder; we report it for
-completeness and build nothing on it. And the controlled campaigns use one task family at widths up
+affine map can express, because the probe class contains the network's decoder --- and we verify
+that the class membership is not hypothetical: the selection misses the network's own map, on the
+very validation objective it maximises, in every trained model above the tie width. We report the
+comparison for completeness and build nothing on it. And the controlled campaigns use one task family at widths up
 to $d=400$, so they establish the mechanism, not its magnitude in a deployed model --- which is
 precisely why the dictionary measurements are the other half of the paper.
