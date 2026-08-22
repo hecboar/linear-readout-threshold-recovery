@@ -2,56 +2,98 @@
 \label{sec:discussion}
 % ============================================================================
 
-Three readings survive the campaign, and one that motivated the work does not.
+Four readings survive this work, and two that motivated it do not.
 
-\textbf{The floor is a target, not an obstacle --- and reaching it means less than it looks.} E4 shows
-gradient descent under the unit-diagonal constraint converging to a unit-norm tight frame, and a
-network trained on a task with no interference objective lands within
-\EfiveLfourRatioPinvMean{} of the same bound. But an untrained i.i.d.\ code reaches
-$R_{\mathrm{geom}}=\SARandFiftyRgeom{}$ without any training at all, so proximity to the rank--trace
-floor is what the ensemble gives for free at this load rather than a signature of learned structure.
-What distinguishes models is not whether they approach the floor but whether the floor \emph{binds}
-them, and there the separation is enormous: $L^2$ drives $R_{\mathrm{geom}}$ to
-\SALtwoTwoHundredRgeom{} at $d=200$ and collapses its frontier to $1$, while $L^4$ stays at
-\SALfourTwoHundredRgeom{}.
+\textbf{The floor is a target, not an obstacle --- and reaching it means less than it looks.}
+Gradient descent under the unit-diagonal constraint converges to a unit-norm tight frame
+(Appendix~\ref{app:earlier}), and a network trained on a task with no interference objective lands
+within \EfiveLfourRatioPinvMean{} of the same bound. But an untrained i.i.d.\ code reaches
+$\Rgeom=\SARandFiftyRgeom{}$ with no training at all, and \SaeControls{} shape-matched controls land
+between \SaeCtlRgeomMin{} and \SaeCtlRgeomMax{} across a twentyfold range of load. Proximity to the
+rank--trace floor is what the ensemble gives for free, not a signature of learned structure, and
+Proposition~\ref{prop:leverage} says why rather than leaving it as an empirical coincidence: the ratio
+is exactly one when leverage is equalised, and an unstructured code equalises it. Any attainment
+ratio reported without a shape-matched baseline is uninterpretable, and we could not find that
+baseline in the work we build on.
 
-\textbf{The nonlinearity does not out-decode an affine probe of the state it produces.} Given the same
-post-ReLU representation and the same threshold treatment, the network and the best fitted affine
-probe tie on $s_{95}$ in 119 of 120 trained models. We registered this outcome as a result before
-running, and it is one: for support recovery on this task, at these widths, the network's second layer
-is doing what a linear probe of its first layer already does. The gap that earlier framings read as a
-nonlinear advantage is a gap between \emph{representations} --- the preactivation is more affinely
-decodable than what the ReLU leaves --- and attributing it to the decoder confuses where the
-information went with who read it.
+\textbf{No released dictionary we measured is at the floor, and the excess tracks what the model
+learned.} All \SaeDictsAboveControl{} of \SaeDicts{} decoders sit above their own control, at $\Rgeom$
+from \SaeDictRgeomMin{} to \SaeDictRgeomMax{}, with no exception across five model families, three
+training recipes and two decoder sites. The direction is the opposite of the natural guess: a random
+code of the same shape carries strictly \emph{less} cross-talk under the best linear readout each
+admits, so whatever sparse reconstruction optimises, it is not the conditioning of the dictionary's
+own linear readout. The matched pair EleutherAI released settles where the excess comes from: an
+autoencoder trained by an identical recipe on a \emph{randomly initialised} copy of the same model
+returns to the floor (\SaeRandInitRgeomMin--\SaeRandInitRgeomMax) in all \SaePairedLayers{} paired
+layers. Fitting a sparse autoencoder does not by itself produce dispersed leverage; representing a
+trained model's features does. For practice this reorders two intuitions: the layer a dictionary is
+trained on matters far more for linear readability than its width, and the coefficient of variation
+--- the obvious summary --- is the wrong one, because it moves when the ratio does not.
 
-\textbf{What training buys is the code.} A random code with only its readout trained keeps an
-untrained code's frontier, \EeightFrozenHundredKappa{} against \EeightRandomHundredKappa{}, while
-training both reaches \EeightTrainedHundredKappa{}. The frozen arm's own decoder also ends at
-$R_{\mathrm{readout}}=\EeightFrozenHundredRreadout{}$, near twice the closed-form cross-talk optimum
-for the code it was handed --- but that is not a failed optimisation. It beats that optimum by
+\textbf{The loss decides whether a linear interface exists at all.} This is the largest effect we
+report and the one that replicates most widely. $L^2$ drives $\Rgeom$ to \SALtwoTwoHundredRgeom{} at
+$d=200$ and \ScLtwoRgeom{} at $d=400$ while collapsing its frontier to $1$ --- some feature is not
+separable even at $s=1$, which for singleton states means two features share a representation --- and
+$L^4$ stays at \SALfourTwoHundredRgeom{} with a frontier that grows to \ScMeasured{}. What
+distinguishes models is therefore not whether they approach the floor but whether the floor
+\emph{binds} them, and Stage B reproduces the separation in an independent campaign at two training
+sparsities.
+
+\textbf{What training buys is the code, not the readout.} A random code with only its readout trained
+keeps an untrained code's frontier, \EeightFrozenHundredKappa{} against \EeightRandomHundredKappa{},
+while training both reaches \EeightTrainedHundredKappa{}. The frozen arm's own decoder ends at
+$\Rreadout=\EeightFrozenHundredRreadout{}$, near twice the closed-form cross-talk optimum for the
+code it was handed --- and that is not a failed optimisation. It beats that optimum by
 \EeightFrozenHundredTaskGain{} on the loss it was trained under, so on a fixed random code the task
-objective and the cross-talk objective genuinely diverge, and the readout is right to follow the
+objective and the cross-talk objective genuinely diverge and the readout is right to follow the
 former. What the joint arm gains is that it need not choose: it holds
-$R_{\mathrm{readout}}=\EeightTrainedHundredRreadout{}$ while beating the same baseline by
-\EeightTrainedHundredTaskGain{}. Read that way, training the code aligns the two objectives, and
-that is a statement about what co-adaptation buys rather than about the difficulty of the
-conditional problem.
+$\Rreadout=\EeightTrainedHundredRreadout{}$ while beating the same baseline by
+\EeightTrainedHundredTaskGain{}. Training the code aligns the two objectives; freezing it leaves them
+in a conflict no amount of readout training resolves.
 
-What does not survive is the reading this work began with: that the $L^4$ model's thresholded output
-keeps working past where linear readouts of its own code collapse. Against the fixed readouts of E5
-that appeared true; against a probe fitted with the same care as the network was trained, it is not.
+\textbf{What does not survive, first: the decoder framing, in either direction.} This work began with
+the claim that an $L^4$ network's thresholded output keeps working past where linear readouts of its
+own code collapse. Against the fixed readouts of Appendix~\ref{app:earlier} that appeared true; a
+matched comparison against a fitted probe was registered as the test, and the registered prediction
+was a tie. What the corrected comparison gives is neither: across \PrimModels{} models the two tie in
+\PrimTies{} --- but \PrimLtwoJointFailures{} of those ties are $L^2$ cells where both decoders sit at
+$s_{95}=0$, which is joint failure and not agreement --- with \PrimNetWins{} to the network,
+\PrimProbeWins{} to the probe, and a difference that grows with width to \ScPrimDiff{} levels in
+\ScPrimNetWins{} of \ScSeeds{} models at $d=400$.
 
-This gives the debate in~\cite{bhagat2026cc,ferreiradasilva2026l4} an instrument. The question
-``does this network compute in superposition?'' becomes three measurements: how far the code is from
-its own floor rather than from the ensemble's, how far the network's decision function is from an
-affine readout of the same state, and, per feature, the largest sparsity at which any affine rule
-could succeed at all. None requires reverse-engineering the mechanism, and the third is exact rather
-than empirical --- which matters, because the campaign's history is a series of empirical readings
-that reversed when the estimand or the baseline was tightened, while $\kappa_i$ did not move.
+We decline to claim that as a nonlinear advantage, because the probe's hypothesis class contains the
+network's own output layer: a probe attaining the network's score exists in every cell, so the gap
+bounds our fitting procedure rather than what an affine map can express
+(Section~\ref{sec:probes}). What the comparison does support is a property of the code, because the
+protocol is held fixed while the code varies: the sign is positive under $L^4$, zero under $L^2$, and
+negative by up to \PrimRandFourHundredDiff{} levels on a code that was never trained. A single cell
+of that table says little; the ordering across the three is the result.
 
-For capacity theory, the interface distinction explains why the H\"{a}nni and Adler--Shavit
-results coexist rather than compete (Section~\ref{sec:application}). It also cautions against
-reading sparse-autoencoder dictionary sizes as computation capacities: those are reconstructive
-quantities, and the diagnostic makes explicit that reconstruction and recursive Boolean
-decoding are governed by different criteria.
+\textbf{And second: the representation gap.} An earlier version located the effect in what the ReLU
+discards, reporting that a probe reading the preactivation beats the network by a full sparsity level.
+That was an artefact of the threshold-selection defect. On trained codes the pre-ReLU advantage is now
+at most a quarter of a level with most seeds tied, and at $d=400$ it reverses. The surviving form is
+narrower and confined to the untrained arm, where the preactivation is more affinely decodable by
+\PrimRandFiftyPreDiff{} to \PrimRandFourHundredPreDiff{} levels: the ReLU-plus-threshold pipeline
+throws away a large and growing amount on a code that was never trained, and next to none on one
+trained under $L^4$. Appendix~\ref{app:withdrawn} records both withdrawals with their causes, along
+with four others.
 
+\textbf{An instrument, and what it does not settle.} This gives the debate
+in~\cite{bhagat2026cc,ferreiradasilva2026l4} something to measure. ``Does this network compute in
+superposition?'' becomes three questions with numerical answers: how far the code is from its own
+floor rather than from the ensemble's, how that distance decomposes into leverage dispersion, and, per
+feature, the largest sparsity at which any affine rule could succeed. None requires
+reverse-engineering a mechanism, and the third is exact rather than sampled --- which matters, because
+this project's history is a series of empirical readings that reversed when an estimand or a baseline
+was tightened, while $\kappa_i$ never moved. What the instrument does not settle is consequence: we
+measure that trained dictionaries are worse conditioned for linear readout than random ones, and we do
+not show what that costs a specific interpretability pipeline. Establishing that link is the obvious
+next step and the one we would most want a reader to take.
+
+For capacity theory, the interface distinction explains why the H\"{a}nni and Adler--Shavit results
+coexist rather than compete (Appendix~\ref{sec:application}). It also cautions against reading
+sparse-autoencoder dictionary sizes as computation capacities: those are reconstructive quantities,
+and both halves of this paper show that reconstruction and linear decodability are governed by
+different criteria --- most sharply in the dictionaries, which optimise the first and come out behind
+an unstructured code of their own shape on the second.
