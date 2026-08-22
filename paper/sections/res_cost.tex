@@ -1,0 +1,38 @@
+\subsection{Cost and traceability}
+\label{app:cost}
+
+Every campaign ran on CPU alone; Table~\ref{tab:cost} reports the measured wall clock, which
+totals \DurTotalMin{} minutes across the six. Table~\ref{tab:trace} closes the loop between the
+claims above and the artefacts behind them: for each experimental claim it names the figure or
+table that shows it, the raw result file the numbers come from, and the script and
+configuration that produce that file. Together with the automatic check that every measured
+number in this manuscript matches the saved results (Appendix~\ref{app:repro}), this is what
+makes the reported quantities auditable rather than merely stated.
+
+\begin{table}[t]
+\centering
+\caption{Measured computational cost, read from the run records. E1--E6 are CPU-only and hide any
+accelerator that is present, so they cannot silently become irreproducible on a CPU-only machine.
+E7 and E8 train on a GPU; every number this paper draws from them is then recomputed from their
+saved weights on a CPU, so no claim here depends on access to an accelerator. \emph{jobs} counts
+models for the GPU campaigns and configured jobs for the others. $^{\dagger}$Stage~A was resumed,
+and a run record times only the final invocation, so this figure is the last leg rather than the
+campaign.}
+\label{tab:cost}
+\small
+\input{tables/tab_cost}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Traceability: each experimental claim, the figure or table that shows it, the raw
+result file it comes from, and the script and configuration that produce it. Reproduction
+commands are in Appendix~\ref{app:repro}.}
+\label{tab:trace}
+\small
+\input{tables/tab_traceability}
+\end{table}
+
+\FloatBarrier
+
+% ============================================================================

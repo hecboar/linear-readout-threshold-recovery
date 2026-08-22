@@ -31,7 +31,7 @@ python -m venv .venv
 source .venv/bin/activate           # Windows: .venv\Scripts\activate
 python -m pip install -r requirements.txt
 
-python -m pytest -q tests/          # 350 tests, ~75 s
+python -m pytest -q tests/          # 370 tests, ~105 s
 ```
 
 Run one campaign end to end in seconds to check the installation:
@@ -197,10 +197,16 @@ unused, and exits non-zero on any mismatch.
 
 ```bash
 cd paper
-latexmk -pdf main.tex
+latexmk -pdf tmlr.tex
 ```
 
-Requires a LaTeX distribution with the Elsevier `elsarticle` class (TeX Live, MiKTeX).
+`tmlr.tex` is the live manuscript, built from `paper/sections/*.tex` with the TMLR style
+(`paper/tmlr.sty`, bundled). It is anonymous by default: add the `accepted` option to
+`\usepackage{tmlr}` and `\input{sections/backmatter_camera_ready}` for a non-anonymous build.
+
+`paper/legacy/main_elsevier.tex` is the earlier `elsarticle` version. It is **out of date** — two of
+its readings did not survive the threshold defect KD6 — and is kept only as a record; see
+`paper/legacy/README.md`. It is not built and no checker verifies its numbers.
 
 ---
 
@@ -221,9 +227,14 @@ experiments/            one script per campaign (E1-E6 CPU-only; E7 opt-in accel
 configs/                one JSON per campaign, with a `smoke` override block
 results/                raw results, run records and logs (committed)
 scripts/                figures, tables, generated numbers, verification, run_all
-tests/                  350 tests, including numerical verification of the theorems and
-                        counterexamples to two of them that were once stated too broadly
+tests/                  370 tests, including numerical verification of the theorems,
+                        counterexamples to two of them that were once stated too broadly,
+                        and regression tests for each defect in docs/known_defects.md
 paper/                  manuscript sources, figures, tables, highlights
+  tmlr.tex              the live manuscript (TMLR, anonymous by default)
+  sections/             one file per section; every measured number is a generated macro
+  generated/numbers.tex 366 macros, produced from results/ and verified against it
+  legacy/               the retired elsarticle version, kept as a record
 docs/                   decision log and supporting analyses
 internal/               working documents, not part of the release (see internal/README.md)
 superseded-submission/

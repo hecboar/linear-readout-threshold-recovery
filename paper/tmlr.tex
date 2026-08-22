@@ -1,0 +1,118 @@
+% ============================================================================
+% TMLR submission. Anonymous by default: `\usepackage{tmlr}` prints "Anonymous
+% authors / Paper under double-blind review". Add the `accepted` option for the
+% camera-ready and `preprint` for arXiv.
+%
+% Build:  latexmk -pdf tmlr.tex
+%
+% Every measured number is a macro from generated/numbers.tex, produced from
+% results/ by scripts/make_numbers.py and verified by
+% scripts/check_manuscript_numbers.py. No measured quantity is typed by hand.
+%
+% main.tex is the earlier elsarticle version, kept until this port is complete.
+% ============================================================================
+\documentclass{article}
+\usepackage{tmlr}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[expansion=false]{microtype}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{enumitem}
+\usepackage{placeins}
+
+\hypersetup{colorlinks=true, linkcolor=blue!65!black,
+            citecolor=blue!65!black, urlcolor=blue!65!black}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\newcommand{\Otilde}{\widetilde{O}}
+\newcommand{\Omegatilde}{\widetilde{\Omega}}
+\newcommand{\Thetatilde}{\widetilde{\Theta}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\nucnorm}[1]{\left\lVert #1 \right\rVert_*}
+\newcommand{\FrecAS}{F_{\mathrm{rec}}^{\mathrm{AS}}}
+\newcommand{\ecomp}{\varepsilon_{\mathrm{comp}}}
+\newcommand{\ecorr}{\varepsilon_{\mathrm{corr,max}}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\Rgeom}{R_{\mathrm{geom}}}
+\newcommand{\Rreadout}{R_{\mathrm{readout}}}
+
+\input{generated/numbers}
+
+\title{Near-Floor Geometry Is Generic: Leverage Dispersion\\in Trained Overcomplete Codes}
+
+% Revealed only under the `accepted` or `preprint` options.
+\author{\name Hector Borobia \email hecboar@doctor.upv.es \\
+  \AND
+  \name Elies Segu\'i-Mas \email esegui@upvnet.upv.es \\
+  \AND
+  \name Guillermina Tormo-Carb\'o \email gtormo@upvnet.upv.es \\
+  \addr Universitat Polit\`ecnica de Val\`encia, Spain}
+
+\def\month{08}
+\def\year{2026}
+\def\openreview{\url{https://openreview.net/forum?id=XXXXXXXXXX}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\input{sections/tmlr_intro}
+\input{sections/notation}
+\input{sections/floor}
+\input{sections/frontier}
+\input{sections/tmlr_dictionaries}
+\input{sections/res_campaigns}
+\input{sections/tmlr_stageb}
+\input{sections/tmlr_probes}
+\input{sections/related}
+\input{sections/limitations}
+\input{sections/discussion}
+
+\subsubsection*{Acknowledgments}
+Withheld for anonymous review.
+
+\bibliographystyle{tmlr}
+\bibliography{refs}
+
+\appendix
+\input{sections/diagnostic}
+\input{sections/threshold}
+\input{sections/hierarchy}
+\input{sections/application}
+\input{sections/setup}
+\input{sections/app_earlier}
+\input{sections/res_e123}
+\input{sections/res_e4}
+\input{sections/res_e5}
+\input{sections/res_e6}
+\input{sections/res_cost}
+\input{sections/app_withdrawn}
+\input{sections/app_reproducibility}
+\input{sections/openproblem}
+\input{sections/appendix_old}
+
+\end{document}

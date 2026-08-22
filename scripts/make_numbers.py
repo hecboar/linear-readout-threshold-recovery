@@ -221,7 +221,7 @@ def build() -> Macros:
             # `wout` for L2 is simply never quoted.
             if rtag == "Wout" and kind != "L4":
                 continue
-            if kind == "L4" or rtag in ("Ls", "Pinv"):
+            if kind == "L4" or rtag == "Ls" or (rtag == "Pinv" and kind == "random"):
                 m.num(f"Efive{tag}Ratio{rtag}Mean", float(np.mean(ratios)), 4)
             # Only the L4 pinv/ls ranges are quoted in prose.
             if kind == "L4" and rtag in ("Pinv", "Ls"):
@@ -385,21 +385,45 @@ def build() -> Macros:
 
     prim = {(c["loss"], c["d"]): c for c in
             load("e7/derived/primary_comparison.json")["cells"]}
-    for d, tag in W.items():
-        for loss in ("L4", "L2"):                        # the primary table: trained cells only
+    # The two cells stage B replicates, which is where prose quotes a single number. Every other
+    # cell of this comparison is in tab_primary, generated from the same file.
+    for d in (100, 200):
+        v = prim[("L4", d)]["network_minus_probe"]["post_relu"]["s95"]
+        m.num(f"PrimLfour{W[d]}PostDiff", v["mean"], 2)
+    # The headline count, broken down rather than summed. An earlier version reported "the two tie in
+    # 119 of 120 trained models" as one number; 60 of those ties were L2 cells where both decoders
+    # sit at s95 = 0, so they are joint failures rather than agreements, and folding them into a
+    # single tie count inflates the evidence for equivalence. The L4 subtotal is what a reader wants.
+    agg = {"tie": 0, "net": 0, "probe": 0, "l2tie": 0}
+    for loss in ("L4", "L2"):
+        for d in W:
             v = prim[(loss, d)]["network_minus_probe"]["post_relu"]["s95"]
-            t = f"Prim{LO[loss]}{tag}Post"
-            m.num(t + "Diff", v["mean"], 2)
-            m.num(t + "CiLow", v["ci_low"], 2)
-            m.num(t + "CiHigh", v["ci_high"], 2)
-            m.integer(t + "Ties", v["n_zero"])
-            m.integer(t + "ProbeWins", v["n_negative"])
-    # The second pre-registered estimand. D17 decided to report both because they disagree; only
-    # `s95` reached the manuscript, so these close that gap. The direction of the AUC difference
-    # itself depends on the width, which is why all three widths get macros rather than a summary.
+            agg["tie"] += v["n_zero"]
+            agg["net"] += v["n_positive"]
+            agg["probe"] += v["n_negative"]
+            if loss == "L2":
+                agg["l2tie"] += v["n_zero"]
+    m.integer("PrimModels", 2 * len(W) * prim[("L4", 200)]["n_seeds"])
+    m.integer("PrimTies", agg["tie"])
+    m.integer("PrimNetWins", agg["net"])
+    m.integer("PrimProbeWins", agg["probe"])
+    m.integer("PrimLtwoJointFailures", agg["l2tie"])
+    m.integer("PrimLfourModels", len(W) * prim[("L4", 200)]["n_seeds"])
+    m.integer("PrimLfourTies", agg["tie"] - agg["l2tie"])
+
+    # The second pre-registered estimand. D17 decided to report both, because under the defective
+    # threshold selection they disagreed and the disagreement was itself a finding. With KD6 fixed
+    # they agree: the AUC difference is positive at every width and grows with it, and the earlier
+    # sign reversal was an artefact. All four widths get macros so the agreement can be shown rather
+    # than asserted; stage C supplies the fourth.
     m.integer("EsevenSeeds", prim[("L4", 200)]["n_seeds"])
-    for d, tag in W.items():
-        v = prim[("L4", d)]["network_minus_probe"]["post_relu"]["auc"]
+    scprim = {(c["loss"], c["d"]): c for c in
+              load("e7_stageC/derived/primary_comparison.json")["cells"]}
+    W4 = dict(W)
+    W4[400] = "FourHundred"
+    for d, tag in W4.items():
+        src = prim if d != 400 else scprim
+        v = src[("L4", d)]["network_minus_probe"]["post_relu"]["auc"]
         t = f"Auc{tag}"
         m.num(t + "Diff", v["mean"], 4)
         m.num(t + "CiLow", v["ci_low"], 4)
@@ -411,11 +435,78 @@ def build() -> Macros:
         else:
             m.integer(t + "ProbeWins", v["n_negative"])
 
-    pre50 = prim[("L4", 50)]["network_minus_probe"]["pre_relu"]["s95"]
-    pre200 = prim[("L4", 200)]["network_minus_probe"]["pre_relu"]["s95"]
-    m.num("PrimLfourFiftyPreDiff", pre50["mean"], 2)
-    m.integer("PrimLfourFiftyPreProbeWins", pre50["n_negative"])
-    m.num("PrimLfourTwoHundredPreDiff", pre200["mean"], 2)
+    # The untrained arm under the *same* matched protocol. This is the control that answers the
+    # obvious objection to the two paragraphs above -- that giving both sides a validation-selected
+    # threshold must favour the network. It does not: on a code that was never trained the affine
+    # probe wins by one to two and a half sparsity levels, unanimously, at every width. So the sign
+    # of `network - probe` is set by the code, not by the protocol.
+    for d, tag in W4.items():
+        src = prim if d != 400 else scprim
+        post = src[("random", d)]["network_minus_probe"]["post_relu"]
+        m.num(f"PrimRand{tag}Diff", post["s95"]["mean"], 2)
+        # The intervals and the per-seed counts are in tab_primary for every cell; only the two
+        # widths the prose quotes get macros, so nothing here is a number no sentence justifies.
+        if d in (200, 400):
+            m.integer(f"PrimRand{tag}ProbeWins", post["s95"]["n_negative"])
+        if d in (50, 400):
+            m.num(f"PrimRand{tag}AucDiff", post["auc"]["mean"], 4)
+
+    # ---------------- Stage B: an independent replication, and a sparsity axis ----------------
+    # Stage B was run as a separate campaign with its own seeds and its own run record. Two of its
+    # cells repeat stage A's protocol exactly (p_train = 0.01 at d in {100, 200}); the other two
+    # double the training sparsity, which is the one axis stage A held fixed.
+    sb = {(c["loss"], c["d"], c["p_train"]): c for c in
+          load("e7_stageB/derived/primary_comparison.json")["cells"]}
+    sbf = {(c["loss"], c["d"], c["p_train"]): c for c in
+           load("e7_stageB/derived/all_feature_frontier.json")["cells"]}
+    m.integer("SbSeeds", sb[("L4", 200, 0.01)]["n_seeds"])
+    SB_CELLS = {("L4", 100, 0.01): "SbLfourHundred",
+                ("L4", 200, 0.01): "SbLfourTwoHundred",
+                ("L4", 50, 0.02): "SbLoadLfourFifty",
+                ("L4", 200, 0.02): "SbLoadLfourTwoHundred",
+                ("random", 100, 0.01): "SbRandHundred",
+                ("random", 200, 0.01): "SbRandTwoHundred"}
+    # The untrained rows and the d = 50 row are quoted as bare differences; the rest carry their
+    # interval and their winning count, which is the form the prose uses. tab_stageb has all of it.
+    SB_FULL = {"SbLfourHundred", "SbLfourTwoHundred", "SbLoadLfourTwoHundred"}
+    for key, tag in SB_CELLS.items():
+        v = sb[key]["network_minus_probe"]["post_relu"]["s95"]
+        m.num(tag + "Diff", v["mean"], 2)
+        if tag in SB_FULL:
+            m.num(tag + "CiLow", v["ci_low"], 2)
+            m.num(tag + "CiHigh", v["ci_high"], 2)
+            m.integer(tag + "NetWins", v["n_positive"])
+    # Every stage B L2 cell has both decoders at s95 = 0. Reported as joint failures, not ties.
+    m.integer("SbLtwoJointFailures",
+              sum(sb[k]["network_minus_probe"]["post_relu"]["s95"]["n_zero"]
+                  for k in sb if k[0] == "L2"))
+    m.integer("SbLtwoCells", sum(1 for k in sb if k[0] == "L2"))
+    # The sparsity axis, on the frontier rather than on the decoder comparison: at d = 200 the
+    # exact frontier is higher at the higher training sparsity, while L2 stays pinned at 1.
+    for key, tag in ((("L4", 200, 0.01), "SbKappaLfourTwoHundred"),
+                     (("L4", 200, 0.02), "SbKappaLoadLfourTwoHundred"),
+                     (("L2", 200, 0.02), "SbKappaLoadLtwoTwoHundred")):
+        m.num(tag, sbf[key]["kappa_min_full_mean"], 4)
+
+    # The pre-ReLU arm. Before KD6 was fixed this was a headline: the probe reading the
+    # preactivation beat the network by a full sparsity level, which we read as a statement about
+    # what the nonlinearity discards. With the threshold selection corrected the advantage is at
+    # most a quarter of a level and most seeds tie, and at d = 400 it reverses. The claim is
+    # withdrawn in Appendix~\ref{app:withdrawn}; the macros stay so the withdrawal can be shown.
+    for d, tag in W4.items():
+        src = prim if d != 400 else scprim
+        for loss, lt in (("L4", "PrimLfour"), ("random", "PrimRand")):
+            v = src[(loss, d)]["network_minus_probe"]["pre_relu"]["s95"]
+            t = f"{lt}{tag}Pre"
+            m.num(t + "Diff", v["mean"], 2)
+            if (loss, d) == ("L4", 50):                # the one cell quoted with its interval
+                m.num(t + "CiLow", v["ci_low"], 2)
+                m.num(t + "CiHigh", v["ci_high"], 2)
+                m.integer(t + "Ties", v["n_zero"])
+            if (loss, d) == ("L4", 400):               # the width where the sign reverses
+                m.integer(t + "NetWins", v["n_positive"])
+            if (loss, d) == ("random", 400):
+                m.integer(t + "ProbeWins", v["n_negative"])
 
     full = {(c["loss"], c["d"]): c for c in
             load("e7/derived/all_feature_frontier.json")["cells"]}
@@ -427,6 +518,55 @@ def build() -> Macros:
     m.integer("FullLfourTwoHundredArgminFound", hi200["models_where_subset_found_the_argmin"])
     m.integer("FullLfourTwoHundredArgminRankMed",
               int(hi200["leverage_rank_of_true_argmin_median"]))
+
+    # ---------------- What the ReLU costs, and why it is measurable at one width ----------------
+    # kappa is defined on Phi b; ReLU(Phi b) is not a linear image of the state polytope, so the
+    # post-ReLU side is sampled rather than solved. Sampling can only refute separability, so it
+    # overestimates the frontier; the overestimate cancels only in a difference taken with the same
+    # sampler and the same draws on both sides, which is what `gap_mean` is. Where the sampled
+    # frontier hits the sampler's ceiling on both sides the difference is censoring, not
+    # measurement, and no value is emitted for that cell.
+    gap = {(c["loss"], c["d"]): c for c in load("e7/derived/relu_frontier_gap.json")["cells"]}
+    m.integer("ReluGapSmax", load("e7/derived/relu_frontier_gap.json")["s_max"])
+    m.integer("ReluGapDraws", load("e7/derived/relu_frontier_gap.json")["n_sample_per_side"])
+    m.integer("ReluGapFeatures", gap[("L4", 50)]["n_features"])
+    m.num("ReluLooseMin", min(c["sampler_looseness_mean"] for c in gap.values()), 2)
+    m.num("ReluLooseMax", max(c["sampler_looseness_mean"] for c in gap.values()), 2)
+    for key, tag in ((("L4", 50), "ReluLfourFifty"),
+                     (("random", 50), "ReluRandFifty"),
+                     (("random", 100), "ReluRandHundred")):
+        c = gap[key]
+        m.num(tag + "Gap", c["gap_mean"], 2)
+        m.num(tag + "CiLow", c["gap_ci_low"], 2)
+        m.num(tag + "CiHigh", c["gap_ci_high"], 2)
+        m.integer(tag + "Positive", c["n_positive"])
+    # The cells where the sampler saturates on both sides, named so the censoring is explicit.
+    m.integer("ReluCensoredCells",
+              sum(1 for c in gap.values()
+                  if c["pre_frontier_sampled_mean"] >= c["post_frontier_sampled_mean"]
+                  == float(load("e7/derived/relu_frontier_gap.json")["s_max"])))
+
+    # Two numbers the manuscript quotes about the *validity region* rather than about a result.
+    # KD3 corrected two statements to require h_i <= 1/2; the measurements are unaffected because
+    # the corollary is only ever applied at min_i h_i, and this is the largest min_i h_i over every
+    # model of the stage A grid. If it ever exceeded 1/2 the corrected statements would stop
+    # covering our own data, so it is quoted rather than asserted.
+    import glob as _glob
+
+    lev_max, lp_cost, lp_n = 0.0, [], 0
+    for _f in sorted(_glob.glob(str(RESULTS / "e7" / "raw" / "cell_relu_*.json"))):
+        with open(_f, "r", encoding="utf-8") as fh:
+            _cell = json.load(fh)
+        for g in _cell["diagnoses"]:
+            lev_max = max(lev_max, g["theory"]["analog"]["leverage_min"])
+            lp_n += 1
+            if g["d"] == 200:
+                aff = g["theory"]["affine"]
+                lp_cost.append(aff["runtime_s"] / aff["features_tested"])
+    m.num("KdThreeMaxLevMin", lev_max, 4)
+    m.integer("KdThreeModels", lp_n)
+    # Seconds per linear programme at d = 200, from the recorded sweep time and the feature count.
+    m.num("FrontierLpSecondsTwoHundred", float(np.mean(lp_cost)), 2)
 
     # ---------------- E8: which half of the training does the work ----------------
     import collections
@@ -572,12 +712,20 @@ def build() -> Macros:
     m.add("SaeIdentityGap", f"{max(r['identity_gap'] for r in sae):.0e}")
     m.integer("SaeIdentityRows", len(sae))
 
-    # The matched comparison at the fourth width.
-    pc = {(c["loss"], c["d"]): c for c in
-          load("e7_stageC/derived/primary_comparison.json")["cells"]}
-    v = pc[("L4", 400)]["network_minus_probe"]["post_relu"]["s95"]
+    # The matched comparison at the fourth width. The winning side is emitted by sign rather than
+    # assumed: under the defective threshold selection the probe led here, and after the fix the
+    # network does. A macro named for one side would have silently kept the old reading.
+    v = scprim[("L4", 400)]["network_minus_probe"]["post_relu"]["s95"]
     m.num("ScPrimDiff", v["mean"], 2)
-    m.integer("ScPrimProbeWins", v["n_negative"])
+    m.integer("ScPrimNetWins" if v["mean"] > 0 else "ScPrimProbeWins",
+              v["n_positive"] if v["mean"] > 0 else v["n_negative"])
+    m.num("ScPrimCiLow", v["ci_low"], 2)
+    m.num("ScPrimCiHigh", v["ci_high"], 2)
+    # The same comparison under the conservative reading, where the probe keeps the test-set maximum
+    # over families. Reported beside the primary one because dropping the less favourable of two
+    # defensible readings is exactly the manoeuvre D1 forbids.
+    vt = scprim[("L4", 400)]["network_minus_probe"]["post_relu"]["s95_test_max"]
+    m.num("ScPrimTestMaxDiff", vt["mean"], 2)
 
     # Whether the cross-talk the frozen arm gives up is bought or lost: its own objective, its own
     # representation, against the readout that attains the code-specific cross-talk optimum.

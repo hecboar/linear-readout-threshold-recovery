@@ -1,0 +1,69 @@
+\section{Open problem}
+\label{sec:open}
+
+Corollary~\ref{cor:impossible} shows that no reset staying inside the small-error
+$\varepsilon$-linear class can improve the worst-case cross-talk scale beyond $d^{-1/2}$ when
+$F\gg d$, while Theorem~\ref{thm:randomsupport} shows thresholded recovery survives to
+$s=O(d/\log d)$ at quadratic load. Any interpolation beyond the H\"{a}nni template must
+therefore leave the small-error linear class. This makes one question concrete.
+
+\begin{conjecture}[Generic robust threshold reset]
+\label{conj:reset}
+Fix $s=O(1)$. There are constants $c,C,K>0$ such that for every $d$ and every
+$F\le c\,d^2/\log^C d$ there exist a code $\Phi\in\R^{d\times F}$, an input readout
+$R_{\mathrm{in}}$, a width-$\Otilde(d)$ reset module $\mathcal R_\Phi:\R^d\to\R^d$ and a
+scoring map $S$ such that, for every $s$-sparse $b$ and every $x$ with
+$\norm{R_{\mathrm{in}}x-b}_\infty\le K\,d^{1/2}/(F^{1/2}s^{1/4})$, the output
+$z=\mathcal R_\Phi(x)$ is composable with the next stage and satisfies
+$b_i=1\Rightarrow(Sz)_i\ge3/4$ and $b_i=0\Rightarrow(Sz)_i\le1/4$.
+\end{conjecture}
+
+The incoming-error tolerance is the essential clause: a reset theorem for clean inputs
+$x=\Phi b$ alone would not support recursive composition. By
+Corollary~\ref{cor:impossible} any proof must use an explicitly nonlinear or thresholded
+decoding mechanism, as Adler--Shavit do.
+
+% ============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% ============================================================================
+
+We proposed the Interface Diagnostic, a computable procedure that decides which decoding
+interface an overcomplete code or a trained network maintains, and how far it is from the best
+possible one. It rests on a rank--trace floor for unit-diagonal linear readouts, in a
+gain-normalised form that bounds the interference-to-gain ratio, and on a separation between the
+linear and threshold criteria proved under one and the same sparse-state model. Its mean-square
+statistics run in $O(Fd^2)$ time and $O(d^2)$ memory and reach $F\approx10^6$ features on a
+laptop CPU.
+
+Two additions make the diagnosis about a code rather than about an ensemble. Computing a code's
+own floor in closed form splits any attainment ratio into a geometry term and a decoder term, and
+the split is deflationary: under the calibrated pseudoinverse the decoder term is one by
+construction, so the ratio a reader is invited to read as a decoder result is nothing of the
+kind. The trained $L^4$ network's \EfiveLfourRatioPinvMean{} and the $L^2$ baseline's factor
+\EfiveLtwoRatioLsMean{} are statements about leverage profiles. And for support recovery, one
+linear programme per feature returns the largest sparsity at which any affine probe can detect
+that feature, with a certified margin when it succeeds and a checkable certificate when it fails.
+Leverage links the two: low leverage forces the affine frontier down, with no decoder in the
+argument, and an explicit code refutes the converse, so the hierarchy holds in one direction
+only.
+
+Applied to 180 trained models, the instrument returns a negative result and two positive ones. The
+negative: given the same representation and the same threshold treatment, the network and a fitted
+affine probe tie on exact support recovery in 119 of 120 models, so on this task the nonlinearity
+does not out-decode a linear probe of the state it produces. The first positive: what separates
+models is the loss, not the architecture --- $L^2$ pushes $R_{\mathrm{geom}}$ to
+\SALtwoTwoHundredRgeom{} and collapses its frontier to $1$, while $L^4$ holds
+\SALfourTwoHundredRgeom{} and a frontier of \FullLfourTwoHundredKappaMin{}. The second: that
+separation is bought by training the code and not the readout, since a frozen random code with a
+fully trained readout keeps an untrained code's frontier.
+
+Two things we decline to claim. There is no scaling law here: the threshold-recovery campaign reaches
+$d=\EsixDmax$ at about a million features, which establishes that the measurement scales, but four
+widths do not distinguish $c\,d/\ln d$ from the alternatives. And proximity to the rank--trace floor
+is not evidence of learned structure, because an untrained code already achieves it.
+
+The broader lesson is that capacity questions for overcomplete representations are not settled by
+counting features, nor by measuring distance to a bound that random codes already meet. They depend
+on which decoding interface a particular code maintains, and on which representation is being read ---
+both of which are now measurable, per feature and exactly, for the code in hand.

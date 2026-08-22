@@ -1,0 +1,149 @@
+\section{The hierarchy is an implication, and only one way}
+\label{sec:hierarchy}
+% ============================================================================
+
+We now have three criteria on the same code: analog reconstruction
+(Section~\ref{sec:codefloor}), affine support recovery (Section~\ref{sec:frontier}), and whatever
+a trained nonlinear decoder achieves. Calling them a hierarchy is only justified if one implies
+another. It does, in one direction, and the implication runs through leverage --- the same
+statistic that Theorem~\ref{thm:codefloor} showed governs the analog level.
+
+\begin{lemma}[Leverage is redundancy, exactly]
+\label{lem:sm}
+If $\Phi$ has full row rank and $h_i<1$ then
+$\min\{\norm{z}_2^2:\Phi_{-i}z=\phi_i\}=h_i/(1-h_i)$.
+\end{lemma}
+
+\begin{proof}
+The minimum-norm solution gives
+$\min\norm{z}_2^2=\phi_i^{\top}(\Phi_{-i}\Phi_{-i}^{\top})^{-1}\phi_i$, and
+$\Phi_{-i}\Phi_{-i}^{\top}=\Sigma-\phi_i\phi_i^{\top}$. Sherman--Morrison gives
+$(\Sigma-\phi_i\phi_i^{\top})^{-1}=\Sigma^{-1}+\Sigma^{-1}\phi_i\phi_i^{\top}\Sigma^{-1}/(1-h_i)$,
+so the value is $h_i+h_i^2/(1-h_i)=h_i/(1-h_i)$.
+\end{proof}
+
+So a feature with low leverage is reproducible by the others with small coefficients, with no
+detour through coherence. That is the missing step: it converts a statement about the analog
+geometry into a bound on the affine frontier.
+
+\begin{theorem}[Low leverage forces the frontier down]
+\label{thm:arrow}
+For every $i$ with $h_i\le\tfrac12$,
+\begin{equation}
+  \kappa_i\;\le\;1+\sqrt{\frac{(F-1)\,h_i}{1-h_i}} .
+  \label{eq:arrow}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Take the $z$ of Lemma~\ref{lem:sm}, so $\Phi_{-i}z=\phi_i$ and
+$\norm{z}_2=\sqrt{h_i/(1-h_i)}$. Then $\norm{z}_1\le\sqrt{F-1}\,\norm{z}_2$ and
+$\max(\sum_jz^{+}_j,1+\sum_jz^{-}_j)\le1+\norm{z}_1$. For $z$ to be \emph{admissible} it must also
+satisfy the box, and $h_i\le1/2$ gives $\norm{z}_2\le1$ and hence $\norm{z}_\infty\le1$. So this
+$z$ witnesses the right-hand side.
+\end{proof}
+
+\begin{remark}[The hypothesis is necessary, not cosmetic]
+\label{rem:arrow-hyp}
+Above $h_i=1/2$ the minimum-$\ell_2$ representation need not satisfy the box, and the inequality
+is then not merely unproved but false. Take unit-norm columns in $\R^2$,
+\[
+  \phi_1=(1,0),\qquad
+  \phi_2=\Big(\tfrac14,\tfrac{\sqrt{15}}4\Big),\qquad
+  \phi_3=\Big(\tfrac14,-\tfrac{\sqrt{15}}4\Big).
+\]
+Here $h_1=8/9$, so the right-hand side of~\eqref{eq:arrow} equals $5$. But the second coordinate
+forces $z_2=z_3$ and the first then forces $z_2=z_3=2$, so the only representation of $\phi_1$ by
+the other two columns violates $\norm{z}_\infty\le1$: the programme~\eqref{eq:kappa} is infeasible
+and $\kappa_1=+\infty$. An earlier version of this work stated~\eqref{eq:arrow} for all $h_i<1$;
+that was wrong, and the counterexample is in the test suite.
+\end{remark}
+
+\begin{corollary}[A failure threshold with no decoder in it]
+\label{cor:failthresh}
+If
+\[
+  h_i\;\le\;\min\left\{\frac12,\;\frac{(s-1)^2}{(F-1)+(s-1)^2}\right\}
+\]
+then feature $i$ is \emph{not} affinely separable at sparsity $s$.
+\end{corollary}
+
+\begin{proof}
+Solve $1+\sqrt{(F-1)h/(1-h)}\le s$ for $h$, intersect with the hypothesis of
+Theorem~\ref{thm:arrow}, and apply Theorem~\ref{thm:frontier}.
+\end{proof}
+
+The cap only binds for $s-1>\sqrt{F-1}$; below that the second expression is already at most a
+half and the statement is the unrestricted one. Dropping it makes the corollary false, and by the
+same mechanism as Remark~\ref{rem:arrow-hyp}: with $a=(1,0)$,
+$b=(-\tfrac{25}{44},\tfrac{\sqrt{1311}}{44})$ and
+$\phi_i=(-\tfrac{17}{40},\tfrac{\sqrt{1311}}{40})$, all unit-norm in $\R^2$, the unique
+representation is $z=(\tfrac15,\tfrac{11}{10})$, so $\kappa_i=+\infty$ and the feature is separable
+at every sparsity --- yet $h_i=5/9$ lies below the uncapped $s=3$ threshold of $2/3$.
+
+Corollary~\ref{cor:failthresh} is a statement about the code alone: no training, no decoder, no
+probe. It predicts affine collapse from a single leverage score. Its cost is looseness --- the
+$\sqrt{F-1}$ step is lossy, and Section~\ref{sec:res-e5} reports a case where it predicts
+failure at $s=11$ against a measured frontier of $4$. It is a sufficient condition for collapse,
+not an estimate of the frontier.
+
+\begin{proposition}[The converse is false]
+\label{prop:oneway}
+Let $\Phi=[\,I_d\;\;I_d\,]\in\R^{d\times2d}$. Then $h_i=1/2$ for every $i$, so leverage is
+perfectly uniform and $W_{\star}(\Phi)=W(F,d)$: the analog geometry is optimal. Yet
+$\kappa_i=1$ for every $i$, the smallest value the frontier can take, so no feature is separable at
+any positive sparsity.
+\end{proposition}
+
+\begin{proof}
+$\Sigma=2I_d$, so $h_i=\phi_i^{\top}\phi_i/2=1/2$ and Theorem~\ref{thm:codefloor} gives equality.
+Each column $i$ has a duplicate $j$ with $\phi_j=\phi_i$; taking $z=e_j$ gives
+$\Phi_{-i}z=\phi_i$ with $\sum_jz^{+}_j=1$, $\sum_jz^{-}_j=0$ and $\norm{z}_\infty=1$, so
+$\kappa_i\le\max(1,1)=1$. The reverse holds for every code and every feature, since
+$z^{-}\ge0$ forces the objective to be at least $1+\sum_jz^{-}_j\ge1$. Hence $\kappa_i=1$.
+Theorem~\ref{thm:frontier} requires $\kappa_i>s$, and $1>1$ is false, so feature $i$ is separable
+at \emph{no} positive sparsity: the largest separable sparsity is $\lceil\kappa_i\rceil-1=0$.
+Directly: the singleton state $e_i$ and the singleton state $e_j$ have identical representations,
+so no rule of any kind can tell them apart.
+\end{proof}
+
+Together, Theorem~\ref{thm:arrow} and Proposition~\ref{prop:oneway} say:
+
+\begin{quote}
+Bad analog geometry \emph{implies} a bad affine frontier. Good analog geometry does \emph{not}
+imply a good one.
+\end{quote}
+
+That is a strict one-way hierarchy, with the forward arrow proved and the converse refuted by an
+explicit code, and it is what makes the word ``hierarchy'' literally true here rather than a
+label attached to three separate measurements.
+
+\subsection{The nonlinear level: a witness, not a frontier}
+\label{sec:witness}
+
+The third level has no frontier to compute. ``All nonlinear decoders'' has no capacity without a
+restricted class, and restricting it leads to sign-rank, which we do not open. What it does have
+is a finite certificate, and it comes free from Proposition~\ref{prop:farkas}: the states
+appearing in~\eqref{eq:farkas} are explicit vectors that \emph{no} affine rule can label
+correctly, and Radon's theorem says the obstruction compresses to at most $d+2$ of them. A
+trained network either resolves them or does not, with margin
+\[
+  \gamma_{\mathrm{net}}
+  =\min\Big(\min_k N_i(x^{+}_k)-\theta,\;\min_l\theta-N_i(x^{-}_l)\Big),
+\]
+which is a sharper report than a recovery curve: not ``a solver says the hulls intersect
+somewhere among the $\binom{F}{s}$ admissible states'' but a named, listed set that any third
+party can rebuild from $\Phi$ and check.
+
+The extraction is implemented (\code{lrtr.affine\_frontier.radon\_witness}) and validated by
+asking a linear programme for an affine separator of exactly the extracted states and requiring
+it to be infeasible; on small codes it is also checked against brute-force enumeration of every
+Boolean state. Two honest qualifications. The compression to $d+2$ is \emph{not} implemented, so
+the witness we return is valid but not minimal --- on the codes we have examined it comes out at
+about $d+2$ states already, which is small against $\binom{F}{s}$ but is not a handful, and the
+per-state margin $\gamma_{\mathrm{net}}$ is therefore a minimum over that many states. And no
+result in this paper is yet derived from it; the chain
+$G_1\to G_2\to G_3$ is complete as a construction, and reporting witnesses for trained models is
+future work rather than a claim made here.
+
+% ============================================================================

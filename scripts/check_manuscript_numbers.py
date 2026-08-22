@@ -37,7 +37,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from make_numbers import OUT, build  # noqa: E402
 
 PAPER = REPO_ROOT / "paper"
-TEX_SOURCES = ["main.tex"]
+TEX_SOURCES = ["tmlr.tex"]
 DEFINE_RE = re.compile(r"\\newcommand\{\\([A-Za-z]+)\}")
 USE_RE = re.compile(r"\\([A-Za-z]+)(?![A-Za-z])")
 
@@ -125,19 +125,22 @@ def main() -> int:
     # otherwise drown the signal. This cannot know whether a literal is a measurement, so it does
     # not fail; it prints a list. The audit that prompted it found four numbers quoted from an
     # artefact that was never committed, sitting in a limitation, invisible to every other check.
-    main_tex = (PAPER / "main.tex").read_text(encoding="utf-8").splitlines()
     literal_re = re.compile(r"(?<![\d.])\d+\.\d{2,}(?![\d])")
+    scanned = [PAPER / n for n in TEX_SOURCES if (PAPER / n).exists()]
+    scanned += sorted((PAPER / "sections").glob("*.tex"))
     literals = []
-    for i, line in enumerate(main_tex, 1):
-        code = line.split("%")[0] if not line.lstrip().startswith("%") else ""
-        code = re.sub(r"\\(cite|label|ref|input|includegraphics)\{[^}]*\}", "", code)
-        for hit in literal_re.findall(code):
-            literals.append((i, hit))
+    for path in scanned:
+        rel = path.relative_to(PAPER).as_posix()
+        for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            code = line.split("%")[0] if not line.lstrip().startswith("%") else ""
+            code = re.sub(r"\\(cite|label|ref|input|includegraphics)\{[^}]*\}", "", code)
+            for hit in literal_re.findall(code):
+                literals.append((rel, i, hit))
     if literals:
-        print(f"\nnote: {len(literals)} decimal literal(s) in main.tex are not generated macros, "
-              f"so nothing verifies them:")
-        for i, hit in literals:
-            print(f"  main.tex:{i}: {hit}")
+        print(f"\nnote: {len(literals)} decimal literal(s) across {len(scanned)} source file(s) "
+              f"are not generated macros, so nothing verifies them:")
+        for rel, i, hit in literals:
+            print(f"  {rel}:{i}: {hit}")
 
     if failures:
         print("\nFAILURES:")

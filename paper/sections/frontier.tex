@@ -1,0 +1,236 @@
+\section{The affine level: a per-feature collision frontier}
+\label{sec:frontier}
+% ============================================================================
+
+Sections~\ref{sec:floor} and~\ref{sec:threshold} bound two criteria on random ensembles. Neither
+answers the question an interpretability practitioner actually asks about a \emph{particular}
+trained code: for this feature, in this network, up to what sparsity can a linear probe read the
+feature's presence off the representation at all? This section gives that quantity exactly, as
+the value of one linear programme per feature.
+
+\begin{definition}[Affine separability of a feature]
+\label{def:affsep}
+Fix $\Phi\in\R^{d\times F}$, a feature $i$ and a sparsity $s$. Write $\mathcal A_i(s)$ for the
+set of states $\Phi b$ with $b\in\{0,1\}^F$, $b_i=1$ and $|\operatorname{supp}(b)|\le s$, and
+$\mathcal B_i(s)$ for the same with $b_i=0$. Feature $i$ is \emph{affinely separable at sparsity
+$s$} if there exist $w\in\R^d$ and $\theta\in\R$ with $w^{\top}x>\theta$ for every
+$x\in\mathcal A_i(s)$ and $w^{\top}x<\theta$ for every $x\in\mathcal B_i(s)$.
+\end{definition}
+
+The states are Boolean here, and that is not a simplification we could drop. Allowing an active
+amplitude to be any positive number makes ``$i$ is active'' an open condition, and an active
+state with $b_i\to0$ converges to an inactive one; the two hulls then touch for every code and
+every sparsity, so nothing would ever be separable. A positive floor on the active amplitude is
+what makes the question well posed, and Corollary~\ref{cor:kappa-alpha} is the graded statement
+with that floor made explicit.
+
+An affine functional separates two sets exactly when it separates their convex hulls, so the
+question is whether those two hulls meet. The programme below decides it.
+
+\begin{theorem}[The collision frontier]
+\label{thm:frontier}
+For $z\in\R^{F-1}$, indexed by the features other than $i$, let $z^{+}_j=\max(z_j,0)$ and
+$z^{-}_j=\max(-z_j,0)$, so that both parts are non-negative and $z=z^{+}-z^{-}$. Let
+$\Phi_{-i}$ be $\Phi$ with column $i$ deleted. Put
+\begin{equation}
+  \kappa_i\;:=\;\min_{z}\Big\{\max\big(\textstyle\sum_j z^{+}_j,\;1+\sum_j z^{-}_j\big)
+  \;:\;\Phi_{-i}z=\phi_i,\;\norm{z}_\infty\le1\Big\}.
+  \label{eq:kappa}
+\end{equation}
+with $\kappa_i:=+\infty$ when the constraints admit no $z$ at all. Then feature $i$ is affinely
+separable at every sparsity $s'\le s$ if and only if $\kappa_i>s$. When $\kappa_i$ is finite the
+largest sparsity at which feature $i$ is separable is $\lceil\kappa_i\rceil-1$; when
+$\kappa_i=+\infty$ the feature is separable at every sparsity, and no collision exists to bound.
+\end{theorem}
+
+\begin{proof}
+Separability fails exactly when $\operatorname{conv}\mathcal A_i(s)$ meets
+$\operatorname{conv}\mathcal B_i(s)$. By Proposition~\ref{prop:knapsack} below, applied to the
+coordinates other than $i$ with budget $s-1$ on the active side and $s$ on the inactive side,
+those hulls are $\Phi\{e_i+u:u\in[0,1]^{F-1},\;\mathbf 1^{\top}u\le s-1\}$ and
+$\Phi\{v:v\in[0,1]^{F-1},\;\mathbf 1^{\top}v\le s\}$ respectively --- the relaxation from
+$0/1$ coordinates to the box is exact, because the polytope is integral. So a collision is a
+pair $u,v$ in those two boxes with $\Phi(e_i+u)=\Phi v$. We may take $u$ and $v$ to have
+disjoint supports, since a common component cancels from both sides and only relaxes the two sum
+constraints. Then
+$\Phi(e_i+u)=\Phi v$ reads $\Phi_{-i}(v-u)=\phi_i$, so with $z=v-u$ we have $z^{+}=v$ and
+$z^{-}=u$. The budget on the inactive state is $\sum_j v_j\le s$, that on the active state is
+$1+\sum_j u_j\le s$, and the entries lie in $[0,1]$, giving $\norm{z}_\infty\le1$. The two
+budgets are exactly $\sum_jz^{+}_j\le s$ and $1+\sum_jz^{-}_j\le s$, so a collision at some
+sparsity at most $s$ exists if and only if the objective in~\eqref{eq:kappa} can be brought to
+$s$ or below, that is, if and only if $\kappa_i\le s$.
+\end{proof}
+
+Three things improve on the corresponding exactly-$s$ statement, which we record because the
+earlier formulation of this work used it. The threshold is $s$ itself rather than
+$2\min(s,F-s)-1$; the admissible sets nest in $s$, so monotonicity of the frontier holds by
+construction rather than needing a proof and a restriction to $s\le F/2$; and $\kappa_i=7.4$ now
+reads directly as ``separable up to $7$, lost at $8$'', which is what a capacity ought to mean.
+Computationally~\eqref{eq:kappa} is a single linear programme, stated as
+Algorithm~\ref{alg:frontier}: the $\max$ of two linear forms is handled by one auxiliary scalar,
+and one solve settles every sparsity at once rather than one feasibility problem per $s$.
+
+\begin{algorithm}[t]
+\caption{\textsc{CollisionFrontier} --- the largest affinely separable sparsity, per feature}
+\label{alg:frontier}
+\begin{algorithmic}[1]
+\Require code $\Phi\in\R^{d\times F}$; feature set $\mathcal I\subseteq[F]$; minimum amplitude
+  $\alpha\in(0,1]$
+\Ensure $\kappa_i(\alpha)$ and the frontier $\lceil\kappa_i(\alpha)\rceil-1$ for each
+  $i\in\mathcal I$
+\For{$i\in\mathcal I$}
+  \State solve, in variables $u,v\in\R^{F-1}_{\ge0}$ and $t\in\R$:
+  \Statex \qquad $\min\;t$ \quad s.t.\quad $\Phi_{-i}(u-v)=\phi_i$,\quad
+    $\alpha\mathbf 1^{\top}u\le t$,\quad $1+\alpha\mathbf 1^{\top}v\le t$,\quad
+    $u,v\le1/\alpha$
+  \State $\kappa_i(\alpha)\gets t^{\star}$;\quad
+    $s_i^{\max}\gets\lceil\kappa_i(\alpha)\rceil-1$
+\EndFor
+\State \Return $\{(\kappa_i(\alpha),s_i^{\max})\}_{i\in\mathcal I}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{remark}[Why splitting $z$ into two non-negative vectors loses nothing]
+\label{rem:split}
+Algorithm~\ref{alg:frontier} does not constrain $u$ and $v$ to have disjoint supports, so a
+feasible point need not have $u=z^{+}$ and $v=z^{-}$. It is still exact. If
+$u_j,v_j>0$ for some $j$, subtracting $\min(u_j,v_j)$ from both leaves $u-v$ unchanged, keeps
+feasibility, and strictly decreases both $\mathbf 1^{\top}u$ and $\mathbf 1^{\top}v$, hence does
+not increase $t$. Every optimum therefore admits a canonical split, on which the two budget
+constraints are exactly those of~\eqref{eq:kappa} and the bounds $u,v\le1/\alpha$ are exactly
+$\norm{z}_\infty\le1/\alpha$.
+\end{remark}
+
+The cost is one linear programme in $2(F-1)+1$ variables with $d$ equality constraints per
+feature, which is affordable for every feature at $d=50$ and not at $d=400$; how we choose a
+subset there, and why the resulting minimum is an upper bound, is stated in
+Section~\ref{sec:limitations}.
+
+\subsection{What the state distribution contributes}
+\label{sec:frontier-amplitudes}
+
+Definition~\ref{def:affsep} allowed graded activations in $[0,1]$. It is natural to ask what
+happens under a genuine state law, and the answer is unusually clean: almost nothing survives.
+
+\begin{proposition}[Amplitudes wash out of the hulls]
+\label{prop:knapsack}
+For $\alpha\in(0,1]$ and $k\in\mathbb N$ let
+$\mathcal U_k^{\alpha}=\{u\in\R_{\ge0}^{F}:u_j\in\{0\}\cup[\alpha,1],\;
+|\operatorname{supp}(u)|\le k\}$. Then
+$\operatorname{conv}\mathcal U_k^{\alpha}=\{u\in[0,1]^F:\mathbf 1^{\top}u\le k\}$ for every
+$\alpha$.
+\end{proposition}
+
+\begin{proof}
+The right-hand side is the unit-weight knapsack polytope, which is integral: its vertices are the
+$0/1$ vectors with at most $k$ ones. Each such vertex lies in $\mathcal U_k^{\alpha}$ for every
+$\alpha\le1$, so the right-hand side is contained in the hull; the reverse inclusion is immediate
+since $\mathcal U_k^{\alpha}$ satisfies both constraints.
+\end{proof}
+
+\begin{corollary}[The frontier under a minimum amplitude]
+\label{cor:kappa-alpha}
+If active amplitudes lie in $[\alpha,1]$ then feature $i$ is separable at every sparsity
+$s'\le s$ iff $\kappa_i(\alpha)>s$, where
+\[
+  \kappa_i(\alpha)=\min_z\Big\{\max\big(\alpha\textstyle\sum_jz^{+}_j,\;
+  1+\alpha\sum_jz^{-}_j\big)\;:\;\Phi_{-i}z=\phi_i,\;\norm{z}_\infty\le1/\alpha\Big\},
+\]
+and $\kappa_i(\alpha)$ is non-decreasing in $\alpha$. As $\alpha\to0$ an active state converges
+to an inactive one, the hulls touch, and no uniform margin exists.
+\end{corollary}
+
+\begin{remark}[The affine level is a support-level worst case, not a weighted average]
+\label{rem:notdistributional}
+It would be convenient to call Corollary~\ref{cor:kappa-alpha} a distribution-aware frontier. It
+is not, and the distinction matters. By Proposition~\ref{prop:knapsack} two state laws with the
+same support family and the same minimum amplitude give the \emph{same} $\kappa_i(\alpha)$,
+however differently they weight the states in between. The affine level therefore reads exactly
+one scalar off the state law --- the smallest detectable amplitude --- whereas by
+Proposition~\ref{prop:secondmoment} the analog level reads the full second moment $C$. That
+asymmetry is a property of the two criteria, not an artefact of our formulation: separability is
+a statement about a worst case over a support family, and a worst case cannot be reweighted. A
+genuinely probabilistic version, guaranteeing separability for all but a $\delta$ fraction of
+states, is possible but needs machinery we do not open here.
+\end{remark}
+
+\subsection{Margin, certificate, and a dimensional ceiling}
+\label{sec:frontier-margin}
+
+The verdict of Theorem~\ref{thm:frontier} is binary. Two further quantities say how comfortably
+it holds and how it fails, and one says that no code can do well beyond a certain sparsity. The
+first two are stated for the exactly-$s$ parameterisation in which they were derived and
+verified, where the admissible set carries the affine constraint $\mathbf 1^{\top}z=1$ and an
+$\ell_1$ budget; we flag that rather than restate them without proof.
+
+\begin{proposition}[The robust margin is half the hull distance]
+\label{prop:margin}
+Let $\delta_i(s)=\operatorname{dist}(\mathcal A_i(s),\mathcal B_i(s))$ be the Euclidean distance
+between the two hulls. The maximum-margin affine decoder for feature $i$ has
+$\norm{w^{\star}}=1/\delta_i(s)$ and margin $\gamma_i(s)=1/(2\norm{w^{\star}})=\delta_i(s)/2$.
+Consequently, with the optimal unit-norm $w$ and its centred bias, every perturbed input
+$x+\eta$ with $\norm{\eta}_2<\gamma_i(s)$ still receives the correct label on every admissible
+support.
+\end{proposition}
+
+\begin{proof}
+The margin programme is $\min\norm{w}$ subject to $\min_{u\in D}w^{\top}u\ge1$ with
+$D=\mathcal A_i(s)-\mathcal B_i(s)$. Support-function duality gives
+$\max_{\norm{w}\le1}\min_{u\in D}w^{\top}u=\operatorname{dist}(0,D)=\delta_i(s)$, whence
+$\norm{w^{\star}}=1/\delta_i(s)$. For the perturbation claim, the score moves by at most
+$\norm{w}\norm{\eta}$.
+\end{proof}
+
+The margin is therefore a certified noise tolerance in the units of the representation, not
+merely a scale, and $\delta_i(s)=0$ holds exactly when the feature is not separable --- the
+verdict and the margin are two readings of one object.
+
+\begin{proposition}[Failure comes with a finite, independently checkable certificate]
+\label{prop:farkas}
+If feature $i$ is not separable at sparsity $s$, there are states
+$x^{+}_1,\dots,x^{+}_m\in\mathcal A_i(s)$, states $x^{-}_1,\dots,x^{-}_n\in\mathcal B_i(s)$ and
+convex weights $\lambda,\mu$ with
+\begin{equation}
+  \sum_{k}\lambda_kx^{+}_k\;=\;\sum_{l}\mu_lx^{-}_l .
+  \label{eq:farkas}
+\end{equation}
+No affine rule can label all of them correctly, since affinity would force the same point to lie
+strictly on both sides of $\theta$. By Radon's theorem the obstruction can be compressed to at
+most $d+2$ states.
+\end{proposition}
+
+\begin{remark}[What the certificate is, and what it is not]
+\label{rem:cert}
+Equation~\eqref{eq:farkas} is a convex combination of active states equal to a convex combination
+of inactive ones. It is \emph{not} a single pair of colliding supports, and describing it as one
+would be wrong: the obstruction is generically spread over several states on each side. This
+matters practically, because the certificate is what makes the negative verdict auditable. ``The
+solver reported infeasible'' is not evidence; a list of supports from which any third party can
+rebuild the states from $\Phi$ and recompute~\eqref{eq:farkas} is. Our implementation stores the
+supports rather than the cut vectors for exactly that reason, and re-verifies them in a process
+that never sees the solver.
+\end{remark}
+
+\begin{proposition}[A dimensional ceiling on the affine level]
+\label{prop:circuit}
+Call a set $C$ of columns an \emph{affine circuit} if it is minimally affinely dependent:
+$\sum_{j\in C}l_j\phi_j=0$ with $\sum_{j\in C}l_j=0$ and every $l_j\neq0$. Let $q$ be the
+smallest size of an affine circuit of $\Phi$. Since any $d+2$ points in $\R^d$ are affinely
+dependent, $q\le d+2$ whenever $F>d+1$. Moreover the exactly-$s$ collision radius satisfies
+$\rho_{\min}\le q-1\le d+1$, and hence no code supports featurewise affine support recovery
+beyond sparsity $\lceil d/2\rceil$.
+\end{proposition}
+
+\begin{proof}
+Given a circuit $C$, pick $i\in C$ with $|l_i|$ largest and set $z_j=-l_j/l_i$ for
+$j\in C\setminus\{i\}$ and $z_j=0$ otherwise. Then $\Phi_{-i}z=\phi_i$; the affine constraint
+$\mathbf 1^{\top}z=1$ holds automatically, because $\sum_{j\in C}l_j=0$ forces
+$\sum_{j\neq i}l_j=-l_i$; $\norm{z}_\infty\le1$ by the choice of $i$; and
+$\norm{z}_1\le q-1$. Hence $\rho_i\le q-1$. The sparsity bound follows from the threshold
+$2\min(s,F-s)-1$ of the exactly-$s$ rule.
+\end{proof}
+
+This is the affine counterpart of Theorem~\ref{thm:floor}: one bounds error from below, the other
+bounds sparsity from above, and both follow from the ambient dimension alone.
+
+% ============================================================================

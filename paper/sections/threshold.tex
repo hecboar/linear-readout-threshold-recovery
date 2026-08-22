@@ -1,0 +1,149 @@
+\section{Threshold recovery and the separation}
+\label{sec:threshold}
+% ============================================================================
+
+The floor rules out small-error $\varepsilon$-linear readout with $\varepsilon=o(d^{-1/2})$
+when $F\gg d$. It does not rule out thresholded Boolean recovery, because thresholding does
+not require every inactive score to be small --- only that the aggregate interference stay
+below the margin.
+
+\begin{theorem}[Threshold recovery under coherent superposition]
+\label{thm:coherence}
+Let $\Phi$ have unit-norm columns with coherence $\mu$, let $b$ be $s$-sparse, let
+$x=\Phi b+\eta$ with $\norm{\Phi^{\top}\eta}_\infty\le\nu$, and let $Q(z)_i=\mathbf
+1\{z_i\ge1/2\}$. If $s\mu+\nu<1/2$ then $Q(\Phi^{\top}x)=b$, with margin
+$\tau=\tfrac12-(s\mu+\nu)>0$.
+\end{theorem}
+
+\begin{proof}
+For $i\in S=\operatorname{supp}(b)$ we have
+$z_i=1+\sum_{j\in S,\,j\neq i}\langle\phi_i,\phi_j\rangle+\langle\phi_i,\eta\rangle
+\ge1-(s-1)\mu-\nu\ge\tfrac12+\tau$. For $i\notin S$,
+$z_i\le s\mu+\nu=\tfrac12-\tau$.
+\end{proof}
+
+\begin{corollary}[Random codes at quadratic load]
+\label{cor:randomcode}
+Let $F=\lfloor d^2\rfloor$ and let $\phi_1,\dots,\phi_F$ be independent uniform unit vectors in
+$\R^d$. Then $\mu\le6\sqrt{\log d/d}$ with probability at least $1-d^{-5}$ for all
+sufficiently large $d$, and on that event the threshold decoder recovers every $s$-sparse
+Boolean state whenever $\norm{\Phi^{\top}\eta}_\infty<\tfrac12-6s\sqrt{\log d/d}$.
+\end{corollary}
+
+\begin{proof}
+For independent uniform unit vectors $u,v$, the inner product $\langle u,v\rangle$ has the law
+of the first coordinate of a uniform point on $S^{d-1}$, whose tail satisfies
+$\Pr\{|\langle u,v\rangle|>t\}\le2\exp(-(d-1)t^2/2)$ for $0<t<1$
+(see e.g.~\cite[Thm.~3.4.6]{vershynin2018hdp}). Taking a union bound over the
+$\binom{F}{2}$ unordered pairs and using $2\binom F2\le F^2\le d^4$,
+\[
+  \Pr\{\mu>t\}\;\le\;d^4\exp\!\left(-\tfrac{(d-1)t^2}{2}\right).
+\]
+With $t=6\sqrt{\log d/d}$ we have $\tfrac{(d-1)t^2}{2}=18(1-1/d)\log d\ge9\log d$ for $d\ge2$,
+so $\Pr\{\mu>t\}\le d^4 e^{-9\log d}=d^{-5}$. The recovery claim is then
+Theorem~\ref{thm:coherence} with $\mu\le t$.
+\end{proof}
+
+The worst-case coherence bound is pessimistic for a \emph{random} support, which is the case
+the diagnostic measures. The following average-case statement is the one used in
+Algorithms~\ref{alg:two} and~\ref{alg:ensemble}.
+
+\begin{theorem}[Random-support threshold recovery]
+\label{thm:randomsupport}
+Let $\Phi$ have independent uniform unit-vector columns and let $S$ be a uniformly random
+support of size $s$, independent of $\Phi$. For $\delta\in(0,1)$ there is a universal $C>0$
+such that, with probability at least $1-\delta$,
+\[
+  \max_{i\in[F]}\Big|\sum_{j\in S,\,j\neq i}\langle\phi_i,\phi_j\rangle\Big|
+  \;\le\;C\sqrt{\frac{s\log(F/\delta)}{d}},
+\]
+and on that event thresholding $\Phi^{\top}(\Phi\mathbf 1_S+\eta)$ at $1/2$ recovers
+$\mathbf 1_S$ whenever $\norm{\Phi^{\top}\eta}_\infty+C\sqrt{s\log(F/\delta)/d}<1/2$.
+\end{theorem}
+
+\begin{proof}
+Conditionally on $S$ and on $\phi_i$, the summands are independent and each is distributed as
+the first coordinate of a uniform point on $S^{d-1}$, hence sub-Gaussian with variance proxy
+$O(1/d)$~\cite[Thm.~3.4.6]{vershynin2018hdp}. The sum of at most $s$ of them is sub-Gaussian
+with proxy $O(s/d)$, so $\Pr\{|I_i|>t\mid S\}\le2\exp(-c_0dt^2/s)$. A union bound over
+$i\in[F]$ and the stated choice of $t$ give the claim; the recovery statement follows as in
+Theorem~\ref{thm:coherence}. Full details are in Appendix~\ref{app:proofs}.
+\end{proof}
+
+\begin{remark}[Which randomness the probability is over]
+\label{rem:annealed}
+The guarantee of Theorem~\ref{thm:randomsupport} is \emph{annealed}: the probability is taken
+over the joint draw of the code $\Phi$ and the support $S$. It is therefore the right statement
+for Algorithm~\ref{alg:ensemble}, which redraws the code at every trial, and it is not directly
+the statement for Algorithm~\ref{alg:two}, which holds one code fixed. A quenched version ---
+$\Phi$ fixed, probability over $S$ alone --- follows from concentration for sampling without
+replacement, but it is not free: it needs hypotheses on the particular $\Phi$ (bounded
+coherence and bounded row sums of $|\Phi^{\top}\Phi|-I$), which a given trained code may or may
+not satisfy. We do not assume them. What the fixed-code diagnostic reports is therefore an
+empirical recovery rate with a Wilson interval, and the theorem is quoted as the ensemble-level
+expectation it is, not as a guarantee about the code in hand. The analog side has no such
+caveat: Proposition~\ref{prop:uniform-energy} is exact for every fixed $\Phi$.
+\end{remark}
+
+We now give the average linear-readout error under the \emph{same} distribution, which is what
+allows the two criteria to be compared without a distributional mismatch.
+
+\begin{proposition}[Average linear energy floor, uniform random supports]
+\label{prop:uniform-energy}
+Let $F>d$, let $M=G\Phi\in\R^{F\times F}$ satisfy $\operatorname{rank}(M)\le d$ and $M_{ii}=1$
+for all $i$, and set $A=M-I_F$. Let $S\subseteq[F]$ be a uniformly random support of size $s$
+with $1\le s\le F/2$ and let $b=\mathbf 1_S$. Then
+\begin{equation}
+  \E_S\norm{Ab}_2^2
+  \;\ge\;\frac{s(F-s)}{F(F-1)}\norm{A}_F^2
+  \;\ge\;\frac{s(F-s)(F-d)}{d(F-1)} .
+  \label{eq:energyfloor}
+\end{equation}
+In particular $\frac1F\E_S\norm{Ab}_2^2\ge\frac{s(F-d)}{2d(F-1)}$, which is $\Omega(s/d)$
+whenever $F/d\to\infty$.
+\end{proposition}
+
+\begin{proof}
+For a uniformly random size-$s$ support, $\E[b_i]=s/F$ and $\E[b_ib_j]=\frac{s(s-1)}{F(F-1)}$
+for $i\neq j$. Hence $\E[bb^{\top}]=(p-q)I_F+q\,\mathbf 1\mathbf 1^{\top}$ with $p=s/F$ and
+$q=\frac{s(s-1)}{F(F-1)}$, and
+\[
+  p-q=\frac{s(F-1)-s(s-1)}{F(F-1)}=\frac{s(F-s)}{F(F-1)} .
+\]
+Therefore
+$\E_S\norm{Ab}_2^2=\operatorname{tr}(A^{\top}A\,\E[bb^{\top}])
+=(p-q)\norm{A}_F^2+q\norm{A\mathbf 1}_2^2\ge(p-q)\norm{A}_F^2$.
+Since $A$ has zero diagonal and $\operatorname{rank}(M)\le d$ with unit diagonal,
+Theorem~\ref{thm:floor} gives $\norm{A}_F^2\ge F(F-d)/d$, which yields the second inequality.
+For $s\le F/2$ we have $F-s\ge F/2$, and dividing by $F$ gives the per-coordinate form.
+\end{proof}
+
+\begin{corollary}[Separation at quadratic load, one sparse-state model]
+\label{cor:separation}
+Let $F=d^2$ and let $\Phi$ have independent uniform unit-vector columns. There is a universal
+$c>0$ such that, for $1\le s\le c\,d/\log d$ and a uniformly random support $S$ of size $s$,
+thresholding $\Phi^{\top}\Phi\mathbf 1_S$ at $1/2$ recovers $\mathbf 1_S$ exactly with
+probability at least $1-d^{-10}$ for all sufficiently large $d$. For the \emph{same} sparse-state
+model, every unit-diagonal rank-$d$ linear readout has average per-coordinate squared error at
+least $\frac{s(F-d)}{2d(F-1)}=\Omega(s/d)$, and hence RMS error $\Omega(\sqrt{s/d})$.
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{thm:randomsupport} with $\delta=d^{-10}$, so $\log(F/\delta)=12\log d$; the
+interference bound is $C\sqrt{12s\log d/d}$, which is below $1/2$ as soon as
+$s\le c\,d/\log d$ with $c<1/(48C^2)$. The second statement is
+Proposition~\ref{prop:uniform-energy} with $F=d^2$.
+\end{proof}
+
+\begin{remark}[What the separation compares]
+\label{rem:criteria}
+The two sides compare different \emph{interface criteria} on the same input distribution:
+expected squared linear readout error versus exact-recovery probability of a threshold
+decoder. Neither criterion dominates the other in general. The content of
+Corollary~\ref{cor:separation} is that at quadratic feature load one of them is attainable
+exactly and the other is provably not, in the same regime --- which is precisely the quantity
+Algorithm~\ref{alg:two} reports. Corollary~\ref{cor:separation} is stated for uniform supports;
+the Bernoulli variant, with the same conclusion, is in Appendix~\ref{app:proofs}.
+\end{remark}
+
+% ============================================================================

@@ -1,0 +1,122 @@
+\section{Readings we withdrew, and what caused each}
+\label{app:withdrawn}
+
+This appendix exists because the alternative is worse. Over the course of this work six readings of
+our own measurements turned out not to survive a check, and in every case the reading we had chosen
+was the more interesting of the available ones. Listing them costs us the appearance of a clean
+result and buys the reader the only thing that makes the surviving claims worth anything: a record
+of how hard they were pushed. The register in \code{docs/known\_defects.md} carries the code-level
+detail; what follows is the manuscript-level consequence of each.
+
+\paragraph{1. ``The two estimands disagree'' (withdrawn; cause: a defective threshold search).} The
+analysis plan named two co-primary estimands, $s_{95}$ and the recovery AUC. An earlier version of
+Section~\ref{sec:res-primary} reported that they disagreed --- $s_{95}$ a tie at every width, the
+AUC favouring the network at $d=50$ and the probe at $d\in\{100,200\}$ --- and treated the
+disagreement as the finding, on the grounds that a blunt statistic and a fine one seeing different
+things is informative.
+
+The cause was in \code{select\_thresholds}. For the \code{global} and \code{per\_feature} policies it
+searched a grid of quantiles of the validation scores and returned the best point on that grid,
+without ever scoring $\theta_{\mathrm{fixed}}$, the value it was meant to improve on. On these score
+distributions the quantile grid could and did miss, so a decoder could be evaluated at a threshold
+that loses to the default on the very validation objective the search maximises. It cost the network
+up to five sparsity levels at $d=400$. The fix scores $\theta_{\mathrm{fixed}}$ first, adds a uniform
+grid to the quantile grid, and asserts the post-condition that the returned threshold is at least as
+good as $\theta_{\mathrm{fixed}}$ on validation; \code{tests/test\_threshold\_selection.py}
+re-implements the old search and requires it to fail a bimodal case the new one passes. Both sides of
+the comparison moved when it was refitted, which is the reason we trust the correction: it was not a
+change that could only help one arm.
+
+With the defect fixed the two estimands agree at all four widths and the disagreement was an
+artefact. We report the agreement, and this paragraph, rather than quietly substituting one for the
+other.
+
+\paragraph{2. ``The ReLU discards affinely decodable information'' (withdrawn; same cause).} A probe
+fitted on the preactivation $\Phi b$ once beat the network by a full sparsity level, and we read that
+as a measurement of what the nonlinearity throws away --- a claim we liked, because it reframed a
+decoder comparison as a statement about representations. It does not survive the same fix. The
+pre-ReLU probe's advantage is now \PrimLfourFiftyPreDiff{} at $d=50$
+([\PrimLfourFiftyPreCiLow, \PrimLfourFiftyPreCiHigh], \PrimLfourFiftyPreTies{} of \EsevenSeeds{}
+seeds tied), \PrimLfourHundredPreDiff{} at $d=100$ and \PrimLfourTwoHundredPreDiff{} at $d=200$, and
+at $d=400$ it reverses: the network leads the \emph{pre}-ReLU probe by
+\PrimLfourFourHundredPreDiff{} on \PrimLfourFourHundredPreNetWins{} of \ScSeeds{} models. A quarter
+of a sparsity level, with most seeds tied and the sign flipping at the largest width, does not
+support a claim about what a nonlinearity discards.
+
+What does survive is confined to the untrained arm, where the effect is an order of magnitude larger
+and unanimous: the pre-ReLU probe beats the network by \PrimRandFiftyPreDiff{},
+\PrimRandHundredPreDiff{}, \PrimRandTwoHundredPreDiff{} and \PrimRandFourHundredPreDiff{} levels at
+the four widths, on every one of the \PrimRandFourHundredPreProbeWins{} and \EsevenSeeds{} models per
+cell. On an untrained code the thresholded post-ReLU readout is far worse than an affine read of the
+preactivation, and training closes almost all of that gap. We state it in that scoped form and note
+that it is a comparison across two stages of one pipeline, not a decoder comparison
+(Section~\ref{sec:probes}).
+
+\paragraph{3. ``The frozen-code arm is a failed optimisation'' (withdrawn; cause: scoring an arm
+under an objective it was not trained on).} In E8 the arm with a frozen random code trains only
+$W_{\mathrm{out}}$ and ends at $\Rreadout\approx\EeightFrozenTwoHundredRreadout$, nearly twice the
+cross-talk of the best readout of the code it was given. Since $\Phi^{+}$ attains that optimum for
+every code, the obvious reading is that gradient descent failed at a convex-looking problem.
+
+We checked it instead of asserting it. Scored under the loss the arm actually trained on, in its own
+post-ReLU representation, on fresh draws from a seed no training used, the frozen $W_{\mathrm{out}}$
+\emph{beats} $\Phi^{+}$ by a factor of \EeightFrozenTwoHundredTaskGain{} at $d=200$ on
+\EeightFrozenTwoHundredTaskWins{} of \EeightSeeds{} models. The cross-talk is bought, not lost, and
+the correct reading is about what co-adaptation does to two objectives rather than about optimisation
+difficulty. Section~\ref{sec:res-primary} now says that.
+
+\paragraph{4. ``The advantage of training grows with width'' (withdrawn; cause: choosing the summary
+after seeing the result).} Both the trained and the untrained frontier grow with width, so at three
+widths it was natural to report that training's advantage grows too --- and as a ratio over
+$d\in\{50,100,200\}$ it does. The fourth width breaks it. In absolute sparsity levels, the
+operationally meaningful unit, the margin is \MarginFiftyGap, \MarginHundredGap,
+\MarginTwoHundredGap, \MarginFourHundredGap: it peaks at $d=200$ and falls, by more than the sampling
+noise (a two-sample bootstrap over the independently trained arms gives \MarginDrop{} with interval
+[\MarginDropCiLow, \MarginDropCiHigh]). As a ratio it falls at every step.
+
+When we first found the fourth width's numbers we reassured ourselves with the ratio, which was the
+reading that preserved the claim. That is the same move as picking a summary statistic after seeing
+the result, and we record it as such in \code{docs/decision\_log.md} (D20). The manuscript now leads
+with the reading that does not survive and states the surviving claim in its narrowed form: training
+buys frontier at every width we measured, and the amount it buys stops growing by $d=400$.
+
+\paragraph{5. ``The subset frontier is a justified shortcut'' (withdrawn; cause: a sufficient
+condition used as if it were necessary).} Evaluating $\kappa_i$ for every feature costs $F$ linear
+programmes, so early campaigns evaluated a subset chosen by Theorem~\ref{thm:arrow} and reported the
+minimum over it as an upper bound. The bound is accurate --- it overestimates by
+\SubsetFourHundredOver{} on average even at $d=400$ --- but its justification is not: the theorem is
+sufficient for a feature to be hard, not necessary, so the subset need not contain the true argmin.
+On untrained codes it always does. On trained codes it drifts, and it drifts with width: the median
+leverage rank of the true argmin runs \SubsetFiftyRank, \SubsetHundredRank, \SubsetTwoHundredRank,
+\SubsetFourHundredRank, and at $d=400$ the subset locates the argmin in \SubsetFourHundredFound{} of
+\ScSeeds{} trained models.
+
+The bias is one-sided and asymmetric between the arms, so a margin computed from subset values is
+biased in favour of training by an amount growing with the variable under study. Every frontier
+number in this paper is therefore the exact minimum over all $F$ features. We would not use the
+shortcut past $d=200$ again, and we report the accuracy and the invalidity together because the first
+without the second is how a shortcut survives.
+
+\paragraph{6. Three theorem statements, false as written (corrected; cause: a proof establishing less
+than its statement claimed).} An external adversarial audit found that
+Theorem~\ref{thm:arrow} and Corollary~\ref{cor:failthresh} were stated for all $h_i<1$ while their
+shared proof establishes them only for $h_i\le 1/2$, with explicit unit-norm counterexamples at
+$d=2$, $F=3$; and that a proposition concluded a feature with $\kappa_i=1$ is separable at $s=1$ when
+the frontier statement requires $\kappa_i>s$, so the correct answer is that it is separable at no
+positive sparsity. The statements are corrected here and the counterexamples are regression tests
+(\code{tests/test\_arrow\_counterexamples.py}).
+
+No measurement was affected: the corollary is only ever applied at $\min_i h_i$, and the largest
+$\min_i h_i$ over all \KdThreeModels{} stage A models is \KdThreeMaxLevMin, inside the valid
+region. That is why the tests
+passed --- they sampled only the region where the statement is true, which is a gap in the tests and
+not a false test. An earlier preprint carries the incorrect statements and will be corrected with an
+explicit erratum rather than a silent replacement.
+
+\paragraph{What the pattern says.} Three of the six defects are the same trap in three different code
+paths: an operating point chosen by maximising something, with no check that the choice beats the
+baseline it replaced. Two of the six are a reading chosen from among several that the data permitted,
+selected after the fact for being the stronger claim. We mention the count because a reader deciding
+how much weight to put on this paper's surviving claims should know both the rate at which we found
+our own errors and the direction they pointed, and because the second pattern is not one that more
+tests would have caught.

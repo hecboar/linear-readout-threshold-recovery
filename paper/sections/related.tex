@@ -1,0 +1,128 @@
+\section{Background and related work}
+\label{sec:background}
+% ============================================================================
+
+\subsection{Computation in superposition}
+
+A network of hidden width $d$ \emph{represents $F\gg d$ features in superposition} if its
+activation $a(x)\in\R^d$ is approximately $\Phi b$ for a feature-encoding matrix
+$\Phi\in\R^{d\times F}$ and a sparse Boolean $b$. Following~\cite{hanni2024superposition},
+features $f_1,\dots,f_F$ are \emph{$\varepsilon$-linearly represented} by $a$ if there is a
+readout $R\in\R^{F\times d}$ with $|r_k\cdot a(x)-f_k(x)|<\varepsilon$ for all $k$ and $x$.
+
+H\"{a}nni et al.\ construct an approximate-linear recursive template for sparse Boolean
+circuits, alternating a targeted superpositional AND layer with an error-correction layer, and
+certify emulation of circuits of width $\Otilde(d^{3/2})$. Adler and
+Shavit~\cite{adler2024superposition} give parameter-description lower bounds and explicit
+constructions for computing in superposition, obtaining a near-quadratic capacity by
+thresholding after each stage. Adler et al.~\cite{adler2025combinatorial} reframe superposition
+combinatorially through feature channel coding, and Kong et al.~\cite{kong2025expand} show
+empirically that reducing inter-feature interference at fixed parameter count improves
+performance. This paper reproves none of these constructions; it identifies the interface-level
+reason the two regimes coexist.
+
+\subsection{Trained toy models of computation in superposition}
+
+A recent empirical line studies whether small trained networks actually compute in
+superposition. Braun et al.~\cite{braun2025apd} introduced the compressed-computation task ---
+a width-$50$ network asked to compute $100$ sparse ReLU features --- as a testbed. Bhagat et
+al.~\cite{bhagat2026cc} argued that the standard $L^2$-trained model largely exploits a mixing
+term rather than genuinely computing in superposition, and Ferreira da Silva and
+Heimersheim~\cite{ferreiradasilva2026l4} showed that training under an $L^4$ loss elicits a
+solution that does compute in superposition, assigning each feature a sparse codeword over
+neurons and decoding it with a pseudoinverse of the encoder --- that is, a linear readout
+interface in the sense studied here. In parallel,
+\cite{ferreiradasilva2026errcorr} report perturbation-based evidence for feature-specific
+error correction in large language models, the mechanism whose certified tolerance drives the
+$d^{3/2}$ compatibility scale of the H\"{a}nni template. This debate is about which decoding
+interface a trained network maintains; the diagnostic proposed here is a direct instrument for
+it, and Section~\ref{sec:res-e5} applies it to exactly the models under dispute.
+
+\subsection{Frame theory, Welch bounds and cross-Gramians}
+\label{sec:frames}
+
+Classical Welch bounds~\cite{welch1974lower} lower-bound the correlations of overcomplete
+unit-norm systems; the maximum-correlation form we use,
+$\max_{i\neq j}|\langle\phi_i,\phi_j\rangle|\ge\sqrt{(F-d)/(d(F-1))}$, appears for instance as
+Theorem~2.3 of Strohmer and Heath~\cite{strohmer2003grassmannian} in the study of Grassmannian
+frames. Waldron~\cite{waldron2003generalized} showed that generalised Welch-bound-equality
+sequences are exactly tight frames, and Datta, Howard and Cochran~\cite{datta2012geometry}
+derived the entire family of higher-order Welch bounds from a geometric rank/Grammian
+argument, of which the rank--trace computation behind Theorem~\ref{thm:floor} is the
+first-order instance; see also~\cite{klappenecker2005mub} for the design-theoretic view. For
+pairs of sequences, Aceska and Kaczanowski~\cite{aceska2022crossframe} introduced the
+cross-frame potential, and Christensen, Datta and Kim~\cite{christensen2020welch} proved
+Welch-type bounds for the maximum coherence of dual frame pairs, characterising equality via
+equiangular tight frames.
+
+Theorem~\ref{thm:floor} sits in this lineage: it is a unit-diagonal cross-Gramian formulation
+assuming only $\operatorname{rank}(M)\le d$ and $M_{ii}=1$ --- in particular, no duality
+relation between the two sequences, which, as finite sequences, are of course frames for their
+spans. We include its short rank--trace proof only to keep the paper self-contained; the proof
+mechanism is standard in this literature, cf.~\cite{datta2012geometry}. The contribution here
+is the application to readout interfaces, the gain-normalised form
+(Corollary~\ref{cor:calibfree}), and the diagnostic built on top of them.
+
+\subsection{Compressed sensing and sparse recovery}
+
+The threshold-recovery results used below are standard coherence-based and random-dictionary
+support-recovery arguments. Their role is to make explicit a distinction relevant to neural
+computation: small-error linear readout requires uniformly small coordinate error, whereas
+threshold recovery only requires the aggregate interference from the active support to remain
+below a margin.
+
+The collision frontier of Section~\ref{sec:frontier} sits in this neighbourhood and we place it
+carefully, because two established literatures ask adjacent questions.
+
+The first is group testing. Recovering a sparse Boolean $b$ from $\Phi b$ is exactly
+\emph{quantitative} group testing when $\Phi$ is a real measurement matrix, and the combinatorial
+theory of superimposed, disjunct and separable codes descends from Kautz and
+Singleton~\cite{kautz1964superimposed}. That theory asks how many tests suffice to identify the
+\emph{whole} support, by \emph{any} decoder, usually for a matrix to be designed. We ask something
+weaker and more specific: for a matrix we are given, and one coordinate of it, is that coordinate's
+presence decidable by an \emph{affine} function of $\Phi b$? The gap is real in both directions.
+A matrix can be identifiable in the group-testing sense while $\kappa_i\le s$, because
+$\kappa_i\le s$ only requires a collision between \emph{convex combinations} of admissible states,
+not an exact coincidence of two integer ones. Conversely $\kappa_i>s$ certifies a linear probe
+with a margin, which identifiability alone does not supply. The restriction to affine decoders is
+not a weakness of the analysis but the object of interest, since linear probing is how features
+are read in practice.
+
+The second is the null space property. Writing $z'$ for $z$ extended by zero at coordinate $i$,
+the constraint $\Phi_{-i}z=\phi_i$ says precisely that $z'-e_i\in\ker\Phi$, so $\kappa_i$ is a
+statement about kernel vectors normalised at one coordinate --- the same geometry as the null
+space property and as the neighbourliness of randomly projected
+polytopes~\cite{donoho2005neighborliness}. Two differences matter. The null space property is
+quantified over all supports and certifies recovery by $\ell_1$ minimisation, a nonlinear decoder;
+$\kappa_i$ is per-coordinate and certifies an affine one. And the null space property is hard to
+verify, which is why the literature tests it by semidefinite
+relaxation~\cite{daspremont2011nullspace}, whereas $\kappa_i$ is the exact value of one linear
+programme --- a consequence of asking the weaker, one-coordinate question rather than of a better
+algorithm. The box $\norm{z}_\infty\le1/\alpha$, which comes from bounded activations and has no
+counterpart in the null space property, turns out to bind rarely, so for most features the
+frontier is a minimum-$\ell_1$-representation quantity and the tools of that literature apply
+directly.
+
+\subsection{Sparse autoencoders}
+
+Sparse autoencoder work scales dictionary learning to millions of
+latents~\cite{cunningham2023sparse,gao2024scaling,lieberum2024gemma} and studies
+reconstruction--sparsity trade-offs~\cite{michaud2025manifolds}. Such results motivate the
+importance of overcomplete internal representations, but dictionary size is a reconstructive
+quantity and does not measure the recursive Boolean interface capacities studied here. This
+paper answers one of the open questions listed by Sharkey et al.~\cite{sharkey2025open}
+concerning what theoretical insight can be gleaned from computation performed natively in
+superposition.
+
+\paragraph{Delineation from a prior sparse-autoencoder study.} One prior paper measures
+released and retrained sparse autoencoders with an overlapping toolset and a different
+question. \citet{borobia2026pruning} train TopK autoencoders on weight-pruned language models and
+ask which features survive compression, using reconstruction and feature-level survival statistics as
+the instrument. This paper trains no autoencoder, prunes nothing, and measures no reconstruction. It
+takes decoder matrices as given --- including ones that paper never examined, such as the
+randomly-initialised control of Section~\ref{sec:dictionaries} --- and computes a different quantity:
+the cross-talk a linear reader of that decoder must accept, its exact decomposition into leverage
+dispersion, and the sparsity at which affine recovery must fail. No model, dictionary, measurement or
+result is shared between the two, and neither paper's conclusions depend on the other's.
+
+% ============================================================================

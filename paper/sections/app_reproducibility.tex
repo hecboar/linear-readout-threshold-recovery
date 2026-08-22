@@ -1,0 +1,40 @@
+\section{Reproducibility statement}
+\label{app:reproducibility}
+
+Everything below is anonymised for review. An anonymised archive of the repository accompanies this
+submission; the public repository, DOI and citation metadata are supplied at camera-ready.
+
+\paragraph{What is released.} The code that produced every number, the configuration of every
+campaign, the raw JSON result of every model, the trained weights of all 400 networks in the
+controlled campaigns, and the sources of this manuscript. Nothing in the paper is computed by a
+script that is not released, and no measured number in the text is typed by hand: every one is a
+macro generated from \code{results/} by \code{scripts/make\_numbers.py}, and
+\code{scripts/check\_manuscript\_numbers.py} regenerates every generated table and every macro
+definition from \code{results/} and exits non-zero on any mismatch. It is run as part of the
+release check and its failure modes are tested: injecting a wrong literal into a generated table, or
+an undefined macro of a generated family into the source, both make it fail.
+
+\paragraph{Provenance.} Every campaign from Section~\ref{sec:campaigns} onward writes a run record
+carrying the exact command line, the seeds, the resolved configuration, the environment, the
+wall-clock duration, the exit status, and the commit hash together with the working-tree status of the
+code that produced it --- with the list of modified files when the tree was dirty. The earlier
+campaigns of Appendix~\ref{app:earlier} predate that policy and cite the repository's initial commit,
+which is stated there rather than hidden. Every third-party dictionary analysed in
+Section~\ref{sec:dictionaries} is recorded with the SHA-256 of the checkpoint file actually read.
+
+\paragraph{Cost.} The full pipeline is reproducible on commodity hardware; the released cost table
+(Appendix~\ref{app:cost}) gives the measured wall-clock and device of every campaign. The dictionary
+measurements of Section~\ref{sec:dictionaries} cost seconds per dictionary and need no accelerator,
+which is why a reader can check the paper's main empirical claim without rerunning any training.
+
+\paragraph{What a reader should be able to check independently.} Three things, in increasing cost.
+The identity of Proposition~\ref{prop:leverage} against the implementation, from the released
+\code{results/sae/derived/sae\_axes.json} alone. The dictionary measurements, by downloading the
+listed checkpoints and running one script. And the controlled campaigns, either from the released
+weights --- which is how three of the analyses in Section~\ref{sec:campaigns} were computed, months
+after the runs --- or by retraining from the recorded seeds.
+
+\paragraph{Known defects.} A register of every defect found during this work, what each invalidated
+and what was done about it, is released with the code. The manuscript-level consequences are in
+Appendix~\ref{app:withdrawn}. Two of the entries invalidated readings that appear in an earlier
+preprint of this work, which will carry an explicit erratum rather than a silent replacement.

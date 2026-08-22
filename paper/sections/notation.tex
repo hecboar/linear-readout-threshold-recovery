@@ -1,0 +1,52 @@
+\section{Problem setting and notation}
+\label{sec:setting}
+% ============================================================================
+
+We write $\Otilde(\cdot),\Omegatilde(\cdot),\Thetatilde(\cdot)$ to hide factors polynomial in
+$\log d$. Table~\ref{tab:notation} fixes the notation used throughout.
+
+\begin{table}[t]
+\centering
+\caption{Notation.}
+\label{tab:notation}
+\small
+\begin{tabular}{ll}
+\toprule
+symbol & meaning \\
+\midrule
+$d$ & activation width (number of neurons) \\
+$F$ & number of features, $F>d$ \\
+$\Phi\in\R^{d\times F}$ & code; column $\phi_i$ is the direction of feature $i$ \\
+$G\in\R^{F\times d}$ & linear readout \\
+$M=G\Phi\in\R^{F\times F}$ & readout interface, $\operatorname{rank}(M)\le d$ \\
+$D=\operatorname{diag}(M_{11},\dots,M_{FF})$ & diagonal gains; $D^{-1}M$ is the calibrated interface \\
+$A=M-I_F$ & cross-talk matrix (zero diagonal after calibration) \\
+$b\in\{0,1\}^F$ & sparse Boolean state; $S=\operatorname{supp}(b)$, $s=|S|$ \\
+$\mu=\max_{i\ne j}|\langle\phi_i,\phi_j\rangle|$ & coherence of a unit-norm code \\
+$W(F,d)=\frac{F-d}{d(F-1)}$ & mean-square Welch-type floor \\
+$\widehat W$ & measured mean squared off-diagonal cross-talk \\
+$\theta$ & decoding threshold (default $1/2$) \\
+$p_{\mathrm{rec}}(s)$ & probability of exact threshold recovery at sparsity $s$ \\
+$s_{95}$ & largest $s$ such that $p_{\mathrm{rec}}\ge0.95$ for \emph{every} tested $s'\le s$ \\
+$\Sigma=\Phi\Phi^{\top}$ & frame operator (invertible iff $\Phi$ has full row rank) \\
+$h_i=\phi_i^{\top}\Sigma^{-1}\phi_i$ & leverage of feature $i$; $\sum_ih_i=d$ \\
+$W_{\star}(\Phi)$ & the code's own floor: least mean-square cross-talk it admits \\
+$R_{\mathrm{geom}},R_{\mathrm{readout}}$ & $W_{\star}(\Phi)/W(F,d)$ and $W(G,\Phi)/W_{\star}(\Phi)$ \\
+$\Phi_{-i}$ & $\Phi$ with column $i$ deleted \\
+$\alpha\in(0,1]$ & smallest detectable active amplitude \\
+$\kappa_i(\alpha)$ & collision frontier of feature $i$; separable at $s$ iff $\kappa_i>s$ \\
+$\delta_i(s),\gamma_i(s)$ & distance between the two hulls, and the margin $\delta_i(s)/2$ \\
+$m,m'$ & feature counts \emph{inside imported statements}; $m'$ plays the role of $F$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two decoding questions are compared throughout. \emph{Analog reconstruction} asks that the
+scores $z=Mb$ approximate $b$ in a norm; \emph{support recovery} asks only that
+$\mathbf 1\{z_i\ge\theta\}=b_i$ for every $i$. The first is a statement about magnitudes and is
+never exactly satisfiable when $F>d$; the second is a statement about a decision boundary and
+can be satisfied exactly --- by a thresholded linear score as much as by anything else, which
+is why that rule is measured here too rather than treating support recovery as the preserve of
+nonlinearity. Everything below is an elaboration of that asymmetry.
+
+% ============================================================================

@@ -1,0 +1,45 @@
+\subsection{What the decoder comparison can and cannot mean}
+\label{sec:probes}
+
+The comparison in the previous subsections is easy to over-read, and the direction of the
+over-reading is the flattering one, so we state the ceiling on it explicitly.
+
+\paragraph{The probe class contains the network's own decoder.} The affine probe is fitted on the
+post-ReLU state $z=\mathrm{ReLU}(\Phi b)$ with a design matrix that appends an intercept and nothing
+else (\code{\_design} in \code{src/lrtr/probes.py}), so its hypothesis class is every affine map of
+$z$ --- which includes $W_{\mathrm{out}}$, the map the network's own output layer applies, together
+with the network's threshold. It follows that there \emph{exists} a probe configuration attaining the
+network's score exactly, for every model in every cell. Whenever the network scores higher, what the
+gap measures is that our fitting procedure did not find that map: a fixed ridge grid, a fixed number
+of steps, and $8{,}192$ training states. It is not a statement that an affine readout cannot
+represent what the network computes, because it demonstrably can.
+
+This is why the $L^4$ differences of \PrimLfourHundredPostDiff{} to \ScPrimDiff{} are reported and
+nothing is built on them. They are evidence about supervised recovery under a stated budget. A
+reader who wants the claim ``the network's nonlinearity buys expressive power'' will not find it
+here, and should not: the experiment as designed cannot supply it.
+
+\paragraph{What the comparison does support.} The informative content is not any single cell but the
+ordering across code families, because the protocol's asymmetries are held fixed while the code
+varies. Both sides read the same state, both get one validation-selected global threshold, both are
+scored on the same held-out supports. Under that fixed protocol the sign of the difference is set by
+how the code was produced: positive and growing with width for $L^4$, exactly zero for $L^2$, and
+negative by one to two and a half levels for an untrained code. A protocol that systematically
+favoured the network could not produce a two-and-a-half-level loss on any arm.
+
+So the comparison is usable as a property of the code and not as a claim about decoders. Read that
+way it says something we did not expect: on an untrained code, a fitted affine probe recovers
+supports the network's own thresholded readout misses by a wide margin, and on a code trained under
+$L^4$ it does not. Training does not only improve the geometry the code presents
+(Section~\ref{sec:res-primary}); it also brings the network's own readout close to the best one a
+supervised fit of the same class will find, which is a form of the co-adaptation E8 isolates.
+
+\paragraph{The check that would settle it, and why it is not here.} One experiment would decide
+whether the residual $L^4$ gap is a fitting artefact: initialise the probe at the network's own
+$(W_{\mathrm{out}},\theta)$ and refit. If the fitted probe then matches or exceeds the network, the
+gap was optimisation; if the fit moves away and scores worse, the objective the probe minimises is
+not aligned with exact support recovery, which would be a different and more interesting statement.
+We did not run it, for the honest reason that we identified the confound after the campaigns were
+complete and chose to report the ceiling rather than spend the remaining budget widening a result
+the paper does not lean on. It is the first thing we would run next, and it costs a single pass over
+saved weights, which are released.

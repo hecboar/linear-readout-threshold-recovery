@@ -13,7 +13,8 @@ import re
 import sys
 from pathlib import Path
 
-MAIN = Path(__file__).resolve().parents[1] / "paper" / "main.tex"
+PAPER = Path(__file__).resolve().parents[1] / "paper"
+MAIN = PAPER / "tmlr.tex"
 
 LABEL = re.compile(r"\\label\{([^}]+)\}")
 REF = re.compile(r"\\(?:ref|eqref|autoref)\{([^}]+)\}")
@@ -21,7 +22,11 @@ FLOAT_PREFIXES = ("fig:", "tab:", "alg:")
 
 
 def main() -> int:
+    # The manuscript is split across sections/, so every input has to be read: a float
+    # defined in one file and cited in another is the normal case now, not an error.
     text = MAIN.read_text(encoding="utf-8")
+    for path in sorted((PAPER / "sections").glob("*.tex")):
+        text += path.read_text(encoding="utf-8")
     labels = set(LABEL.findall(text))
     refs = set(REF.findall(text))
 

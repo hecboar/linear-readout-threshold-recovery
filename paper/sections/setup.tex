@@ -1,0 +1,69 @@
+\section{Experimental setup}
+\label{sec:setup}
+% ============================================================================
+
+Six campaigns validate the diagnostic, from controlled random codes to a trained network.
+E1--E3 establish that the implementation measures what the theory describes; E4 tests whether
+\emph{learned} codes attain the floor; E5 applies the diagnostic to trained models; E6 tests
+how the recovery threshold scales.
+
+\paragraph{Environment.} All experiments run on CPU only, with no CUDA device.
+Python~\EnvPython, NumPy~\EnvNumpy, SciPy~\EnvScipy, PyTorch~\EnvTorch{} on a
+\EnvCpuCount-core machine; thread counts are pinned and two cores are reserved for the system.
+Every campaign writes a run record with the exact command, seeds, configuration, environment,
+wall-clock duration and exit status. Total measured compute is \DurTotalMin{} minutes
+(Table~\ref{tab:cost}).
+
+\paragraph{E1 --- floor on random codes.} $d\in\{16,32,64,128\}$, $F/d\in\{2,4,8,16\}$,
+\EoneTrials{} independent codes per configuration, three readouts (tied, pseudoinverse and an
+i.i.d.\ Gaussian readout as an adversarial control), and a harmonic tight frame at each
+$(d,F)$ as the equality witness.
+
+\paragraph{E2 --- recovery and separation at $F=d^2$.} $d\in\{64,128,256\}$,
+\EtwoTrials{} trials per configuration, thresholds
+$\theta\in\{0.4,0.5,0.6\}$ (\EtwoThetaCount{} values) as a sensitivity ablation.
+
+\paragraph{E3 --- average linear energy.} $d\in\{32,64,128\}$ at $F=8d$, sparsities
+$s\in\{1,2,4,8,16,32,64,128\}$, energies computed in closed form under both the Bernoulli and
+the uniform-support model, with a \EthreeMcTrials-draw Monte Carlo cross-check of the closed
+form.
+
+\paragraph{E4 --- optimised codes.} $d\in\{16,32,64\}$, $F/d\in\{2,4,8,16\}$
+(\EfourConfigs{} configurations), Adam at learning rate $10^{-2}$ for \EfourSteps{} steps,
+\EfourRuns{} runs in total across four variants: \emph{free} ($G$ and $\Phi$ independent),
+\emph{tied} ($G=\Phi^{\top}$), \emph{smooth-max}, and the \emph{uncalibrated} ablation in
+which the diagonal constraint is removed.
+
+\paragraph{E5 --- trained toy model.} The compressed-computation task
+of~\cite{braun2025apd}: $d=\EfiveD$, $F=\EfiveF$, inputs with each coordinate active with
+probability $p\in\{0.01,0.02\}$ and value $\sim U[-1,1]$, target $\mathrm{ReLU}(x)$,
+$\hat y=W_{\mathrm{out}}\mathrm{ReLU}(W_{\mathrm{in}}x)$ trained by Adam for \EfiveSteps{} steps
+under an $L^2$ and an $L^4$ loss, \EfiveSeeds{} seeds each, plus an i.i.d.\ random-code control
+at the same $(d,F)$. Diagnosis uses \EfiveEvalTrials{} evaluation trials per sparsity and three
+linear readouts, including a least-squares readout fitted on the evaluation distribution ---
+deliberately the strongest linear baseline we can give the competing criterion.
+
+\paragraph{E6 --- scaling.} $d\in\{128,256,512,1024\}$ at $F=d^2$, up to
+$F=\EsixFmax$ features. The code is never materialised: each trial regenerates it in blocks
+from a counted seed sequence and evaluates every sparsity in one pass using nested supports.
+
+\paragraph{Statistics.} Recovery probabilities carry Wilson $95\%$ intervals. Group
+comparisons in E5 use a two-sided exact Mann--Whitney $U$ test with Cliff's $\delta$ as effect
+size. The scaling law in E6 is a one-parameter least-squares fit of $s_{95}=c\,d/\ln d$, the
+shape being predicted by the theory and only the constant free; with \EsixFitPoints{} points
+the fit is reported as a consistency check, not as an estimate with inferential force.
+
+\paragraph{Reproducibility.} Every figure and table in this paper is generated from the raw
+result files by a script, and every measured number in the text is a macro emitted from those
+same files; a checker regenerates the macros, compares them against the file on disk, and fails
+the build on any mismatch, on a macro the text uses but does not define, and on a macro defined
+but never used. We are explicit about the limit of that guarantee: it certifies that the
+\emph{values} match the saved results, not that the sentences around them draw the right
+conclusion. Prose claims still need a reader. Commands are in Appendix~\ref{app:repro}.
+
+\paragraph{A note on E6's linear side.} To keep the cost of the largest widths manageable, the
+exact linear-energy statistic is computed on every fifth trial rather than every trial, so its
+averages rest on fewer samples than the recovery curves (\EsixEnergyTrialsTop{} trials against
+\EsixOneZeroTwoFourTrials{} at $d=\EsixDmax$). The recovery probabilities use the full budget.
+
+% ============================================================================

@@ -576,3 +576,59 @@ true `argmin` in 2 of 10 trained models, with the true one at leverage rank 131 
 **Count.** This is the fifth limitation this project has had to retire or rewrite because later work
 overtook it, and the fifth claim withdrawn or reframed after measurement. Both counts are worth
 keeping visible: they are the argument for the run-record discipline, not an embarrassment.
+
+---
+
+## D21 — Target TMLR, and what the port cost us
+
+**Decided** 2026-08-22. The manuscript is rewritten for TMLR (`paper/tmlr.tex`), and the
+`elsarticle` version is retired to `paper/legacy/main_elsevier.tex` rather than deleted.
+
+**Why TMLR.** Its two acceptance criteria are that the claims are supported by the evidence and that
+some subset of readers would be interested. Neither asks for novelty of mechanism, which is the
+weakest part of this work: the leverage identity is elementary and we claim no priority for it. What
+we have instead is a measurement no one appears to have made — that every released sparse-autoencoder
+dictionary we could find is worse conditioned for linear readout than a random code of its own shape,
+with a matched randomly-initialised control locating the cause — and a record of how hard the claims
+were pushed. Both are things TMLR's criteria reward and a novelty-first venue does not.
+
+**What the port changed in substance, not only in format.** Three things, all of which made the paper
+weaker before they made it more defensible.
+
+1. *The dictionaries became the headline and the toy campaigns became the intervention.* Previously
+   the campaigns led and the dictionaries were a late section. The campaigns cannot establish
+   anything about a deployed model, so leading with them invited the reviewer's first objection.
+   Leading with 40+ released decoders and demoting 400 trained networks to "the part where we control
+   the variables" is the honest ordering.
+
+2. *The decoder comparison was demoted to a subsection with a stated ceiling*
+   (`sec:probes`). The probe's hypothesis class contains the network's own output layer, because
+   `_design` appends only an intercept. So whenever the network scores higher, the gap bounds our
+   fitting procedure and says nothing about what an affine map can express. This was identified after
+   the campaigns were complete. The result is reported and nothing is built on it. The experiment
+   that would settle it — refit the probe warm-started at the network's own `(W_out, theta)` — is
+   named in the text and not run, which is a stated gap rather than a silent one.
+
+3. *Stage B and the untrained arm entered the manuscript.* Neither was reported before. The untrained
+   arm turned out to be the answer to the obvious objection against the whole comparison: under the
+   identical protocol, an untrained code's own readout loses to the fitted probe by 1.0 to 2.6
+   sparsity levels, unanimously, at all four widths. A protocol rigged for the network could not
+   produce that. It is now the paragraph the decoder subsection turns on, and it was sitting unused
+   in `results/` the whole time.
+
+**Two readings withdrawn, and where.** The KD6 refit killed the claim that the two pre-registered
+estimands disagree — they agree at all four widths — and the claim that a pre-ReLU probe beats the
+network by a full sparsity level, which is now within a quarter of a level on trained codes and
+reverses sign at `d=400`. Both are recorded in `paper/sections/app_withdrawn.tex`, an appendix of the
+paper rather than a note in this repository. That appendix now carries all six withdrawals in one
+place, with the cause of each, because a reader weighing the surviving claims is entitled to the rate
+at which we found our own errors and the direction they pointed.
+
+**Count.** Seven claims withdrawn or reframed after measurement, five limitations retired or
+rewritten. Two of the seven were not defects in code but readings chosen after the fact for being the
+stronger claim, which no additional test would have caught. That distinction is the reason
+`app_withdrawn.tex` groups them by cause rather than listing them.
+
+**Not decided here.** The repository name and public URL, whether `internal/` ships in the release,
+and whether the 204 MB `.git` history is acceptable for a public push. All three are the principal
+investigator's calls and all three are blockers for the anonymised archive TMLR wants attached.

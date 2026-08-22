@@ -1,0 +1,238 @@
+\section{The linear-readout floor}
+\label{sec:floor}
+% ============================================================================
+
+\begin{theorem}[Unit-diagonal cross-Gramian Welch floor]
+\label{thm:floor}
+Let $F\ge2$, let $\Phi\in\R^{d\times F}$ and $G\in\R^{F\times d}$, and set $M=G\Phi$. Suppose
+$M_{ii}=1$ for all $i\in[F]$. Then
+\begin{equation}
+  \sum_{i\neq j}|M_{ij}|^2\;\ge\;\frac{F(F-d)}{d}.
+  \label{eq:floorsum}
+\end{equation}
+Consequently, if $F>d$,
+\begin{equation}
+  \frac{1}{F(F-1)}\sum_{i\neq j}|M_{ij}|^2\;\ge\;W(F,d):=\frac{F-d}{d(F-1)},
+  \label{eq:floor}
+\end{equation}
+and hence $\max_{i\neq j}|M_{ij}|\ge\sqrt{W(F,d)}$. In particular, if $F/d\to\infty$ then
+$\max_{i\neq j}|M_{ij}|\ge(1-o(1))\,d^{-1/2}$.
+\end{theorem}
+
+\begin{proof}
+Since $M=G\Phi$ with $G\in\R^{F\times d}$ and $\Phi\in\R^{d\times F}$ we have
+$\operatorname{rank}(M)\le d$, and the unit diagonal gives $\operatorname{tr}(M)=F$. For any
+matrix of rank at most $d$, $|\operatorname{tr}(M)|\le\nucnorm{M}\le\sqrt d\,\norm{M}_F$
+(Appendix~\ref{app:nuclear}), so $F^2\le d\,\norm{M}_F^2$. Expanding
+$\norm{M}_F^2=F+\sum_{i\neq j}|M_{ij}|^2$ gives~\eqref{eq:floorsum}, and dividing by $F(F-1)$
+gives~\eqref{eq:floor}. For the maximum, note that
+$\max_{i\neq j}|M_{ij}|^2\ge\frac{1}{F(F-1)}\sum_{i\neq j}|M_{ij}|^2$, and take square roots.
+\end{proof}
+
+The argument is the standard rank--trace mechanism, cf.~\cite{datta2012geometry}; we give it
+in full only for self-containedness. The next corollary is what the diagnostic actually uses,
+because it removes the normalisation hypothesis.
+
+\begin{corollary}[Gain-normalised form]
+\label{cor:calibfree}
+Let $F>d$ and let $M=G\Phi$ satisfy $\operatorname{rank}(M)\le d$ and $M_{ii}\neq0$ for all
+$i$. Then
+\[
+  \max_{i\neq j}\frac{|M_{ij}|}{|M_{ii}|}\;\ge\;\sqrt{\frac{F-d}{d(F-1)}}.
+\]
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{thm:floor} to $D^{-1}M$ with $D=\operatorname{diag}(M_{11},\dots,M_{FF})$:
+this matrix has rank at most $d$, unit diagonal, and entries $M_{ij}/M_{ii}$.
+\end{proof}
+
+\begin{remark}[Why the gain normalisation is essential]
+\label{rem:calib}
+Without a diagonal normalisation the absolute off-diagonal entries of $G\Phi$ can be made
+arbitrarily small by shrinking $G$, and the floor appears to fail. A concrete instance: take
+$\Phi$ to be the three unit vectors at $120^{\circ}$ in $\R^2$ --- an equiangular tight frame
+--- and $G=D\Phi^{\top}$ with $D=\operatorname{diag}(1/10,1/20,1/20)$. Then $G\Phi$ has
+diagonal $(1/10,1/20,1/20)$ and maximum off-diagonal entry $1/20$, ten times \emph{below}
+$\sqrt{(F-d)/(d(F-1))}=1/2$. There is no contradiction: this interface reads out its own
+coordinates with gains far below one, and after recalibrating each row to unit gain the
+maximum off-diagonal entry becomes exactly $1/2$ --- the floor, attained with equality.
+Corollary~\ref{cor:calibfree} isolates the scale-invariant content: what is bounded below is
+the interference-to-gain ratio. This example is verified in the test suite, and
+Section~\ref{sec:res-e4} shows that a gradient optimiser left free of the constraint exploits
+exactly this degree of freedom.
+\end{remark}
+
+\begin{proposition}[Equality within the tied family]
+\label{prop:tight}
+Let $\Phi\in\R^{d\times F}$ have unit-norm columns and let $G=\Phi^{\top}$, so that
+$M=\Phi^{\top}\Phi$ has unit diagonal. Then $\sum_{i\neq j}|M_{ij}|^2\ge F(F-d)/d$, with
+equality \emph{if and only if} $\Phi\Phi^{\top}=(F/d)I_d$, that is, iff $\Phi$ is a unit-norm
+tight frame.
+\end{proposition}
+
+\begin{proof}
+The diagonal entries are $\norm{\phi_i}^2=1$. By cyclicity,
+$\norm{M}_F^2=\operatorname{tr}((\Phi\Phi^{\top})^2)=\norm{\Sigma}_F^2$ with
+$\Sigma=\Phi\Phi^{\top}\succeq0$ and $\operatorname{tr}\Sigma=F$. Cauchy--Schwarz on the
+eigenvalues of $\Sigma$ gives $\norm{\Sigma}_F^2\ge(\operatorname{tr}\Sigma)^2/d=F^2/d$, with
+equality iff all $d$ eigenvalues coincide, i.e.\ $\Sigma=(F/d)I_d$. Subtracting the diagonal
+contribution $F$ gives the claim.
+\end{proof}
+
+Within this family --- unit-norm columns read out by their own transpose --- equality therefore
+characterises tight frames, consistent
+with~\cite{waldron2003generalized,datta2012geometry}. We stress the scope: it is a statement
+about the tied Gram matrix, not about every rank-$d$ unit-diagonal interface. Other readouts
+attain the same floor under different conditions, and the next proposition identifies the
+condition for the pseudoinverse. Whether learned codes find such configurations is an empirical
+question, answered in Section~\ref{sec:res-e4}.
+
+\begin{proposition}[The pseudoinverse ratio is a leverage statistic]
+\label{prop:leverage}
+Let $\Phi\in\R^{d\times F}$ have full row rank, let $G=\Phi^{+}$, and write
+$P=\Phi^{+}\Phi$ for the orthogonal projector onto the row space, with leverage scores
+$h_i=P_{ii}\in(0,1]$. Then the gain-normalised interface $\widetilde M=D^{-1}P$ satisfies
+\[
+  \sum_{i\neq j}\widetilde M_{ij}^{2}\;=\;\sum_{i=1}^{F}\frac1{h_i}-F ,
+  \qquad\text{so}\qquad
+  r=\frac{d}{F(F-d)}\left(\sum_{i=1}^{F}\frac1{h_i}-F\right).
+\]
+Since $\sum_i h_i=\operatorname{tr}P=d$, Cauchy--Schwarz gives $\sum_i h_i^{-1}\ge F^2/d$ with
+equality iff $h_i=d/F$ for every $i$. Hence $r\ge1$, and $r=1$ exactly when leverage is
+equalised across features.
+\end{proposition}
+
+\begin{proof}
+$P$ is symmetric idempotent, so row $i$ obeys $\sum_j P_{ij}^2=P_{ii}=h_i$ and $D_{ii}=h_i$.
+Dividing row $i$ by $h_i$ and removing the unit diagonal entry leaves
+$(h_i-h_i^2)/h_i^2=h_i^{-1}-1$; summing over $i$ gives the identity. The inequality is
+Cauchy--Schwarz applied to $\sum_i h_i\cdot\sum_i h_i^{-1}\ge F^2$, and dividing by $F(F-1)$
+and by $W(F,d)=(F-d)/(d(F-1))$ turns it into $r\ge1$.
+\end{proof}
+
+This is worth stating because it deflates a natural over-reading of a ratio close to one under
+the pseudoinverse readout. Attaining the floor with $G=\Phi^{+}$ says that the code spreads its
+features evenly over the row space --- nothing more. It is a statement about the geometry of the
+code, not about whether the code is a good representation for any task; a code can have
+perfectly equalised leverage and still be useless. We use this to scope the empirical claims of
+Section~\ref{sec:res-e5}.
+
+\subsection{The floor of the code itself}
+\label{sec:codefloor}
+
+Theorem~\ref{thm:floor} bounds every rank-$d$ unit-diagonal interface, so it is a statement
+about the \emph{ensemble} of codes: no particular $\Phi$ need be able to attain it. That makes a
+measured ratio hard to read. If a trained code sits $0.06\%$ above $W(F,d)$, is the readout
+excellent, or is the floor simply unreachable for this code and the readout merely adequate? The
+question is answered by computing the floor of the code itself, which is available in closed
+form.
+
+\begin{theorem}[Code-specific analog optimum]
+\label{thm:codefloor}
+Let $\Phi\in\R^{d\times F}$ have full row rank, let $\Sigma=\Phi\Phi^{\top}\succ0$ be its frame
+operator, and let $h_i=\phi_i^{\top}\Sigma^{-1}\phi_i$ be the leverage of feature $i$. Then for
+every $i$
+\begin{equation}
+  \min_{g\in\R^d}\Big\{\sum_{j\neq i}(g^{\top}\phi_j)^2 \;:\; g^{\top}\phi_i=1\Big\}
+  \;=\;\frac{1}{h_i}-1,
+  \label{eq:capon}
+\end{equation}
+attained uniquely at $g_i^{\star}=\Sigma^{-1}\phi_i/h_i$. Stacking the $F$ minimisers as rows gives
+$G^{\star}=D_h^{-1}\Phi^{+}$ with $D_h=\operatorname{diag}(h_1,\dots,h_F)$: the row-wise optimum is
+the Moore--Penrose pseudoinverse \emph{after} gain calibration, and coincides with $\Phi^{+}$ itself
+only when every $h_i=1$. Consequently the smallest mean-square off-diagonal cross-talk this code
+admits is
+\begin{equation}
+  W_{\star}(\Phi)\;:=\;\frac{1}{F(F-1)}\sum_{i=1}^{F}\Big(\frac1{h_i}-1\Big)
+  \;=\;\frac{\sum_i h_i^{-1}-F}{F(F-1)}\;\ge\;W(F,d),
+  \label{eq:codefloor}
+\end{equation}
+with equality if and only if $h_i=d/F$ for every $i$.
+\end{theorem}
+
+\begin{proof}
+Since $\sum_{j}(g^{\top}\phi_j)^2=g^{\top}\Sigma g$, the constraint $g^{\top}\phi_i=1$ turns the
+objective into $g^{\top}\Sigma g-1$. Minimising a positive-definite quadratic under one linear
+equality is classical: the Lagrange conditions give $g=\lambda\Sigma^{-1}\phi_i$, the constraint
+fixes $\lambda=1/h_i$, and the value is $\phi_i^{\top}\Sigma^{-1}\phi_i/h_i^2=1/h_i$. Subtracting
+the constrained direction's contribution, which is exactly $1$, gives~\eqref{eq:capon}; strict
+convexity gives uniqueness. Summing over $i$ and dividing by $F(F-1)$
+gives~\eqref{eq:codefloor}. Finally $\sum_ih_i=\operatorname{tr}(\Sigma^{-1}\Phi\Phi^{\top})=d$,
+so Cauchy--Schwarz gives $\sum_ih_i^{-1}\ge F^2/d$ with equality iff the $h_i$ are all equal,
+and $(F^2/d-F)/(F(F-1))=W(F,d)$.
+\end{proof}
+
+\begin{remark}[Provenance]
+\label{rem:capon}
+Equation~\eqref{eq:capon} is the minimum-variance distortionless-response (Capon) beamformer with
+the frame operator in place of a covariance~\cite{capon1969}, and $g_i^{\star}$ is the canonical
+dual frame vector rescaled to unit gain; both are classical. We claim no
+novelty in the optimisation. What the diagnostic uses is the reading of $h_i$ as a leverage
+score, the resulting per-code floor~\eqref{eq:codefloor}, and the exact attribution of the gap
+in Proposition~\ref{prop:excess}.
+\end{remark}
+
+\begin{proposition}[The excess is leverage dispersion, exactly]
+\label{prop:excess}
+With $c=d/F$ the mean leverage,
+\[
+  \sum_{i=1}^{F}\frac1{h_i}-\frac{F^2}{d}\;=\;\sum_{i=1}^{F}\frac{(h_i-c)^2}{c^{2}h_i}\;\ge\;0 .
+\]
+Hence $W_{\star}(\Phi)$ exceeds $W(F,d)$ by a weighted dispersion of the leverage scores, which
+vanishes precisely when leverage is uniform.
+\end{proposition}
+
+\begin{proof}
+Expand the right-hand side: $c^{-2}\sum_i(h_i^2-2ch_i+c^2)/h_i
+=c^{-2}\sum_ih_i-2c^{-1}F+\sum_ih_i^{-1}$. Substituting $\sum_ih_i=d$ and $c=d/F$ turns the
+first two terms into $F^2/d-2F^2/d=-F^2/d$.
+\end{proof}
+
+This separates two questions that a single ratio against $W(F,d)$ conflates. Writing
+$W(G,\Phi)$ for the mean-square off-diagonal cross-talk actually achieved by a readout $G$,
+\begin{equation}
+  \underbrace{\frac{W(G,\Phi)}{W(F,d)}}_{\text{what is usually reported}}
+  \;=\;\underbrace{\frac{W_{\star}(\Phi)}{W(F,d)}}_{R_{\mathrm{geom}}:\ \text{the code}}
+  \times
+  \underbrace{\frac{W(G,\Phi)}{W_{\star}(\Phi)}}_{R_{\mathrm{readout}}:\ \text{the decoder}} ,
+  \label{eq:decomposition}
+\end{equation}
+and the two factors answer different questions. $R_{\mathrm{geom}}$ asks whether the code's
+leverage is spread evenly; $R_{\mathrm{readout}}\ge1$ asks whether the decoder is the best one
+\emph{for that code}. In particular Proposition~\ref{prop:leverage} says that the calibrated
+pseudoinverse has $R_{\mathrm{readout}}=1$ identically, so a published attainment ratio computed
+with $G=\Phi^{+}$ measures $R_{\mathrm{geom}}$ and nothing else. Section~\ref{sec:res-e5} reports
+both factors.
+
+Finally, the analog level reads a state distribution through one object only, which is what lets
+Section~\ref{sec:hierarchy} compare it with the affine level under a single state model.
+
+\begin{proposition}[Distribution-weighted reconstruction error]
+\label{prop:secondmoment}
+Let $M=G\Phi$ have unit diagonal, let $A=M-I_F$, and let the state $b\in\R^F$ be drawn from any
+law with finite second moment $C=\E[bb^{\top}]$. Then
+$\E\norm{Ab}_2^2=\operatorname{tr}(A^{\top}A\,C)$. The analog level therefore depends on the
+state law only through $C$: two laws with the same second moment impose the same reconstruction
+error on every readout.
+\end{proposition}
+
+\begin{proof}
+$\E\norm{Ab}_2^2=\E\operatorname{tr}(A^{\top}Abb^{\top})=\operatorname{tr}(A^{\top}A\,C)$ by
+linearity.
+\end{proof}
+
+\begin{corollary}[No better-than-floor $\varepsilon$-linear readout]
+\label{cor:impossible}
+Let $F>d$ and suppose $G$ satisfies $\norm{G y_i-e_i}_\infty\le\delta$ for singleton states
+$y_i$, with $\delta<1/2$. Then $\delta/(1-\delta)\ge\sqrt{(F-d)/(d(F-1))}$; in particular
+$\delta=\Omega(d^{-1/2})$ when $F/d\to\infty$.
+\end{corollary}
+
+\begin{proof}
+Let $M=G[y_1,\dots,y_F]$. The hypothesis gives $|M_{ii}-1|\le\delta$ and $|M_{ji}|\le\delta$
+for $j\neq i$. Calibrating, $|\widetilde M_{ij}|\le\delta/(1-\delta)$, and
+Theorem~\ref{thm:floor} applies to $\widetilde M$.
+\end{proof}
+
+% ============================================================================

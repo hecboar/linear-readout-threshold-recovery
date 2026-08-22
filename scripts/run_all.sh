@@ -100,9 +100,18 @@ if [ -z "$SMOKE" ]; then
   echo "== derived analysis (CPU, from the committed E7/E8 artefacts) =="
   # Order matters once: all_feature_frontier writes the exact frontier that refresh_native_blocks
   # stamps into the per-cell records.
-  python scripts/all_feature_frontier.py 8       2>&1 | tee "$LOGS/all_feature_frontier.log"
+  for STAGE in e7 e7_stageB e7_stageC; do
+    python scripts/all_feature_frontier.py 8 "$STAGE" \
+        2>&1 | tee "$LOGS/all_feature_frontier_$STAGE.log"
+    # KD6: select_thresholds never scored theta_fixed, so every threshold-dependent probe block
+    # written before 2026-08-14 is suspect. This refits them from the saved W_in -- no retraining --
+    # and must run before primary_comparison, which reads those blocks.
+    python scripts/refresh_probe_blocks.py 8 "$STAGE" \
+        2>&1 | tee "$LOGS/refresh_probe_blocks_$STAGE.log"
+    python scripts/primary_comparison.py "$STAGE" \
+        2>&1 | tee "$LOGS/primary_comparison_$STAGE.log"
+  done
   python scripts/refresh_native_blocks.py        2>&1 | tee "$LOGS/refresh_native.log"
-  python scripts/primary_comparison.py           2>&1 | tee "$LOGS/primary_comparison.log"
   python scripts/native_comparison.py            2>&1 | tee "$LOGS/native_comparison.log"
   python scripts/network_threshold_policies.py   2>&1 | tee "$LOGS/threshold_policies.log"
   python scripts/relu_frontier_gap.py            2>&1 | tee "$LOGS/relu_frontier_gap.log"
@@ -118,6 +127,14 @@ if [ -z "$SMOKE" ]; then
     fi
   fi
 
+  if [ -n "${WITH_SAE:-}" ]; then
+    echo "== released SAE dictionaries (needs network access to download checkpoints) =="
+    python scripts/sae_diagnostic.py             2>&1 | tee "$LOGS/sae_diagnostic.log"
+  else
+    echo "== SAE dictionary analysis skipped: set WITH_SAE=1 to download and re-measure =="
+    echo "   results/sae/derived/sae_axes.json is committed, with the SHA-256 of every checkpoint"
+  fi
+
   echo "== figures, tables and generated numbers =="
   python scripts/make_figures.py
   python scripts/make_tables.py
@@ -127,6 +144,6 @@ if [ -z "$SMOKE" ]; then
   python scripts/check_abstract_length.py
 
   echo "== manuscript =="
-  ( cd paper && latexmk -pdf -interaction=nonstopmode main.tex )
+  ( cd paper && latexmk -pdf -interaction=nonstopmode tmlr.tex )
 fi
 echo "run_all: done"

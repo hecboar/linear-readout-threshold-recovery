@@ -291,25 +291,34 @@ def figure_matched_comparison() -> None:
     untrained code sits as close to the floor as the trained one, so proximity to the floor is not
     evidence of learning.
     """
-    prim = {(c["loss"], c["d"]): c for c in load("e7/derived/primary_comparison.json")["cells"]}
-    per_width = load("e7/raw/e7_stage_A.json")["report"]["per_width"]
+    # E8 has three widths, so the module-level WIDTHS stays as it is; this figure has four.
+    WIDTHS = (50, 100, 200, 400)
+    prim = {}
+    for rel in ("e7/derived/primary_comparison.json",
+                "e7_stageC/derived/primary_comparison.json"):
+        for c in load(rel)["cells"]:
+            prim[(c["loss"], c["d"])] = c
+    per_width = dict(load("e7/raw/e7_stage_A.json")["report"]["per_width"])
+    per_width.update(load("e7_stageC/raw/e7_stage_C.json")["report"]["per_width"])
 
     fig, axes = plt.subplots(1, 3, figsize=(WIDTH_2COL, 2.5))
 
+    # All three code families under the identical matched protocol. The pre-ReLU arm is left out of
+    # the figure on purpose: after the threshold fix it is within a quarter of a level of zero on the
+    # trained codes, so plotting it adds three near-flat lines and no information. The text reports
+    # it, including the one place it is large -- the untrained arm.
     for ax, estimand, ylab, title in (
             (axes[0], "s95", r"network $-$ probe, $s_{95}$", "(a) exact recovery"),
             (axes[1], "auc", r"network $-$ probe, recovery AUC", "(b) recovery AUC")):
-        for loss in ("L4", "L2"):
+        for loss in ("L4", "L2", "random"):
             colour, marker, label = KIND_STYLE[loss]
-            for stage, ls, alpha in (("post_relu", "-", 1.0), ("pre_relu", ":", 0.6)):
-                xs, ys, lo, hi = [], [], [], []
-                for d in WIDTHS:
-                    v = prim[(loss, d)]["network_minus_probe"][stage][estimand]
-                    xs.append(d); ys.append(v["mean"])
-                    lo.append(v["mean"] - v["ci_low"]); hi.append(v["ci_high"] - v["mean"])
-                ax.errorbar(xs, ys, yerr=[lo, hi], color=colour, marker=marker, ls=ls,
-                            alpha=alpha, capsize=2, lw=1.0, ms=3.5,
-                            label=f"{label}, {'post' if stage == 'post_relu' else 'pre'}-ReLU")
+            xs, ys, lo, hi = [], [], [], []
+            for d in WIDTHS:
+                v = prim[(loss, d)]["network_minus_probe"]["post_relu"][estimand]
+                xs.append(d); ys.append(v["mean"])
+                lo.append(v["mean"] - v["ci_low"]); hi.append(v["ci_high"] - v["mean"])
+            ax.errorbar(xs, ys, yerr=[lo, hi], color=colour, marker=marker, ls="-",
+                        capsize=2, lw=1.0, ms=3.5, label=label)
         ax.axhline(0.0, color="k", lw=0.9)
         ax.set_xscale("log", base=2)
         ax.set_xticks(list(WIDTHS)); ax.set_xticklabels([str(d) for d in WIDTHS])

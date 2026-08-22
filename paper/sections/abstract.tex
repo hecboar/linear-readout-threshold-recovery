@@ -1,0 +1,27 @@
+An overcomplete code packs $F$ features into $d<F$ dimensions, so linear readout of one feature picks
+up cross-talk from the others, bounded below by the rank--trace floor $W(F,d)=(F-d)/(d(F-1))$.
+Proximity to this floor is read as evidence of an efficient arrangement. It is not: an i.i.d.\ code
+of the same shape attains the floor at every shape
+and load we measure (\SaeCtlRgeomMin--\SaeCtlRgeomMax{} over \SaeControls{} matched controls), and
+the reason is exact. For the gain-calibrated pseudoinverse the attainment ratio
+is $\frac{d}{F(F-d)}\left(\sum_i h_i^{-1}-F\right)$ with $\sum_i h_i=d$, so it equals one precisely
+when the leverage $h_i$ is equalised across features: distance from the floor \emph{is} leverage
+dispersion.
+
+The floor then separates what training buys from what comes for free. On \SaeDicts{} decoder matrices
+from released sparse autoencoders --- five model families, $d$ from \SaeDMin{} to \SaeDMax{}, loads
+from \SaeLoadMin$\times$ to \SaeLoadMax$\times$ --- all \SaeDictsAboveControl{} sit \emph{above}
+their matched control (\SaeDictRgeomMin--\SaeDictRgeomMax): a random code of the same shape is better
+conditioned for linear readout than any dictionary we measured. Autoencoders trained by the same
+recipe on a \emph{randomly initialised} copy of the same model return to the floor
+(\SaeRandInitRgeomMin--\SaeRandInitRgeomMax) in all \SaePairedLayers{} paired layers, so the excess
+reflects what the model learned rather than the act of fitting an autoencoder. Under controlled
+conditions the loss decides whether an interface exists at all --- $L^2$ reaches
+$R_{\mathrm{geom}}=\SALtwoFiftyRgeom$ to \ScLtwoRgeom{} with its frontier collapsed to $1$, against
+$\SALfourTwoHundredRgeom$ for $L^4$ --- and that frontier follows a rate we registered before the
+widest run (\ScRegistered{} predicted, \ScMeasured{} measured), with an advantage over an untrained
+code that narrows as width grows.
+
+Two limits are stated rather than implied: frontier statements are worst cases, not typical-case
+claims; and because the probe class contains the network's own decoder, our decoder
+comparison bounds supervised fitting rather than affine expressiveness.

@@ -1,0 +1,303 @@
+\section{The Interface Diagnostic}
+\label{sec:method}
+% ============================================================================
+
+\subsection{Problem statement}
+
+\begin{problem}[Interface diagnosis]
+\label{prob:main}
+\textbf{Input:} a code $\Phi\in\R^{d\times F}$ with $F>d$ (or a trained network from which an
+effective code is read off); a readout family $\mathcal G$; a sparse-state model, here
+uniformly random supports of size $s$ drawn from a grid $\mathcal S$; a threshold $\theta$; a
+trial budget $T$; a confidence level $1-\alpha$.
+
+\textbf{Output:} (i) the attainment ratio $r=\widehat W/W(F,d)\ge1$ and the maximum-form ratio
+$r_{\max}$, together with its factorisation $R_{\mathrm{geom}}\times R_{\mathrm{readout}}$
+against the code's own floor (Section~\ref{sec:codefloor}); (ii) for each $s\in\mathcal S$, the
+empirical $p_{\mathrm{rec}}(s)$ with a Wilson interval and the exact per-coordinate RMS error
+$\rho_{\mathrm{lin}}(s)$ of the calibrated linear interface; (iii) the criterion-separation
+witness $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$; (iv) for each feature in a chosen subset, the
+collision frontier $\kappa_i$ and hence the largest sparsity at which any affine probe can
+detect that feature (Algorithm~\ref{alg:frontier}).
+\end{problem}
+
+The output is a diagnosis, not a score to be optimised, and the four parts answer different
+questions. A code with $r$ close to $1$ is Welch-optimal in the mean-square sense, but only
+$R_{\mathrm{readout}}$ says anything about the decoder; a large $s_{95}$ with
+$\rho_{\mathrm{lin}}(s_{95})$ well above $d^{-1/2}$ says the code supports support recovery in a
+regime where analog reconstruction from the same map is useless; and $\kappa_i$ is the only part
+that is per-feature and exact rather than aggregate and empirical, which is what makes it usable
+as a statement about an individual feature rather than about the code on average.
+
+\subsection{Algorithm 1: floor attainment}
+
+\begin{algorithm}[t]
+\caption{\textsc{FloorAttainment} --- how close the readout interface sits to the floor}
+\label{alg:one}
+\begin{algorithmic}[1]
+\Require code $\Phi\in\R^{d\times F}$, $F>d$; readout $G\in\R^{F\times d}$ or a rule in
+  $\{\textsc{tied},\textsc{pinv},\textsc{lsq}\}$
+\Ensure attainment ratio $r$ (and $r_{\max}$ if requested), or \textsc{Degenerate}
+\State $G\gets\Phi^{\top}$, $\Phi^{+}$, or the least-squares fit, per the rule
+\State $D_{ii}\gets\langle g_i,\phi_i\rangle$ for $i=1,\dots,F$
+  \Comment{the diagonal of $M=G\Phi$, in $O(Fd)$; $M$ itself is not formed}
+\If{$\min_i|D_{ii}|<\epsilon_{\mathrm{gain}}$} \Return \textsc{Degenerate}
+  \Comment{some feature is read out with vanishing gain}
+\EndIf
+\State $\bar G\gets D^{-1}G$ \Comment{gain normalisation; see Corollary~\ref{cor:calibfree}}
+\State $H\gets\bar G^{\top}\bar G$;\quad $\Sigma\gets\Phi\Phi^{\top}$
+  \Comment{both $d\times d$; $O(Fd^2)$}
+\State $\widehat W\gets\dfrac{\operatorname{tr}(H\Sigma)-F}{F(F-1)}$
+  \Comment{exact, by Lemma~\ref{lem:suffstat}}
+\State $W\gets(F-d)/(d(F-1))$ \Comment{Theorem~\ref{thm:floor}}
+\If{the maximum form is requested}
+  \State form $\widetilde M\gets\bar G\Phi$ and set
+    $\widehat\mu\gets\max_{i\neq j}|\widetilde M_{ij}|$
+    \Comment{$O(F^2d)$ time, $O(F^2)$ memory}
+\EndIf
+\State \Return $r\gets\widehat W/W$ \ (and $r_{\max}\gets\widehat\mu/\sqrt{W}$ if computed)
+\end{algorithmic}
+\end{algorithm}
+
+Step~3 is not a numerical guard but a semantic one: without it, an interface can be made to
+look arbitrarily good by shrinking $G$, which is exactly the confusion that
+Remark~\ref{rem:calib} dispels. By Theorem~\ref{thm:floor}, a correct implementation always
+returns $r\ge1$; we use that as a runtime assertion, and no violation was observed in
+\EoneMeasurements{} gain-normalised interfaces (Section~\ref{sec:res-e1}).
+
+The mean-square statistic that the theorem actually constrains never requires the interface to
+be built. The maximum statistic does, and we say so rather than folding it into the same cost.
+
+\begin{lemma}[Mean-square cross-talk from $d\times d$ statistics]
+\label{lem:suffstat}
+Let $\bar G=D^{-1}G$ with $D_{ii}=\langle g_i,\phi_i\rangle\neq0$, let
+$\widetilde M=\bar G\Phi$, and set $H=\bar G^{\top}\bar G$ and $\Sigma=\Phi\Phi^{\top}$, both
+in $\R^{d\times d}$. Then
+\[
+  \sum_{i\neq j}\widetilde M_{ij}^{2}
+  \;=\;\norm{\bar G\Phi}_F^{2}-F
+  \;=\;\operatorname{tr}(H\Sigma)-F .
+\]
+\end{lemma}
+
+\begin{proof}
+$\widetilde M$ has unit diagonal by construction, so the $F$ diagonal entries contribute
+exactly $F$ to $\norm{\widetilde M}_F^2$ and the remainder is the off-diagonal sum. Cyclicity
+of the trace gives $\norm{\bar G\Phi}_F^2=\operatorname{tr}(\Phi^{\top}\bar G^{\top}\bar
+G\Phi)=\operatorname{tr}(\bar G^{\top}\bar G\,\Phi\Phi^{\top})=\operatorname{tr}(H\Sigma)$.
+\end{proof}
+
+Forming $H$ and $\Sigma$ costs $O(Fd^2)$ time and $O(d^2)$ memory, against $O(F^2d)$ and
+$O(F^2)$ for the direct route --- a reduction of a factor $F/d$ in time and $F^2/d^2$ in
+memory, with no approximation whatever. The identity is verified against the dense computation
+to relative accuracy $10^{-10}$ in the accompanying tests.
+
+\subsection{Algorithm 2: separation profile of a given code}
+
+Algorithm~\ref{alg:two} is the diagnostic proper: it takes a code and a readout that already
+exist --- a designed code, an optimised one, or the effective code of a trained network --- and
+holds them fixed while the support varies. This is the only version that says anything about a
+particular object, and it is the one applied to trained networks in
+Section~\ref{sec:res-e5}.
+
+\begin{algorithm}[t]
+\caption{\textsc{SeparationProfile} --- support recovery versus irreducible analog error, on a
+fixed code}
+\label{alg:two}
+\begin{algorithmic}[1]
+\Require code $\Phi\in\R^{d\times F}$ and readout $G\in\R^{F\times d}$; sparsity grid
+  $\mathcal S$; trials $T$; threshold $\theta$; seed $\sigma$
+\Ensure $\{(s,p_{\mathrm{rec}}(s),\text{CI},\rho_{\mathrm{lin}}(s))\}_{s\in\mathcal S}$ and the
+  separation witness $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$
+\State $s_{\max}\gets\max\mathcal S$;\quad $\bar G\gets D^{-1}G$ as in
+  Algorithm~\ref{alg:one}
+\State $\norm{A}_F^2\gets\operatorname{tr}(H\Sigma)-F$;\quad
+       $\norm{A\mathbf 1}^2\gets\norm{\bar G\Phi\mathbf 1}^2
+       -2\,\mathbf 1^{\top}\bar G\Phi\mathbf 1+F$
+  \Comment{Lemma~\ref{lem:moments}; $O(Fd^2)$}
+\State $e_s\gets\frac1F\!\left[(p-q)\norm{A}_F^2+q\norm{A\mathbf 1}^2\right]$,
+  $p=\tfrac sF$, $q=\tfrac{s(s-1)}{F(F-1)}$, for each $s\in\mathcal S$
+  \Comment{exact; Prop.~\ref{prop:uniform-energy}}
+\For{$t=1$ \textbf{to} $T$}
+  \State draw nested supports $S_1\subset\cdots\subset S_{s_{\max}}$ from seed $(\sigma,t)$
+  \State $Z\gets\bar G\,[\,x_1,\dots,x_{s_{\max}}\,]$, $x_s=\sum_{j\in S_s}\phi_j$
+    \Comment{$O(Fd\,s_{\max})$}
+  \State $k_s\mathrel{+}=1$ for each $s$ with $\mathbf 1\{Z_{\cdot s}\ge\theta\}=\mathbf 1_{S_s}$
+\EndFor
+\State $p_{\mathrm{rec}}(s)\gets k_s/T$ with Wilson interval;\quad
+       $\rho_{\mathrm{lin}}(s)\gets\sqrt{e_s}$
+\State $s_{95}\gets\max\{s:\ p_{\mathrm{rec}}(s')\ge0.95\ \forall s'\le s\}$
+\State \Return the profile and $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$
+\end{algorithmic}
+\end{algorithm}
+
+The support-recovery side of Algorithm~\ref{alg:two} is Monte Carlo over supports; the analog
+side is \emph{exact} for the given code, computed once before the loop rather than estimated
+inside it. Total cost is $O(Fd^2+TFd\,s_{\max})$ time and $O(Fd+d^2)$ memory: the $F\times F$
+interface is never formed.
+
+\subsection{A scaling experiment on the random-code ensemble}
+\label{sec:alg-ensemble}
+
+Algorithm~\ref{alg:ensemble} is a different object and we keep it named apart. It redraws a
+fresh code at every trial, so what it characterises is the $(d,F)$ random-code \emph{ensemble},
+not any individual code; it is the vehicle for the width-scaling study of
+Sections~\ref{sec:res-e1} and~\ref{sec:res-e6}, and it is not a diagnosis of anything. Because
+the code is regenerated block by block from a counted seed and never stored, it reaches widths
+at which the code would not fit in memory.
+
+\begin{algorithm}[t]
+\caption{\textsc{EnsembleScaling} --- the same two criteria, averaged over random codes}
+\label{alg:ensemble}
+\begin{algorithmic}[1]
+\Require $d$, $F$, sparsity grid $\mathcal S$, trials $T$, threshold $\theta$, seed $\sigma$,
+  block size $B$
+\Ensure the ensemble-averaged profile and $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$
+\State $s_{\max}\gets\max\mathcal S$;\quad $k_s\gets0$ for all $s$;\quad $e_s\gets0$ for all $s$
+\For{$t=1$ \textbf{to} $T$}
+  \State draw nested supports $S_1\subset\cdots\subset S_{s_{\max}}$ from seed $(\sigma,t)$
+  \State $X\gets$ partial sums $[\,x_1,\dots,x_{s_{\max}}\,]$, $x_s=\sum_{j\in S_s}\phi_j$
+    \Comment{$d\times s_{\max}$}
+  \State $\Sigma\gets 0_{d\times d}$,\ $v\gets 0_d$
+  \For{each block $\beta$ of $B$ columns of $\Phi$}
+    \State regenerate $\Phi_\beta$ from seed $(\sigma,t,\beta)$ \Comment{$\Phi$ is never stored}
+    \State $Z\gets\Phi_\beta^{\top}X$; mark $s$ as failed if
+      $\mathbf 1\{Z_{\cdot s}\ge\theta\}$ disagrees with $\mathbf 1_{S_s}$ on this block
+    \State $\Sigma\mathrel{+}=\Phi_\beta\Phi_\beta^{\top}$;\quad
+           $v\mathrel{+}=\Phi_\beta\mathbf 1$
+  \EndFor
+  \State $k_s\mathrel{+}=1$ for each surviving $s$
+  \State $\norm{A}_F^2\gets\norm{\Sigma}_F^2-F$;\quad
+         $\norm{A\mathbf 1}^2\gets v^{\top}\Sigma v-2\norm{v}^2+F$
+    \Comment{Lemma~\ref{lem:moments}}
+  \State $e_s\mathrel{+}=\frac1F\!\left[(p-q)\norm{A}_F^2+q\norm{A\mathbf 1}^2\right]$,
+    $p=\tfrac sF$, $q=\tfrac{s(s-1)}{F(F-1)}$ \Comment{Prop.~\ref{prop:uniform-energy}}
+\EndFor
+\State $p_{\mathrm{rec}}(s)\gets k_s/T$ with Wilson interval;\quad
+       $\rho_{\mathrm{lin}}(s)\gets\sqrt{e_s/T}$
+\State $s_{95}\gets\max\{s:\ p_{\mathrm{rec}}(s')\ge0.95\ \forall s'\le s\}$
+\State \Return the profile and $(s_{95},\rho_{\mathrm{lin}}(s_{95}))$
+\end{algorithmic}
+\end{algorithm}
+
+Both algorithms share the same asymmetry: the support-recovery side is estimated, the analog
+side is computed. That is what makes the comparison a witness rather than two noisy curves ---
+the analog error carries no Monte Carlo uncertainty, so any gap at $s_{95}$ is attributable to
+the recovery side alone.
+
+\begin{lemma}[Sufficient statistics of the tied interface]
+\label{lem:moments}
+Let $\Phi$ have unit-norm columns, $M=\Phi^{\top}\Phi$, $A=M-I_F$,
+$\Sigma=\Phi\Phi^{\top}\in\R^{d\times d}$ and $v=\Phi\mathbf 1\in\R^d$. Then
+\[
+  \norm{A}_F^2=\norm{\Sigma}_F^2-F,
+  \qquad
+  \norm{A\mathbf 1}_2^2=v^{\top}\Sigma v-2\norm{v}_2^2+F .
+\]
+\end{lemma}
+
+\begin{proof}
+By cyclicity of the trace, $\norm{\Phi^{\top}\Phi}_F^2=\operatorname{tr}((\Phi^{\top}\Phi)^2)
+=\operatorname{tr}((\Phi\Phi^{\top})^2)=\norm{\Sigma}_F^2$; the diagonal of $M$ is all ones and
+contributes $F$, so subtracting $F$ leaves the off-diagonal energy, which is $\norm{A}_F^2$.
+For the second identity, $A\mathbf 1=\Phi^{\top}\Phi\mathbf 1-\mathbf 1=\Phi^{\top}v-\mathbf 1$,
+hence $\norm{A\mathbf 1}^2=v^{\top}\Phi\Phi^{\top}v-2\mathbf 1^{\top}\Phi^{\top}v+F
+=v^{\top}\Sigma v-2\norm{v}^2+F$, using $\mathbf 1^{\top}\Phi^{\top}v=v^{\top}v$.
+\end{proof}
+
+Lemma~\ref{lem:moments} is the reason the diagnostic scales: it replaces an $F\times F$ object
+by a $d\times d$ one, and combined with Proposition~\ref{prop:uniform-energy} it yields the
+average linear error at every sparsity without a single Monte Carlo draw.
+
+\subsection{Hyperparameters, complexity and cost}
+
+The diagnostic has five hyperparameters: the readout rule, the threshold $\theta$ (default
+$1/2$, the natural midpoint for unit-norm codes and Boolean states), the sparsity grid
+$\mathcal S$, the trial budget $T$, and the block size $B$, which trades memory for the number
+of regeneration passes. Only $T$ affects the statistical resolution;
+Section~\ref{sec:res-e1} reports the threshold sensitivity of the conclusions.
+
+Algorithm~\ref{alg:one} costs $O(Fd^2)$ time and $O(d^2)$ memory for the ratio $r$, by
+Lemma~\ref{lem:suffstat}. The maximum-form ratio $r_{\max}$ is the one exception in the whole
+method: no $d\times d$ reduction of a maximum is available to us, so obtaining it exactly costs
+$O(F^2d)$ time and $O(F^2)$ memory, and it is computed only when asked for. Since the floor of
+Theorem~\ref{thm:floor} is a statement about the mean square, nothing about the floor
+comparison is lost by omitting it; we report $r_{\max}$ at the moderate widths where it is
+affordable and drop it beyond. Algorithm~\ref{alg:two} costs $O(Fd^2+T\,F\,d\,s_{\max})$ time
+and $O(Fd+d^2)$ memory. Algorithm~\ref{alg:ensemble} costs $O(T\,F\,d\,
+s_{\max})$ time --- one pass of code regeneration and one $B\times d\times s_{\max}$ product
+per block --- and $O(Bd+d^2)$ memory, independent of $F$. At $d=\EsixDmax$ and
+$F=\EsixFmax$ the code would occupy $4$~GB in single precision; the streaming implementation
+peaks near $B\,d\cdot4$ bytes. Measured wall-clock times are in Table~\ref{tab:cost}.
+
+\subsection{Applicability, edge cases and failure modes}
+
+\paragraph{Conditions of applicability.} The diagnostic assumes (i) $F>d$, otherwise the floor
+is vacuous and Algorithm~\ref{alg:one} refuses to run; (ii) unit-norm code columns, or a
+declared normalisation, since the threshold $\theta=1/2$ is calibrated to unit gain;
+(iii) a sparse-state model that is exchangeable across coordinates, which is what makes the
+closed form of step~3 valid.
+
+\paragraph{Edge cases.} At $s=1$ the linear error is still non-zero while threshold recovery
+succeeds whenever $\mu<\theta$; this is the smallest instance of the separation. When
+$F/d\to1$ the floor tends to zero and the diagnosis becomes uninformative --- correctly so,
+since a nearly complete code has no interference to speak of.
+
+\paragraph{Failure modes.} Three are worth naming. (a) \emph{Degenerate gain}: if some
+$|M_{ii}|$ is numerically zero the calibration is undefined and Algorithm~\ref{alg:one}
+returns \textsc{Degenerate} rather than a number; this is not a corner case but the expected
+outcome when a readout is fitted without the diagonal constraint
+(Section~\ref{sec:res-e4}). (b) \emph{Uncovered feature}: a least-squares readout fitted on
+states in which some feature never appears has an identically zero row, which triggers (a);
+the implementation therefore enforces coverage of the fitting set. (c) \emph{Vacuous profile}:
+if the coherence of the code exceeds $\theta$, $p_{\mathrm{rec}}(1)$ is already below $0.95$
+and $s_{95}=0$; the certificate is then empty, and the diagnostic reports that rather than
+extrapolating.
+
+\subsection{Implementation and traceability}
+
+\begin{table}[t]
+\centering
+\caption{Each step of the method and the function that implements it. Paths are relative to
+the repository root.}
+\label{tab:codemap}
+\small
+\begin{tabular}{lll}
+\toprule
+quantity & where defined & implementation \\
+\midrule
+$W(F,d)$ & Eq.~\eqref{eq:floor} & \code{lrtr/codes.py:welch\_floor} \\
+$D^{-1}M$ & Cor.~\ref{cor:calibfree} & \code{lrtr/interface.py:unit\_diagonal} \\
+$\widehat W,\widehat\mu,r,r_{\max}$ & Alg.~\ref{alg:one} & \code{lrtr/interface.py:crosstalk\_stats} \\
+Algorithm~\ref{alg:one} & Sec.~\ref{sec:method} & \code{lrtr/diagnostic.py:interface\_floor\_diagnostic} \\
+$\Sigma,v\mapsto\norm{A}_F^2,\norm{A\mathbf 1}^2$ & Lem.~\ref{lem:moments} & \code{lrtr/diagnostic.py:tied\_energy\_moments} \\
+$\frac1F\E_S\norm{A\mathbf 1_S}^2$ & Prop.~\ref{prop:uniform-energy} & \code{lrtr/interface.py:linear\_energy\_uniform} \\
+energy floor & Eq.~\eqref{eq:energyfloor} & \code{lrtr/interface.py:energy\_floor\_uniform} \\
+threshold decoder $Q$ & Thm.~\ref{thm:coherence} & \code{lrtr/threshold.py:threshold\_decode} \\
+fixed-code trial & Alg.~
+ef{alg:two}, l.~5--7 & \code{lrtr/threshold.py:recovery\_trial\_fixed} \\
+streaming trial & Alg.~
+ef{alg:ensemble}, l.~6--10 & \code{lrtr/threshold.py:recovery\_trial\_streaming} \\
+Algorithm~
+ef{alg:two} & Sec.~
+ef{sec:method} & \code{lrtr/diagnostic.py:fixed\_code\_separation\_profile} \\
+Algorithm~
+ef{alg:ensemble} & Sec.~
+ef{sec:alg-ensemble} & \code{lrtr/diagnostic.py:random\_code\_scaling\_experiment} \\
+$\operatorname{tr}(H\Sigma)-F$ & Lem.~
+ef{lem:suffstat} & \code{lrtr/interface.py:crosstalk\_mean\_sq} \\
+leverage form of $r$ & Prop.~
+ef{prop:leverage} & \code{lrtr/interface.py:crosstalk\_mean\_sq\_pinv} \\
+$s_{95}$ & Alg.~
+ef{alg:two}, l.~9 & \code{lrtr/threshold.py:s95\_from\_curve} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:codemap} maps every quantity in Problem~\ref{prob:main} to the function that
+computes it. The correctness of the implementation is checked by a test suite that verifies the
+theorems numerically --- equality for tight frames, no violations for random interfaces, the
+closed forms against Monte Carlo, and the streaming trial against an explicit dense evaluation
+of the same code.
+
+% ============================================================================

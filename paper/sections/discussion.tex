@@ -1,0 +1,57 @@
+\section{Discussion}
+\label{sec:discussion}
+% ============================================================================
+
+Three readings survive the campaign, and one that motivated the work does not.
+
+\textbf{The floor is a target, not an obstacle --- and reaching it means less than it looks.} E4 shows
+gradient descent under the unit-diagonal constraint converging to a unit-norm tight frame, and a
+network trained on a task with no interference objective lands within
+\EfiveLfourRatioPinvMean{} of the same bound. But an untrained i.i.d.\ code reaches
+$R_{\mathrm{geom}}=\SARandFiftyRgeom{}$ without any training at all, so proximity to the rank--trace
+floor is what the ensemble gives for free at this load rather than a signature of learned structure.
+What distinguishes models is not whether they approach the floor but whether the floor \emph{binds}
+them, and there the separation is enormous: $L^2$ drives $R_{\mathrm{geom}}$ to
+\SALtwoTwoHundredRgeom{} at $d=200$ and collapses its frontier to $1$, while $L^4$ stays at
+\SALfourTwoHundredRgeom{}.
+
+\textbf{The nonlinearity does not out-decode an affine probe of the state it produces.} Given the same
+post-ReLU representation and the same threshold treatment, the network and the best fitted affine
+probe tie on $s_{95}$ in 119 of 120 trained models. We registered this outcome as a result before
+running, and it is one: for support recovery on this task, at these widths, the network's second layer
+is doing what a linear probe of its first layer already does. The gap that earlier framings read as a
+nonlinear advantage is a gap between \emph{representations} --- the preactivation is more affinely
+decodable than what the ReLU leaves --- and attributing it to the decoder confuses where the
+information went with who read it.
+
+\textbf{What training buys is the code.} A random code with only its readout trained keeps an
+untrained code's frontier, \EeightFrozenHundredKappa{} against \EeightRandomHundredKappa{}, while
+training both reaches \EeightTrainedHundredKappa{}. The frozen arm's own decoder also ends at
+$R_{\mathrm{readout}}=\EeightFrozenHundredRreadout{}$, near twice the closed-form cross-talk optimum
+for the code it was handed --- but that is not a failed optimisation. It beats that optimum by
+\EeightFrozenHundredTaskGain{} on the loss it was trained under, so on a fixed random code the task
+objective and the cross-talk objective genuinely diverge, and the readout is right to follow the
+former. What the joint arm gains is that it need not choose: it holds
+$R_{\mathrm{readout}}=\EeightTrainedHundredRreadout{}$ while beating the same baseline by
+\EeightTrainedHundredTaskGain{}. Read that way, training the code aligns the two objectives, and
+that is a statement about what co-adaptation buys rather than about the difficulty of the
+conditional problem.
+
+What does not survive is the reading this work began with: that the $L^4$ model's thresholded output
+keeps working past where linear readouts of its own code collapse. Against the fixed readouts of E5
+that appeared true; against a probe fitted with the same care as the network was trained, it is not.
+
+This gives the debate in~\cite{bhagat2026cc,ferreiradasilva2026l4} an instrument. The question
+``does this network compute in superposition?'' becomes three measurements: how far the code is from
+its own floor rather than from the ensemble's, how far the network's decision function is from an
+affine readout of the same state, and, per feature, the largest sparsity at which any affine rule
+could succeed at all. None requires reverse-engineering the mechanism, and the third is exact rather
+than empirical --- which matters, because the campaign's history is a series of empirical readings
+that reversed when the estimand or the baseline was tightened, while $\kappa_i$ did not move.
+
+For capacity theory, the interface distinction explains why the H\"{a}nni and Adler--Shavit
+results coexist rather than compete (Section~\ref{sec:application}). It also cautions against
+reading sparse-autoencoder dictionary sizes as computation capacities: those are reconstructive
+quantities, and the diagnostic makes explicit that reconstruction and recursive Boolean
+decoding are governed by different criteria.
+

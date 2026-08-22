@@ -1,0 +1,128 @@
+\section{Introduction}
+\label{sec:intro}
+
+An overcomplete code places $F$ feature directions in $d<F$ dimensions. Such codes are the object of
+study in work on superposition and computation in superposition, and they are what a sparse
+autoencoder returns when it decomposes a language model's activations into a dictionary of feature
+directions. Whatever else one wants from such a code, a great deal of downstream practice reads
+features out of it \emph{linearly}: linear probes, the decoder of the autoencoder itself, steering
+vectors, and any diagnostic built from inner products with feature directions.
+
+Linear readout of an overcomplete code cannot be exact. With $F>d$ the directions cannot be
+orthogonal, so recovering one feature's coefficient picks up contributions from the others, and the
+average squared size of that cross-talk is bounded below by a quantity that depends only on the two
+counts,
+\[
+  W(F,d)\;=\;\frac{F-d}{d(F-1)} .
+\]
+Reporting how close a code comes to this rank--trace floor is therefore a natural way to ask whether
+it is arranged well for linear readout, and ratios of this kind have been read as evidence that
+training discovers efficient geometry.
+
+\paragraph{What a reader should take from this paper.} Proximity to the floor is not evidence of
+anything a code learned, because it is what an unstructured code gives for free; the quantity that
+distance from the floor actually measures is the \emph{dispersion of leverage} across features; and
+measured this way, no released sparse-autoencoder dictionary we examined is near the floor --- every
+one is worse conditioned for linear readout than a random code of its own shape, while an
+autoencoder trained by the same recipe on a randomly initialised model is not. The practical
+consequence is that the excess is a property of the represented content rather than of the fitting
+procedure, and that it moves with depth but not with dictionary width.
+
+\subsection{Why proximity to the floor says less than it appears to}
+
+Our starting point is an identity, not an experiment. For a code $\Phi\in\R^{d\times F}$ read out by
+its gain-calibrated pseudoinverse, the ratio of achieved cross-talk to the floor is
+\[
+  \Rgeom(\Phi)\;=\;\frac{d}{F(F-d)}\left(\sum_{i=1}^{F}\frac{1}{h_i}-F\right),
+  \qquad h_i=\phi_i^{\top}(\Phi\Phi^{\top})^{-1}\phi_i ,
+\]
+and the leverage scores obey $\sum_i h_i=d$ exactly. Cauchy--Schwarz then gives
+$\sum_i h_i^{-1}\ge F^2/d$ with equality precisely when every $h_i$ equals $d/F$, so
+$\Rgeom\ge1$ with equality exactly when leverage is equalised across features
+(Proposition~\ref{prop:leverage}). Distance from the floor is not a separate property that a code
+might or might not have alongside its leverage profile: \emph{it is} that profile's dispersion, in a
+specific harmonic sense that we make precise and then use.
+
+Two consequences follow immediately and are worth stating before any measurement. First, a code whose
+leverage is nearly uniform sits at the floor whether or not it encodes anything, which is why an
+i.i.d.\ Gaussian code attains it. Second, the ratio is driven by $\sum_i h_i^{-1}$, a harmonic
+quantity, so the spread of leverage can grow substantially without the ratio moving --- a
+dissociation we observe and would otherwise have had to report as an anomaly.
+
+\subsection{What we measure, and on what}
+
+We evaluate the diagnostic on two kinds of object, and the division of labour between them is
+deliberate.
+
+\emph{Released dictionaries} (Section~\ref{sec:dictionaries}) test whether any of this transfers
+beyond a controlled setting. We take the decoder matrices of \SaeDicts{} published sparse
+autoencoders --- five model families and three independent training recipes, with $d$ from \SaeDMin{}
+to \SaeDMax{} and feature loads from \SaeLoadMin$\times$ to \SaeLoadMax$\times$ --- and compute
+$\Rgeom$, the leverage distribution, and the failure threshold from the decoder alone. No model
+weights, no activations, no training, and no linear programme are involved, so the whole section
+costs seconds per dictionary and can be re-run by a reader.
+
+\emph{Controlled campaigns} (Section~\ref{sec:campaigns}) supply what released artefacts cannot: an
+intervention. We train 400 small networks in which the loss, the width, the feature load and the
+training sparsity are set by us, so that the effect of each on the resulting code can be measured
+rather than inferred, and we retain every trained model so that later analyses need no retraining.
+
+\subsection{Contributions}
+
+\begin{enumerate}[leftmargin=*,itemsep=3pt]
+
+\item \textbf{Distance from the rank--trace floor is leverage dispersion, exactly.} The identity is
+elementary and we claim no novelty for the mathematics; what is new is that it does predictive work.
+It explains why unstructured codes attain the floor, why trained dictionaries do not, and why
+dispersion can grow while the ratio stays flat. We verify it against the implementation on
+\SaeIdentityRows{} measured codes, with a maximum deviation of \SaeIdentityGap{}.
+
+\item \textbf{Near-floor geometry is generic, and we measure the baseline rather than assert it.}
+\SaeControls{} i.i.d.\ controls, matched in shape and operating sparsity to each dictionary, land at
+$\Rgeom=\SaeCtlRgeomMin$ to \SaeCtlRgeomMax{} across loads from \SaeLoadMin$\times$ to
+\SaeLoadMax$\times$. Any claim that a learned code is close to optimal for linear readout needs this
+comparison, and it is not present in the literature we build on.
+
+\item \textbf{No released dictionary we measured is at the floor.} All \SaeDictsAboveControl{} of
+\SaeDicts{} sit above their own matched control, at $\Rgeom=\SaeDictRgeomMin$ to
+\SaeDictRgeomMax{}, with leverage dispersion \SaeDictCvMin{} to \SaeDictCvMax{} against the
+controls' \SaeCtlCvMin{} to \SaeCtlCvMax{}. Whatever these dictionaries optimise, it is not
+linear-readout cross-talk.
+
+\item \textbf{A matched randomly-initialised control locates the cause.} Autoencoders trained by an
+identical recipe on a randomly initialised copy of the same model return to the floor
+($\Rgeom=\SaeRandInitRgeomMin$ to \SaeRandInitRgeomMax) in all \SaePairedLayers{} paired layers. The
+excess therefore reflects what the model learned, not the act of fitting a sparse autoencoder --- a
+distinction an i.i.d.\ control cannot draw, because it does not share the training procedure.
+
+\item \textbf{The loss decides whether a linear interface exists at all.} Across four widths, two
+feature loads and two training sparsities, $L^2$ training reaches $\Rgeom=\SALtwoFiftyRgeom$ to
+\ScLtwoRgeom{} with its affine recovery frontier collapsed to $1$, while $L^4$ holds
+$\SALfourTwoHundredRgeom$ with a frontier that grows from \FullLfourFiftyKappaMin{} to
+\ScMeasured{}. This is the largest effect we report and the one that replicates most widely.
+
+\item \textbf{The frontier follows a rate, tested out of sample, and the advantage it buys stops
+growing.} Fitted on three widths the frontier implied \ScRegistered{} at $d=400$; we registered that
+number in the run configuration before the width was trained and measured \ScMeasured{}. Over the
+same four widths the advantage over an untrained code narrows from \MarginFiftyRatio{} to
+\MarginFourHundredRatio{}, which we report as a limitation on the preceding claim rather than
+alongside it.
+
+\item \textbf{An artefact that can be checked.} The weights of all 400 trained networks are
+released, along with the SHA-256 of every third-party dictionary analysed, a decision log recording
+what was registered before each campaign, and a register of six defects found during this work
+together with what each invalidated. Section~\ref{sec:limitations} states which readings we
+withdrew and why.
+
+\end{enumerate}
+
+\subsection{Scope}
+
+Three limits apply throughout and we state them here rather than at the end. Every statement about
+the affine recovery frontier is a worst case over feature amplitudes: it says what no affine rule can
+guarantee, not what fails in typical use. The comparison between a network's own decoder and a fitted
+affine probe (Section~\ref{sec:probes}) measures what supervised fitting recovers rather than what an
+affine map can express, because the probe class contains the network's decoder; we report it for
+completeness and build nothing on it. And the controlled campaigns use one task family at widths up
+to $d=400$, so they establish the mechanism, not its magnitude in a deployed model --- which is
+precisely why the dictionary measurements are the other half of the paper.

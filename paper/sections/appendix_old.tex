@@ -1,0 +1,168 @@
+% ============================================================================
+\section{Reproduction}
+\label{app:repro}
+% ============================================================================
+
+From a clean checkout:
+
+\begin{verbatim}
+python -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
+python -m pip install -r requirements.txt
+python -m pytest -q tests/                       # 370 tests
+bash scripts/run_all.sh                          # Windows: scripts\run_all.ps1
+\end{verbatim}
+
+Individual campaigns, each of which writes \code{results/<id>/run\_record.json} with the exact
+command, seeds, environment, duration and exit status:
+
+\begin{verbatim}
+python experiments/e1_welch_floor.py
+python experiments/e2_threshold_recovery.py
+python experiments/e3_linear_energy.py
+python experiments/e4_optimized_codes.py
+python experiments/e5_trained_toy.py
+python experiments/e6_threshold_scaling.py
+\end{verbatim}
+
+Adding \code{--smoke} to any of them runs a reduced configuration end to end in seconds.
+Figures, tables and the generated numbers are rebuilt with
+\code{scripts/make\_figures.py}, \code{scripts/make\_tables.py} and
+\code{scripts/make\_numbers.py}; \code{scripts/check\_manuscript\_numbers.py} verifies that
+every measured number in this manuscript matches the saved results and exits non-zero
+otherwise. E6 writes results per width and per chunk and resumes an interrupted campaign
+without recomputing completed trials.
+
+% ============================================================================
+\section{Verification of imported statements}
+\label{app:imported}
+% ============================================================================
+
+Every statement imported from the two source frameworks was checked against the published
+version. Table~\ref{tab:imported} records the audit.
+
+\begin{table}[h]
+\centering
+\caption{Audit of imported statements.}
+\label{tab:imported}
+\small
+\begin{tabular}{p{3.1cm}p{4.6cm}p{4.6cm}}
+\toprule
+source & as printed there & as used here \\
+\midrule
+\cite[Thm.~11]{hanni2024superposition} &
+targeted superpositional AND, precision $\varepsilon_{\mathrm{in}}\to\varepsilon_{\mathrm{out}}$
+with $\varepsilon_{\mathrm{out}}=\Otilde(\sqrt{s^2/d})$ &
+Lemma~\ref{lem:comp}, $\ecomp(d)=\Otilde(d^{-1/2})$ at $s=O(1)$ \\
+\addlinespace[2pt]
+\cite[Thm.~14]{hanni2024superposition} &
+$\varepsilon^{(1)}=\Otilde(\max\{s\mu,\sqrt{s\varepsilon},\sqrt{s/d}\})$,
+$\mu^{(1)}=\Otilde(\max\{\sqrt{1/d},\mu\})$ &
+quoted in Sec.~\ref{sec:application} only to note it does not by itself preserve the
+$\Otilde(d^{-1/2})$ invariant \\
+\addlinespace[2pt]
+\cite[Cor.~15]{hanni2024superposition} &
+relaxes the near-sphere hypothesis of Thm.~14 at the cost of depth $1\to3$ &
+not used for a capacity claim \\
+\addlinespace[2pt]
+\cite[Thm.~21]{hanni2024superposition} &
+tolerance $\varepsilon<K\,d^{1/4}/(m^{1/2}s^{1/4})$, output
+$\varepsilon^{(1)}=O(\log(d)\sqrt{s}/\sqrt d)$, $\mu^{(1)}=\Otilde(\sqrt s/\sqrt d)$ &
+Lemma~\ref{lem:corr} with $m$ in the role of $F$ \\
+\addlinespace[2pt]
+\cite[Thm.~8]{hanni2024superposition} &
+width $d=\Otilde(m^{2/3}s^2)$, depth $2L$ &
+Proposition~\ref{prop:hanni}, inverted at $s=O(1)$ \\
+\addlinespace[2pt]
+\cite{adler2024superposition} &
+$\Omega(\sqrt{m'}\log m')$ neurons and $\Omega(m'\log m')$ parameters; construction with
+$O(\sqrt{m'}\log m')$ neurons; at most $O(n^2/\log n)$ features with $n$ neurons &
+Sec.~\ref{sec:application}; the parameter-to-neuron conversion is flagged as an architectural
+assumption of that model \\
+\addlinespace[2pt]
+\cite[Thm.~2.3]{strohmer2003grassmannian} &
+$\max_{i\neq j}|\langle\phi_i,\phi_j\rangle|\ge\sqrt{(F-d)/(d(F-1))}$ for unit-norm systems &
+the Gram case of Theorem~\ref{thm:floor}; the reduction is noted in Sec.~\ref{sec:frames} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================================
+\section{Auxiliary proofs}
+\label{app:proofs}
+% ============================================================================
+
+\subsection{Sub-Gaussian interference}
+
+Let $u,u_1,\dots,u_m$ be independent uniform unit vectors in $\R^d$. Conditionally on $u$, each
+$X_j=\langle u,u_j\rangle$ is distributed as the first coordinate of a uniform point on
+$S^{d-1}$, hence has mean zero and is sub-Gaussian with variance proxy $C_0/d$ for a universal
+$C_0$~\cite[Thm.~3.4.6]{vershynin2018hdp}. The $X_j$ are conditionally independent, so their
+sum is sub-Gaussian with proxy $C_0m/d$ and
+$\Pr\{|\sum_j X_j|>t\}\le2\exp(-c_0dt^2/m)$ with $c_0=1/(2C_0)$. This is the estimate used in
+Theorem~\ref{thm:randomsupport}.
+
+\subsection{The Bernoulli variant of the energy floor}
+
+Under $b_i\sim\mathrm{Bernoulli}(p)$ independently,
+$\E[bb^{\top}]=p(1-p)I_F+p^2\mathbf 1\mathbf 1^{\top}$, so
+$\E_b\norm{Ab}^2=p(1-p)\norm{A}_F^2+p^2\norm{A\mathbf 1}^2\ge p(1-p)F(F-d)/d$ by
+Theorem~\ref{thm:floor}. With $p=s/F$ and $s\le F/2$ this gives
+$\frac1F\E_b\norm{Ab}^2\ge\frac{s(F-d)}{2dF}=\Omega(s/d)$, matching
+Proposition~\ref{prop:uniform-energy} up to the $(F-1)$ versus $F$ denominator. Both variants
+are computed by the released code and both are reported in E3.
+
+% ============================================================================
+\section{The nuclear-norm inequality}
+\label{app:nuclear}
+% ============================================================================
+
+For $M\in\R^{F\times F}$ with singular value decomposition
+$M=\sum_{k=1}^{r}\sigma_k u_k v_k^{\top}$,
+\[
+  |\operatorname{tr}(M)|=\Big|\sum_k\sigma_k\,u_k^{\top}v_k\Big|
+  \le\sum_k\sigma_k|u_k^{\top}v_k|\le\sum_k\sigma_k=\nucnorm{M},
+\]
+and by Cauchy--Schwarz on $(\sigma_1,\dots,\sigma_r)$,
+$\nucnorm{M}^2\le r\sum_k\sigma_k^2=r\norm{M}_F^2$. With $r\le d$ this gives
+$|\operatorname{tr}(M)|^2\le d\norm{M}_F^2$, as used in Theorem~\ref{thm:floor}. Note that the
+identity $\operatorname{tr}(M)=\sum_k\sigma_k$ holds only for positive semidefinite matrices and
+is \emph{not} used.
+
+% ============================================================================
+\section{Reference scales}
+\label{app:scales}
+% ============================================================================
+
+The scales appearing in this literature count different objects and should not be read as a
+capacity ordering. Writing $F_{\mathrm{CS}}(d,\alpha)=d\,g(\alpha)$ with
+$g(\alpha)=1/((1-\alpha)\ln(1/(1-\alpha)))$ for compressed-sensing-style linearly decodable
+storage, $F^{\mathrm{H}}_{\mathrm{cert}}(d)=\Thetatilde(d^{3/2})$ for the H\"{a}nni template
+certificate, $L_{\mathrm{AS}}(d)=d^2/\log^2 d$ and $U_{\mathrm{AS}}(d)=d^2/\log d$ for the two
+sides of the Adler--Shavit bracket, and $N_{\mathrm{JL}}(d;\varepsilon)=\exp(\Theta(d
+\varepsilon^2))$ for Johnson--Lindenstrauss packing~\cite{JL1984}, one has
+\[
+  F_{\mathrm{CS}}\ll F^{\mathrm{H}}_{\mathrm{cert}}\ll L_{\mathrm{AS}}
+  \lesssim\FrecAS\lesssim U_{\mathrm{AS}}\ll N_{\mathrm{JL}}
+\]
+as $d\to\infty$. This does not mean that recursive computation beats storage:
+$N_{\mathrm{JL}}$ counts passively packable states, $F_{\mathrm{CS}}$ counts linearly decodable
+features through a compressed bottleneck, and the middle two count recursively computable
+Boolean features under two different published frameworks. Michaud et
+al.~\cite{michaud2025manifolds} give a complementary reason why an observed dictionary size may
+fall below the template scale: if feature manifolds consume capacity, the relevant comparison
+is the effective dimension rather than the raw feature count.
+
+% ============================================================================
+\section{Sparse-autoencoder context}
+\label{app:sae}
+% ============================================================================
+
+As background only, \citet{borobia2026pruning} train TopK sparse
+autoencoders ($k=64$, expansion $8d$) on three language models and observes no dead features at
+$F=8d$, placing those dictionaries well below both the $d^{3/2}$ template scale and the
+near-quadratic Adler--Shavit scale. Sparse-autoencoder dictionary size is a reconstructive
+quantity and is not a measurement of recursive computation capacity; these numbers are not used
+in any proof or experiment of the present paper, and are mentioned only to indicate where
+current empirical dictionaries sit relative to the scales of Appendix~\ref{app:scales}.
+Liu et al.~\cite{liu2025scaling} and Elhage et al.~\cite{elhage2022superposition} provide
+further context on why strong superposition regimes are of interest.

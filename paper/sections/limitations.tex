@@ -1,0 +1,114 @@
+\section{Limitations and what we withdrew}
+\label{sec:limitations}
+
+\begin{enumerate}[leftmargin=*,itemsep=1pt]
+\item \textbf{One trained setting.} E5 covers a single toy task at $d=\EfiveD$, $F=\EfiveF$,
+with \EfiveSeeds{} seeds per condition. Nothing here is a claim about large trained language
+models.
+\item \textbf{Out-of-distribution evaluation.} The diagnostic is defined on Boolean sparse
+states, while the toy models are trained on continuous sparse inputs. It therefore measures
+which interface the learned code \emph{supports}, not what the network does on its native
+distribution.
+\item \textbf{Constant sparsity in the application.} The H\"{a}nni-template comparison assumes
+$s=O(1)$, whereas the distributional results allow $s$ up to $O(d/\log d)$; real features are
+continuous with heterogeneous sparsity.
+\item \textbf{The floor bounds linear readouts only.} Nonlinear decoders and
+distribution-specific average-case mechanisms are outside its scope --- which is the point of
+the separation, but also a limit on what the diagnostic can certify.
+\item \textbf{Fit with few points.} The $c\,d/\ln d$ fit in E6 rests on \EsixFitPoints{}
+widths, on which a plain linear law fits nearly as well ($R^2=\EsixInterpRsqLin$ against
+$\EsixInterpRsqLog$). The data are consistent with the predicted shape and do not discriminate
+it from the alternatives; the logarithm's base is not identifiable at all.
+
+\item \textbf{$s_{95}$ is a point estimate, not a certified threshold.} The trial budget shrinks
+with width, and at $d=\EsixDmax$ even a perfect run gives a Wilson lower bound of
+\EsixTopBestWilsonLow --- below the $95\%$ level being estimated. The reported thresholds are
+best estimates; certifying them at confidence would need more trials at the large widths.
+
+\item \textbf{The linear side's non-exactness is the theorem, not a measurement.} Wherever we
+report that a linear readout ``cannot be exact'', that follows from
+Theorem~\ref{thm:floor} by construction for any rank-$d$ unit-diagonal interface. What the
+experiments measure is the \emph{magnitude} of that error for codes that were actually learned,
+and how far a threshold decoder gets before it bites.
+\item \textbf{Correlated curve points.} The nested-support trick makes each point of
+$p_{\mathrm{rec}}(s)$ marginally unbiased but correlates points within a trial; the Wilson
+intervals are per-point and should not be read as a joint confidence band.
+\item \textbf{Open log gap.} The Adler--Shavit capacity bracket retains a single logarithmic
+factor of slack, which is not resolved here.
+
+\item \textbf{The leverage prediction is a sufficient condition, and its selection heuristic decays
+with width.} Corollary~\ref{cor:failthresh} predicts the $L^2$ collapse from leverage alone and
+holds at all three widths of Section~\ref{sec:res-primary}. But it is applied at $h_{\min}$, and it
+is sufficient rather than necessary, which shows up in where the true worst feature sits: the
+lowest-leverage window contains the true $\arg\min\kappa$ in \FullLfourTwoHundredArgminFound{} of 20
+$L^4$ models at $d=200$ and \SubsetFourHundredFound{} of \ScSeeds{} at $d=400$, where the true
+$\arg\min$ sits at leverage rank \SubsetFourHundredRank{} by median --- against every model of every
+untrained code, at every width. Training pulls the two apart, and the gap widens with width, so the
+theorem localises the failure less and less well as the code improves. Nothing reported depends on
+the heuristic --- the frontiers quoted are exact --- but a reader should not take low leverage as a
+reliable pointer to the binding feature, and past $d=200$ should not use it as a sampling window at
+all.
+
+\item \textbf{The exact frontier does not extrapolate much further.} Every $\kappa_i$ reported here is
+exact --- all $F$ features of every model at all four widths, including the \ScSeeds{} models per arm
+at $d=400$, $F=800$. An earlier version of this limitation said the $d=400$ sweep would be
+unaffordable and that a fourth width would have to return to a subset estimate; it was run instead,
+in a few hours on ten CPU workers, and this entry is corrected rather than removed because the
+estimate was wrong in the direction that mattered. What remains true is the shape of the cost: one
+linear programme per feature --- \FrontierLpSecondsTwoHundred\,s at $d=200$, from the recorded sweep
+times --- growing steeply in $d$ while $F$ grows with it, with the wall-clock of every campaign in
+Appendix~\ref{app:cost}. A fifth width would be a different
+proposition, and the honest statement is that the statistic is exact everywhere we report it and that
+we do not know where it stops being affordable.
+
+\item \textbf{The nonlinear witness is built but not yet used.} The extractor of
+Section~\ref{sec:witness} is implemented and validated --- every witness it returns is confirmed
+inseparable by a linear programme, and on small codes against brute-force enumeration --- but two
+things are missing. The Radon compression to $d+2$ states is not implemented, so the witnesses are
+valid and not minimal; and no result reported in this paper is derived from one, so the sharper
+claim it licenses is not made here.
+
+\item \textbf{How much the ReLU costs is measurable in only three cells.} The decoder comparison
+says the ReLU costs an $L^4$ code almost nothing and an untrained code a great deal
+(Section~\ref{sec:res-primary}). Quantifying that on the frontier rather than on a fitted probe is
+harder: $\kappa$ is defined on $\Phi b$, and $\mathrm{ReLU}(\Phi b)$ is not a linear image of the
+state polytope, so the post-ReLU side must be sampled and tested rather than solved. Sampling can
+only refute separability, never confirm it, so it overestimates the frontier --- here by
+\ReluLooseMin{} to \ReluLooseMax{} levels against the exact $\kappa$ --- and the overestimate cancels
+only in a difference taken with the same sampler and the same draws on both sides
+(\ReluGapDraws{} draws per side, \ReluGapFeatures{} features per cell, sampler ceiling
+$s\le\ReluGapSmax$).
+
+Three of the nine cells give a measurable difference and they agree with the decoder comparison: at
+$d=50$ the ReLU costs the $L^4$ code \ReluLfourFiftyGap{} levels
+$[\ReluLfourFiftyCiLow,\ReluLfourFiftyCiHigh]$ on \ReluLfourFiftyPositive{} of \ReluGapFeatures{}
+features and the untrained code \ReluRandFiftyGap{} $[\ReluRandFiftyCiLow,\ReluRandFiftyCiHigh]$ on
+\ReluRandFiftyPositive{}; at $d=100$ the untrained code loses \ReluRandHundredGap{}
+$[\ReluRandHundredCiLow,\ReluRandHundredCiHigh]$ on all \ReluRandHundredPositive{}. In
+\ReluCensoredCells{} cells both sides reach the sampler ceiling, so the difference there is censoring
+and not measurement, and we report no value --- including for every $L^4$ cell above $d=50$, which is
+precisely where we would most want one. Every $L^2$ cell is a flat zero because its frontier is at
+$1$ on both sides. A larger sampling budget would lift the ceiling and we have not spent one, so the
+claim that the cost is small on trained codes rests on $d=50$ plus the decoder comparison, and not on
+the frontier at the two larger widths.
+
+\item \textbf{One control the analysis wants and does not have.} A random \emph{tight frame}, whose
+$R_{\mathrm{geom}}$ is exactly $1$ rather than the \SaeCtlRgeomMax{} an i.i.d.\ code reaches at
+worst, would sharpen
+the claim that near-floor geometry is generic: as it stands the comparison is against a code that
+is close to the floor rather than on it, so a small residual advantage for the trained code could be
+conditioning rather than structure.
+
+\item \textbf{The margin over an untrained code stops growing inside our own range.} This is the
+sharpest limitation on the headline claim, and it comes from our own data rather than from something
+we did not run. Section~\ref{sec:res-primary} reports the trained frontier at $d^{\ScExpTrained}$ and
+the untrained one at $d^{\ScExpRandom}$: the untrained exponent is larger, the ratio falls at every
+step, and the margin in sparsity levels peaks at $d=200$ and falls by \MarginDrop{}
+$[\MarginDropCiLow,\MarginDropCiHigh]$ at $d=400$. ``Training buys the code'' therefore holds at every
+width we measured and is not established as a property that survives scale. Two candidate
+explanations are not separated here: a real ceiling on what the frontier can buy, or the fixed
+optimisation budget of \EsevenSteps{} steps at every width, which gives the largest models the least
+optimisation per parameter. Distinguishing them needs a budget sweep at fixed width, which is cheap,
+and a fifth width, which is not.
+\end{enumerate}
+

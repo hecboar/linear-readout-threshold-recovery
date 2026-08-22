@@ -218,6 +218,92 @@ def table_cost() -> None:
     write("tab_cost", out)
 
 
+def table_sae() -> None:
+    """One row per measured code, grouped by axis, each control beside the group it judges.
+
+    Generated rather than typed because it is the paper's main empirical exhibit: fifty rows entered
+    by hand are fifty chances to mistype one, and check_manuscript_numbers.py compares this file
+    against results/ on every run. The randomly-initialised arm is labelled as a dictionary by the
+    pipeline but is a control in substance, so the caption says so and the rows stay in their own
+    axis block rather than being merged into a range.
+    """
+    rows = load("sae/derived/sae_axes.json")["rows"]
+    order = {"scale": 0, "load": 1, "causal": 2, "architecture": 3}
+    names = {"scale": r"Scale: $d$ varies, load fixed at $16\times$",
+             "load": r"Load: $F/d$ varies, $d$ and $k$ fixed",
+             "causal": "Trained model against a randomly initialised one",
+             "architecture": "Hybrid convolution/attention MLP code"}
+    out = [r"\begin{tabular}{llrrrrrr}", r"\toprule",
+           r"code & & $d$ & $F$ & $F/d$ & $s$ & $R_{\mathrm{geom}}$ & $\mathrm{cv}(h)$ \\",
+           r"\midrule"]
+    for axis in sorted({r["axis"] for r in rows}, key=lambda a: order.get(a, 9)):
+        out.append(r"\multicolumn{8}{l}{\itshape " + names.get(axis, axis) + r"} \\")
+        grp = [r for r in rows if r["axis"] == axis]
+        for r in sorted(grp, key=lambda r: (r["kind"] != "dictionary", r["load"], r["label"])):
+            kind = "control" if r["kind"] == "control" else ""
+            lab = r["label"].replace("_", r"\_").replace(".sae", "")
+            out.append(f"{lab} & {kind} & {r['d']} & {r['F']} & {r['load']:.1f} & "
+                       f"{r['s_operating']} & {r['R_geom']:.4f} & {r['h_cv']:.3f}" + r" \\")
+        out.append(r"\addlinespace[3pt]")
+    out += [r"\bottomrule", r"\end{tabular}"]
+    write("tab_sae", out)
+
+
+def table_primary() -> None:
+    """The matched decoder comparison, all four widths and all three code families.
+
+    Generated rather than typed because the sign of the difference is the result: it is positive for
+    L^4, exactly zero for L^2 (where both decoders fail), and strongly negative for an untrained
+    code. Twelve cells entered by hand would be twelve chances to flip one.
+    """
+    cells: Dict[tuple, Any] = {}
+    for camp in ("e7", "e7_stageC"):
+        for c in load(f"{camp}/derived/primary_comparison.json")["cells"]:
+            cells[(c["loss"], c["d"])] = c
+    names = {"L4": r"$L^4$", "L2": r"$L^2$", "random": "untrained"}
+    out = [r"\begin{tabular}{llcccc}", r"\toprule",
+           r"code & $d$ & mean difference & 95\% interval & net / tie / probe & AUC difference \\",
+           r"\midrule"]
+    for loss in ("L4", "L2", "random"):
+        for d in (50, 100, 200, 400):
+            c = cells[(loss, d)]
+            v = c["network_minus_probe"]["post_relu"]["s95"]
+            a = c["network_minus_probe"]["post_relu"]["auc"]
+            out.append(f"{names[loss]} & {d} & {v['mean']:+.2f} & "
+                       f"[{v['ci_low']:+.2f}, {v['ci_high']:+.2f}] & "
+                       f"{v['n_positive']} / {v['n_zero']} / {v['n_negative']} & "
+                       f"{a['mean']:+.4f}" + r" \\")
+        if loss != "random":
+            out.append(r"\addlinespace[3pt]")
+    out += [r"\bottomrule", r"\end{tabular}"]
+    write("tab_primary", out)
+
+
+def table_stageb() -> None:
+    """Stage B: an independent replication of two stage A cells, plus the sparsity axis.
+
+    Separate campaign, separate seeds, separate run record. The two p = 0.01 rows are the
+    replication; the two p = 0.02 rows double the one training variable stage A held fixed.
+    """
+    cells = {(c["loss"], c["d"], c["p_train"]): c for c in
+             load("e7_stageB/derived/primary_comparison.json")["cells"]}
+    front = {(c["loss"], c["d"], c["p_train"]): c for c in
+             load("e7_stageB/derived/all_feature_frontier.json")["cells"]}
+    names = {"L4": r"$L^4$", "L2": r"$L^2$", "random": "untrained"}
+    out = [r"\begin{tabular}{llccccc}", r"\toprule",
+           r"code & $d$ & $p$ & mean difference & 95\% interval & net / tie / probe "
+           r"& $\kappa_{\min}$ \\", r"\midrule"]
+    for key in sorted(cells, key=lambda k: (("L4", "L2", "random").index(k[0]), k[2], k[1])):
+        v = cells[key]["network_minus_probe"]["post_relu"]["s95"]
+        loss, d, p = key
+        out.append(f"{names[loss]} & {d} & {p:.2f} & {v['mean']:+.2f} & "
+                   f"[{v['ci_low']:+.2f}, {v['ci_high']:+.2f}] & "
+                   f"{v['n_positive']} / {v['n_zero']} / {v['n_negative']} & "
+                   f"{front[key]['kappa_min_full_mean']:.4f}" + r" \\")
+    out += [r"\bottomrule", r"\end{tabular}"]
+    write("tab_stageb", out)
+
+
 def main() -> None:
     print("Generating tables from raw results:")
     table_e1()
@@ -226,6 +312,9 @@ def main() -> None:
     table_e6()
     table_traceability()
     table_cost()
+    table_sae()
+    table_primary()
+    table_stageb()
     print("done.")
 
 

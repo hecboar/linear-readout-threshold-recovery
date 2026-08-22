@@ -6,8 +6,9 @@ __pycache__/
 .venv/
 venv/
 
-# LaTeX build artefacts. main.pdf is committed deliberately: it is the artefact a
-# reviewer opens, and regenerating it requires a full TeX installation.
+# LaTeX build artefacts. paper/tmlr.pdf is committed deliberately: it is the artefact a
+# reviewer opens, and regenerating it requires a full TeX installation. The retired
+# elsarticle build is kept under paper/legacy/ for the same reason.
 paper/*.aux
 paper/*.log
 paper/*.out

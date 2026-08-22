@@ -23,7 +23,8 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1] / "paper"
-MAIN = ROOT / "main.tex"
+MAIN = ROOT / "tmlr.tex"
+ABSTRACT = ROOT / "sections" / "abstract.tex"
 NUMBERS = ROOT / "generated" / "numbers.tex"
 HIGHLIGHTS = ROOT / "highlights.txt"
 
@@ -52,10 +53,16 @@ def main() -> int:
                     help="abstract word limit; 300 is our own editorial target, not a venue rule (see below)")
     args = ap.parse_args()
 
+    # tmlr.tex \input{}s the abstract rather than inlining it, so both forms are accepted: the
+    # inline one for a single-file source and the file for the split one.
     body = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}",
                      MAIN.read_text(encoding="utf-8"), re.S)
+    if body is not None and "input" in body.group(1) and ABSTRACT.exists():
+        body = re.match(r"(.*)", ABSTRACT.read_text(encoding="utf-8"), re.S)
+    elif body is None and ABSTRACT.exists():
+        body = re.match(r"(.*)", ABSTRACT.read_text(encoding="utf-8"), re.S)
     if body is None:
-        print("FAIL: no abstract found in main.tex")
+        print(f"FAIL: no abstract found in {MAIN.name} or sections/abstract.tex")
         return 1
 
     ok = True

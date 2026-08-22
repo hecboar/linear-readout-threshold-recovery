@@ -1,0 +1,119 @@
+\section{Released dictionaries are not near the floor}
+\label{sec:dictionaries}
+
+A sparse autoencoder's decoder is an overcomplete code in exactly the sense of
+Section~\ref{sec:setting}: $F$ unit-norm directions in $d<F$ dimensions, used in practice by taking
+inner products with feature directions. It is therefore an object the diagnostic applies to without
+adaptation, and it is one that people deploy. This section measures \SaeDicts{} of them.
+
+\paragraph{What is and is not computed.} Everything below comes from a decoder matrix. No model
+weights are loaded, no activations are collected, no autoencoder is trained, and no linear programme
+is solved. The cost is seconds per dictionary, which is why the section can span five model families
+rather than one. The price is that these are statements about the geometry a dictionary presents to a
+linear reader, not about what its features mean or how well it reconstructs; the reconstruction
+metrics its authors report are a different and complementary measurement.
+
+\paragraph{Design.} Four axes, chosen so that each isolates one variable
+(Table~\ref{tab:sae}). \emph{Scale}: Qwen-Scope residual dictionaries at $d=2048$ and $d=4096$ with
+load and recipe held at $16\times$ and TopK. \emph{Load}: EleutherAI's Pythia-160m dictionaries at
+one layer with $k$ fixed at 64 and width varying, giving \SaeLoadOneLoad$\times$ to
+\SaeLoadThreeLoad$\times$ at constant $d$. \emph{Causal}: EleutherAI's SmolLM2-135M pair, one arm
+trained on the model and one on a randomly initialised copy of it, same recipe, same data, same ten
+layers. \emph{Architecture}: the MLP down-projection of LFM2.5-350M, a hybrid convolution/attention
+model rather than a standard transformer.
+
+Every code is compared against an i.i.d.\ Gaussian code of \emph{its own} shape, evaluated at
+\emph{its own} published operating sparsity. That matching is not cosmetic. Because $\sum_i h_i=d$,
+the mean leverage of any code is exactly $d/F$, so absolute quantities like the fraction of features
+a bound rules out are properties of the shape and not of the dictionary. Only the departure from a
+shape-matched control carries information about the code.
+
+\subsection{Near-floor geometry is generic}
+
+The \SaeControls{} matched controls attain the floor: $\Rgeom$ from \SaeCtlRgeomMin{} to
+\SaeCtlRgeomMax{} across every shape and every load from \SaeLoadMin$\times$ to
+\SaeLoadMax$\times$, with leverage dispersion \SaeCtlCvMin{} to \SaeCtlCvMax{}. This is
+Proposition~\ref{prop:leverage} in action rather than a coincidence: an i.i.d.\ code concentrates its
+leverage tightly around $d/F$, and a code with equalised leverage sits at the floor by the identity.
+
+The consequence for how such ratios are read is direct. A reported attainment ratio near one, under a
+pseudoinverse readout, is consistent with a code that has learned nothing at all. It becomes evidence
+about training only when compared against a shape-matched baseline, and that comparison is the first
+thing we could not find in the work we build on.
+
+\subsection{No released dictionary we measured is at the floor}
+
+All \SaeDictsAboveControl{} of the \SaeDicts{} dictionaries sit above their own control, at $\Rgeom$
+from \SaeDictRgeomMin{} to \SaeDictRgeomMax{}. There is no exception across two decoder sites
+(residual stream and MLP), three training recipes (TopK, JumpReLU-style and a hybrid model's own
+projection), five model families, and a twentyfold range of load.
+
+The direction is worth pausing on, because it is the opposite of the natural guess. One might expect
+a dictionary trained to represent a model's features to be at least as well arranged for linear
+readout as an unstructured code. It is not: a random code of the same shape carries strictly less
+cross-talk under the best linear readout each admits. Whatever these dictionaries optimise --- sparse
+reconstruction of activations, under an $\ell_0$ or TopK constraint --- it is not the conditioning of
+their own linear readout, and the two objectives are not aligned.
+
+By the identity, the excess has a single source: leverage dispersion, \SaeDictCvMin{} to
+\SaeDictCvMax{} against the controls' \SaeCtlCvMin{} to \SaeCtlCvMax{}. A released dictionary
+allocates its directions unevenly with respect to the space it lives in, and a handful of features
+with small $h_i$ dominate the harmonic sum that sets the ratio.
+
+\paragraph{Depth, not width.} The excess is not uniform across a model. In every suite we measured,
+mid-depth dictionaries sit furthest from the floor and the deepest layer sampled sits closest ---
+$\Rgeom=\SaeDictRgeomMax{}$ at mid-depth against \SaeDictRgeomMin{} at the last layer of one family,
+with the same ordering in the others. Whatever a practitioner is choosing when they pick a layer to
+train a dictionary on, they are also choosing how well that dictionary can be read linearly, by a
+margin far larger than any width effect below.
+
+\subsection{A randomly initialised control shows where the excess comes from}
+
+The obvious objection to the previous subsection is that training a TopK autoencoder might produce
+uneven leverage on any input, in which case the excess would say nothing about the model. An i.i.d.\
+control cannot answer this, because it does not share the training procedure.
+
+EleutherAI released the pair that does. Two dictionaries trained by an identical recipe on identical
+data, one on SmolLM2-135M and one on a \emph{randomly initialised} copy of it, at the same ten layers
+and the same $64\times$ expansion. The randomly initialised arm returns to the floor:
+$\Rgeom=\SaeRandInitRgeomMin$ to \SaeRandInitRgeomMax{} with dispersion \SaeRandInitCvMin{} to
+\SaeRandInitCvMax{}, against the trained arm's excess in all \SaePairedLayers{} paired layers. Its
+values are also nearly flat across depth, where the trained arm has clear structure.
+
+Fitting a sparse autoencoder therefore does not, by itself, produce dispersed leverage. The excess
+tracks what the model represents. This is the strongest causal statement the section supports, and it
+rests on one model pair, which is the only such pair we are aware of --- a limitation we return to in
+Section~\ref{sec:limitations}.
+
+\subsection{Load and dispersion come apart}
+
+Holding $d$ and $k$ fixed and varying only width, the ratio is flat while the dispersion grows:
+$\Rgeom$ of \SaeLoadOneRgeom, \SaeLoadTwoRgeom{} and \SaeLoadThreeRgeom{} at loads of
+\SaeLoadOneLoad$\times$, \SaeLoadTwoLoad$\times$ and \SaeLoadThreeLoad$\times$, while
+$\mathrm{cv}(h)$ climbs from \SaeLoadOneCv{} through \SaeLoadTwoCv{} to \SaeLoadThreeCv{}.
+
+Without the identity this reads as an anomaly. With it, it is a prediction: $\Rgeom$ is set by
+$\sum_i h_i^{-1}$, a harmonic quantity dominated by the smallest leverage scores, whereas the
+coefficient of variation is a second-moment summary sensitive to the upper tail. Extra spread at
+higher load can therefore accumulate in a part of the distribution the ratio does not see. Across all
+\SaeDicts{} dictionaries the excess is ranked almost perfectly by the harmonic-to-arithmetic gap of
+the leverage and only well by the dispersion, which is the same statement measured rather than
+derived.
+
+Two things follow for practice. Widening a dictionary at fixed $d$ does not improve --- and does not
+much worsen --- how well it can be read linearly. And the coefficient of variation, the obvious
+summary to reach for, is the wrong one: it moves when the ratio does not.
+
+\begin{table}[t]
+\centering
+\caption{The Interface Diagnostic on \SaeDicts{} released dictionaries, grouped by the axis each
+block isolates, with every i.i.d.\ control matched to the shape and operating sparsity of the block
+it judges. $s$ is the dictionary's own published operating sparsity. The
+\emph{trained against randomly initialised} block is a matched intervention rather than an
+observation: both arms come from the same recipe, data and layers, and differ only in whether the
+underlying model was trained. Generated from \texttt{results/sae/derived/sae\_axes.json}; the SHA-256
+of every checkpoint analysed is recorded there.}
+\label{tab:sae}
+\small
+\input{tables/tab_sae}
+\end{table}

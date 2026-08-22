@@ -1,0 +1,59 @@
+\section{Application: two frameworks, two invariants}
+\label{sec:application}
+% ============================================================================
+
+We now apply the interface distinction to the two frameworks whose apparent tension motivated
+this work. All statements imported from the source papers were checked against
+arXiv:2408.05451v1 and arXiv:2409.15318v3; the audit is recorded in
+Appendix~\ref{app:imported}.
+
+\begin{lemma}[Computation-layer interface; restated from {\cite[Thm.~11]{hanni2024superposition}}]
+\label{lem:comp}
+Fix $s=O(1)$ and suppose the targeted superpositional AND primitive of H\"{a}nni et al.\ is
+applied in a regime satisfying its stated graph-balancing, sparsity, norm and
+incoming-interference hypotheses. Then the computation layer produces outgoing readout error
+$\ecomp(d)=\Otilde(\sqrt{s^2/d})=\Otilde(d^{-1/2})$.
+\end{lemma}
+
+\begin{lemma}[Correction-layer tolerance; restated from {\cite[Thm.~21]{hanni2024superposition}}]
+\label{lem:corr}
+The correction layer admits incoming error
+$\varepsilon_{\mathrm{in}}<K(d)\,d^{1/4}/(F^{1/2}s^{1/4})$ with $K(d)=\mathrm{polylog}(d)$, and
+produces $\varepsilon_{\mathrm{out}}=O((\log d)\sqrt{s/d})$ and
+$\mu_{\mathrm{out}}=\Otilde(\sqrt{s/d})$.
+\end{lemma}
+
+\begin{proposition}[Template compatibility threshold; derived from Lemmas~\ref{lem:comp}--\ref{lem:corr}]
+\label{prop:hanni}
+Fix $s=O(1)$. The published H\"{a}nni computation--correction template is certified in the
+regime $F\lesssim\Otilde(d^{3/2})$, and its recursive construction emulates circuits of width
+$m$ using width $d=\Otilde(m^{2/3}s^2)$, giving a matching certified scale
+$\Thetatilde(d^{3/2})$. This is a template-specific certificate, not an impossibility result
+for other implementations.
+\end{proposition}
+
+\begin{proof}
+The correction theorem applies after the computation layer when $\ecomp(d)\lesssim
+\ecorr(F,d,s)$, i.e.\ $\Otilde(d^{-1/2})\lesssim K(d)\,d^{1/4}/F^{1/2}$ for $s=O(1)$.
+Suppressing polylogarithmic factors, $F^{1/2}\lesssim d^{3/4}$, hence
+$F\lesssim\Otilde(d^{3/2})$. Conversely, inverting $d=\Otilde(m^{2/3}s^2)$ at $s=O(1)$ gives
+$m=\Omegatilde(d^{3/2})$.
+\end{proof}
+
+In the Adler--Shavit framework, exact Boolean state is restored by thresholding after every
+stage. Their parameter-description lower bound $\Omega(m'\log m')$, converted to neurons under
+their architectural assumption of $\Theta(n^2)$ parameters with $O(1)$ average description
+length each, gives $\FrecAS(n)\le O(n^2/\log n)$; their explicit construction uses
+$n=O(\sqrt{m'}\log m')$ neurons, giving $\FrecAS(n)\ge\Omega(n^2/\log^2 n)$. The remaining
+logarithmic gap is open.
+
+The two regimes do not contradict each other, and the reason is now precise. The H\"{a}nni
+template maintains an approximate $\varepsilon$-linear interface, so it must feed its residual
+error into a correction theorem whose tolerance is $\Otilde(d^{1/4}/F^{1/2})$; matching that
+tolerance to the unavoidable $d^{-1/2}$ cross-talk scale of Theorem~\ref{thm:floor} gives the
+$d^{3/2}$ threshold. Adler--Shavit instead threshold, leaving the small-error class entirely,
+so Corollary~\ref{cor:impossible} does not apply to them. In the vocabulary of
+Section~\ref{sec:method}: the first framework operates where the diagnostic's attainment ratio
+matters, the second where its criterion-separation witness does.
+
+% ============================================================================

@@ -7,9 +7,11 @@ across entries is the useful part. **Three of these six are the same trap in thr
 paths**: a threshold or operating point chosen by maximising something, with no check that the
 choice beats the baseline it replaced. That pattern is the most useful thing in this file.
 
-KD1-KD5 are fixed. KD6's fix is in the code and its measurements are being recomputed; the decoder
-comparisons it invalidates are withdrawn until they are. The file was called *Known defects, open*
-while some were not; it is kept as a register rather than a queue.
+All six are fixed and all six sets of affected measurements have been recomputed. The file was
+called *Known defects, open* while some were not; it is kept as a register rather than a queue. The
+manuscript-level consequences — which readings were withdrawn and what caused each — are in
+`paper/sections/app_withdrawn.tex`, which is an appendix of the paper rather than a file only a
+reader of this repository would find.
 
 ---
 
@@ -214,11 +216,18 @@ exhausted, so their intervals are wider than the nominal budget implies.
 
 ## KD6 — The "matched" threshold policy never evaluated the threshold it was matching against
 
-**Status: FIXED in the selection routine** 2026-08-14, in `lrtr.probes.select_thresholds`, with
+**Status: FIXED** 2026-08-14 in `lrtr.probes.select_thresholds`, with
 `tests/test_threshold_selection.py` asserting the post-condition and reproducing the old failure.
-**The affected measurements are being recomputed**; until `scripts/refresh_probe_blocks.py` and
-`scripts/primary_comparison.py` have been re-run on all three stages, every decoder comparison in
-Section 10.5 is withdrawn.
+**The affected measurements have been recomputed**: `scripts/refresh_probe_blocks.py` refitted every
+probe from the saved `W_in` on all three stages, `scripts/primary_comparison.py` recomputed the
+matched comparison, and the per-cell records carry `kd6_fixed: true`.
+
+Two readings did not survive the refit and are withdrawn in the manuscript rather than replaced:
+that the two pre-registered estimands disagree (they agree at all four widths once the threshold is
+selected correctly), and that a pre-ReLU probe beats the network by a full sparsity level (it is
+within a quarter of a level on trained codes and the sign reverses at `d=400`). Both are recorded in
+`paper/sections/app_withdrawn.tex`, items 1 and 2. The correction moved *both* sides of the
+comparison, which is why it is trustworthy: it was not a change that could only help one arm.
 
 **Found:** 2026-08-14 by an internal adversarial audit, verified per model at four widths.
 
