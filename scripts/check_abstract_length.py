@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """Count the rendered length of the abstract and the highlights.
 
-Elsevier caps the abstract (commonly 250 words) and each highlight bullet
+The 250-word cap was Elsevier's, from the Guide for Authors of the journal this manuscript
+was first written for. The target is now TMLR, which publishes no abstract limit, so 300 is
+an editorial choice of our own rather than a rule -- kept as a check because an abstract that
+drifts past it stops being an abstract. The highlights file is an Elsevier artefact and TMLR
+has no equivalent; the check tolerates its absence.
+
+Historically: Elsevier caps the abstract (commonly 250 words) and each highlight bullet
 at 85 characters. Both counts have to be taken *after* the generated numeric macros expand,
 which is why this cannot be eyeballed from the source.
 
@@ -42,8 +48,8 @@ def word_count(tex: str) -> int:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--limit", type=int, default=250,
-                    help="abstract word limit from the Guide for Authors (default 250)")
+    ap.add_argument("--limit", type=int, default=300,
+                    help="abstract word limit; 300 is our own editorial target, not a venue rule (see below)")
     args = ap.parse_args()
 
     body = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}",

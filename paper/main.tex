@@ -73,25 +73,34 @@
     Universitat Polit\`ecnica de Val\`encia}, city={Valencia}, country={Spain}}
 
 \begin{abstract}
-Overcomplete neural representations encode more latent features than activation dimensions, but
-are useful only when that information can be decoded. Which interface a network
-maintains is decided informally today, and recent work disagrees about whether trained models
-compute in superposition at all. We give two computable criteria for a code, and prove
-that one implies the other. The first is analog reconstruction: a rank--trace bound makes any
-rank-$d$ unit-diagonal readout carry average squared off-diagonal cross-talk at least
-$(F-d)/(d(F-1))$, in a gain-normalised form bounding the interference-to-gain ratio. Since that
-constrains an ensemble rather than a code, we also compute a given code's own floor in closed
-form, factoring any attainment ratio into a geometry term and a decoder term and showing that
-ratios reported under the pseudoinverse measure only the first. The second is support recovery,
-as a per-feature capacity: one linear programme returns the largest sparsity at which any affine
-probe can detect a chosen feature, with a certified noise margin when it succeeds and a
-checkable certificate when it fails. Low leverage then forces that frontier down,
-with no decoder in the argument, while an explicit code refutes the converse --- so the
-hierarchy is strict and one-way. The statistics need $O(Fd^2)$ time and $O(d^2)$ memory,
-never the $F\times F$ interface, reaching $F\approx10^6$ features. Six CPU
-experiments validate the procedure; in a trained toy model the $L^4$ code's near-attainment
-(\EfiveLfourRatioPinvMean{} against \EfiveLtwoRatioPinvMean{} for $L^2$) proves to be a property
-of its leverage profile rather than of its decoder.
+An overcomplete code packs $F$ features into $d<F$ dimensions, so any linear readout of one feature
+picks up cross-talk from the others, and a rank--trace bound $W(F,d)=(F-d)/(d(F-1))$ limits how
+small that cross-talk can be. Proximity to this floor is read as evidence that a code has found an
+efficient arrangement. It is not: an i.i.d.\ code of the same shape attains the floor to four
+decimal places at every shape and load we measure (\SaeCtlRgeomMin--\SaeCtlRgeomMax{} over
+\SaeControls{} matched controls), and the reason is exact rather than empirical. For the gain-calibrated
+pseudoinverse the attainment ratio is $\frac{d}{F(F-d)}\left(\sum_i h_i^{-1}-F\right)$ with
+$\sum_i h_i=d$, so it equals one precisely when the leverage $h_i$ is equalised across features:
+distance from the floor \emph{is} leverage dispersion.
+
+The floor then separates what training buys from what comes for free. On
+\SaeDicts{} decoder matrices from released sparse autoencoders --- five model families, $d$ from
+\SaeDMin{} to \SaeDMax{}, loads from \SaeLoadMin$\times$ to \SaeLoadMax$\times$ --- all
+\SaeDictsAboveControl{} sit \emph{above} their matched control
+(\SaeDictRgeomMin--\SaeDictRgeomMax): a random code of the same shape is better conditioned for
+linear readout than any dictionary we measured. Autoencoders trained by the same recipe on a
+\emph{randomly initialised} copy of the same model return to the floor
+(\SaeRandInitRgeomMin--\SaeRandInitRgeomMax) in all \SaePairedLayers{} paired layers, so the excess
+reflects what the model learned, not the act of fitting an autoencoder. Under controlled conditions
+the loss decides whether an interface exists at all --- $L^2$ reaches
+$R_{\mathrm{geom}}=\SALtwoFiftyRgeom$ to \ScLtwoRgeom{} with its frontier collapsed to $1$, against
+$\SALfourTwoHundredRgeom$ for $L^4$ --- and that frontier follows a rate we registered before the
+widest run (\ScRegistered{} predicted, \ScMeasured{} measured), with an advantage over an untrained
+code that narrows as width grows.
+
+Two limits are stated rather than implied: frontier statements are worst cases over amplitudes, not
+claims about typical use; and the decoder comparison measures what supervised fitting recovers, not
+what an affine map can express, since the probe class contains the network's own decoder.
 \end{abstract}
 
 \begin{keyword}

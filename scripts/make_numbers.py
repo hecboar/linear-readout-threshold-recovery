@@ -528,6 +528,50 @@ def build() -> Macros:
         m.integer(f"Subset{tag}Rank", int(c["leverage_rank_of_true_argmin_median"]))
     m.integer("SubsetFourHundredFound", af[("L4", 400)]["models_where_subset_found_the_argmin"])
 
+    # ---------------- Released SAE dictionaries: the transfer evidence ----------------
+    # Three populations that must never be conflated: dictionaries from trained models, the ten
+    # dictionaries an identical recipe produced on a RANDOMLY INITIALISED model, and the i.i.d.
+    # controls. The middle one is a control in substance even though the pipeline records it as a
+    # dictionary, so it gets its own macros rather than being folded into the range.
+    sae = load("sae/derived/sae_axes.json")["rows"]
+    ctl = [r for r in sae if r["kind"] == "control"]
+    trained = [r for r in sae if r["kind"] == "dictionary" and "random" not in r["label"]]
+    randinit = [r for r in sae if r["kind"] == "dictionary" and "random" in r["label"]]
+
+    def span(rows, key, dec=4, tag=""):
+        m.num(f"Sae{tag}Min", min(r[key] for r in rows), dec)
+        m.num(f"Sae{tag}Max", max(r[key] for r in rows), dec)
+
+    span(trained, "R_geom", 4, "DictRgeom")
+    span(trained, "h_cv", 3, "DictCv")
+    span(ctl, "R_geom", 4, "CtlRgeom")
+    span(ctl, "h_cv", 3, "CtlCv")
+    span(randinit, "R_geom", 4, "RandInitRgeom")
+    span(randinit, "h_cv", 3, "RandInitCv")
+    m.integer("SaeDicts", len(trained))
+    m.integer("SaeControls", len(ctl))
+    m.integer("SaePairedLayers", len(randinit))
+    m.integer("SaeDMin", min(r["d"] for r in trained))
+    m.integer("SaeDMax", max(r["d"] for r in trained))
+    m.num("SaeLoadMin", min(r["load"] for r in trained), 1)
+    m.num("SaeLoadMax", max(r["load"] for r in trained), 1)
+    # Every trained-model dictionary above its own matched control: the claim is per-shape, so it is
+    # counted per-shape rather than against a global minimum.
+    by_shape = {(r["d"], r["F"], r["s_operating"]): r["R_geom"] for r in ctl}
+    m.integer("SaeDictsAboveControl",
+              sum(1 for r in trained
+                  if r["R_geom"] > by_shape[(r["d"], r["F"], r["s_operating"])]))
+    # The load axis: R_geom flat while the dispersion grows. Quoted in that order in the text.
+    ld = sorted((r for r in trained if r["axis"] == "load"), key=lambda r: r["load"])
+    for i, r in enumerate(ld, start=1):
+        w = {1: "One", 2: "Two", 3: "Three"}[i]
+        m.num(f"SaeLoad{w}Rgeom", r["R_geom"], 4)
+        m.num(f"SaeLoad{w}Cv", r["h_cv"], 3)
+        m.num(f"SaeLoad{w}Load", r["load"], 1)
+    # The identity, checked against the implementation rather than asserted.
+    m.add("SaeIdentityGap", f"{max(r['identity_gap'] for r in sae):.0e}")
+    m.integer("SaeIdentityRows", len(sae))
+
     # The matched comparison at the fourth width.
     pc = {(c["loss"], c["d"]): c for c in
           load("e7_stageC/derived/primary_comparison.json")["cells"]}
