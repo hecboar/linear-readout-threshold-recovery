@@ -101,10 +101,22 @@ than of a basis, and equally what stops them from being claims about numerical c
 noise robustness. None requires
 reverse-engineering a mechanism, and the third is exact rather than sampled --- which matters, because
 this project's history is a series of empirical readings that reversed when an estimand or a baseline
-was tightened, while $\kappa_i$ never moved. What the instrument does not settle is consequence: we
-measure that trained dictionaries are worse conditioned for linear readout than random ones, and we do
-not show what that costs a specific interpretability pipeline. Establishing that link is the obvious
-next step and the one we would most want a reader to take.
+was tightened, while $\kappa_i$ never moved.
+
+The consequence question deserves stating precisely, because the honest answer is neither ``none'' nor
+``established''. In operational units the diagnostic does say something: all \SaeFailEarlier{} of
+\SaeDicts{} dictionaries reach guaranteed affine failure \SaeFailGapMin{} to \SaeFailGapMax{} sparsity
+levels earlier than an i.i.d.\ code of their own shape and operating sparsity. At a sparsity where a
+random code is still safe, a released dictionary already has a feature no affine rule can recover.
+That is a statement a practitioner can act on, and it is a worst-case guarantee rather than an
+average.
+
+What it is not is an external endpoint. Both the ratio and the failure threshold are functionals of
+the same leverage distribution, so their agreement is a consistency check and not independent
+corroboration; and neither is measured against reconstruction quality, attribution accuracy, steering
+behaviour, or any other quantity an interpretability pipeline actually optimises. Whether a
+\SaeFailGapMax{}-level earlier failure boundary changes what such a pipeline recovers in practice is
+the question we would most want a reader to take next, and the one this paper does not answer.
 
 For capacity theory, the interface distinction explains why the H\"{a}nni and Adler--Shavit results
 coexist rather than compete (Appendix~\ref{sec:application}). It also cautions against reading

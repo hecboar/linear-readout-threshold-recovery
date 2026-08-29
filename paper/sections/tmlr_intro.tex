@@ -86,8 +86,17 @@ comparison, and it is not present in the literature we build on.
 \item \textbf{No released dictionary we measured is at the floor.} All \SaeDictsAboveControl{} of
 \SaeDicts{} sit above their own matched control, at $\Rgeom=\SaeDictRgeomMin$ to
 \SaeDictRgeomMax{}, with leverage dispersion \SaeDictCvMin{} to \SaeDictCvMax{} against the
-controls' \SaeCtlCvMin{} to \SaeCtlCvMax{}. Whatever these dictionaries optimise, it is not
-linear-readout cross-talk.
+controls' \SaeCtlCvMin{} to \SaeCtlCvMax{}. Whatever these dictionaries optimise, it is not the
+evenness of their own leverage.
+
+\item \textbf{The same holds in sparsity units, which is the form a practitioner can use.} The
+diagnostic also returns the sparsity at which some feature is guaranteed to be unrecoverable by any
+affine rule. All \SaeFailEarlier{} dictionaries reach it \SaeFailGapMin{} to \SaeFailGapMax{} levels
+earlier than the i.i.d.\ code of their own shape and operating sparsity: where a random code is still
+safe, a released dictionary already has a feature no affine rule recovers. This is a worst-case
+statement about one feature rather than an average over all of them, so its agreement with the ratio
+is not automatic --- though both are functionals of the same leverage distribution, and neither is an
+external endpoint (Section~\ref{sec:discussion}).
 
 \item \textbf{A matched randomly-initialised control locates the cause.} Autoencoders trained by an
 identical recipe on a randomly initialised copy of the same model return to the floor

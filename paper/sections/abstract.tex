@@ -12,16 +12,16 @@ The floor then separates what training buys from what comes for free. On \SaeDic
 matrices --- \SaeSaeCount{} sparse-autoencoder decoders plus \SaeMlpCount{} MLP down-projections of
 a hybrid model, five families --- all
 \SaeDictsAboveControl{} sit \emph{above} their matched control
-(\SaeDictRgeomMin--\SaeDictRgeomMax): a random code of the same shape carries less cross-talk under
-the best linear readout each admits. Autoencoders trained by the same
+(\SaeDictRgeomMin--\SaeDictRgeomMax), and all reach guaranteed affine failure \SaeFailGapMin{} to
+\SaeFailGapMax{} sparsity levels earlier: where a random code of the same shape is still safe, a
+released dictionary already has a feature no affine rule recovers. Autoencoders trained by the same
 recipe on a \emph{randomly initialised} copy of the same model return to the floor
 (\SaeRandInitRgeomMin--\SaeRandInitRgeomMax) in all \SaePairedLayers{} paired layers, so the excess
 reflects what the model learned rather than the act of fitting an autoencoder. Under controlled
 conditions the loss decides whether an interface exists at all --- $L^2$ reaches
 $R_{\mathrm{geom}}=\SALtwoFiftyRgeom$ to \ScLtwoRgeom{} with its frontier collapsed to $1$, against
 $\SALfourTwoHundredRgeom$ for $L^4$ --- and that frontier follows a rate we registered before the
-widest run (\ScRegistered{} predicted, \ScMeasured{} measured), with an advantage over an untrained
-code that narrows as width grows.
+widest run (\ScRegistered{} predicted, \ScMeasured{} measured).
 
 Two limits are stated rather than implied: frontier statements are worst cases, not typical-case
 claims; and because the probe class contains the network's own decoder, our decoder
