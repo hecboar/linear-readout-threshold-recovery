@@ -77,10 +77,25 @@ def _net_as_probe(W_out: np.ndarray, d: int, F: int) -> np.ndarray:
 
 
 def _curve(W_in: np.ndarray, by_s: Dict[int, Any], W: np.ndarray, theta) -> float:
-    """Mean exact recovery over the sparsity grid: the campaign's selection objective."""
-    vals = [float(_exact_recovery(score_probe(W_in, sp, W, "post"), sp, theta).mean())
-            for _, sp in sorted(by_s.items()) if len(sp)]
-    return float(np.mean(vals)) if vals else float("nan")
+    """The campaign's selection objective, verbatim: normalised trapezoid over the validation curve.
+
+    This must be the SAME functional `select_probe` maximises, or the comparison is between two
+    different objectives and the word "missed" is unearned. `select_probe` computes
+    `trapezoid(ys, xs) / (max(xs) - min(xs))`; an earlier version of this file used the plain mean
+    over grid points and claimed in its docstring that the mean *was* the selection objective. It is
+    not: on a uniform integer grid the two differ by endpoint reweighting of order
+    `[(y_1 + y_n)/2 - mean] / (n - 1)`, which is the same order as the smallest gap this script
+    reports. Found by an external adversarial review.
+    """
+    rows = [(s, float(_exact_recovery(score_probe(W_in, sp, W, "post"), sp, theta).mean()))
+            for s, sp in sorted(by_s.items()) if len(sp)]
+    if not rows:
+        return float("nan")
+    xs = [r[0] for r in rows]
+    ys = [r[1] for r in rows]
+    if len(xs) < 2:
+        return float(ys[0])
+    return float(np.trapezoid(ys, xs) / (max(xs) - min(xs)))
 
 
 def _s95(W_in: np.ndarray, test_by_s: Dict[int, Any], W: np.ndarray, theta) -> Dict[str, float]:
