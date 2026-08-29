@@ -67,9 +67,12 @@ finds a far better affine map than the network's own readout, which is exactly w
 a trained one.
 
 As a validity check, this analysis rebuilds each cell's split bundle from the campaign's own seed and
-recomputes both sides from the released weights; the differences it obtains reproduce the published
-ones in Table~\ref{tab:primary} to within \CeilReproMaxDelta{} of a sparsity level in the worst cell,
-which is the resolution of a floored crossing point.
+recomputes both sides from the released weights. The differences it obtains reproduce the published
+ones exactly --- a worst-cell discrepancy of \CeilReproMaxDelta{} of a sparsity level across all
+\CeilReproCells{} cells of the three campaigns, Tables~\ref{tab:primary} and~\ref{tab:stageb}
+together. The check is stated over every cell rather than over the ones it happens to pass: an
+earlier version was scoped to Table~\ref{tab:primary} alone, which excluded the single cell where it
+then failed.
 
 \paragraph{What the comparison does and does not support.} It does not support ``the network's
 nonlinearity buys expressive power'': the class contains its decoder, and the gap is now

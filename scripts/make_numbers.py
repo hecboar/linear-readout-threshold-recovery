@@ -635,14 +635,24 @@ def build() -> Macros:
     # Independent reproduction: this script rebuilds the split bundle from the campaign's own seed
     # and recomputes both sides, so the difference it gets must match the published one. It does,
     # to a tenth of a sparsity level in the worst cell -- which is the resolution of the statistic.
+    # Over EVERY cell of all three campaigns, not just the two that Table 1 draws on. The earlier
+    # version was scoped to e7 and e7_stageC, which silently excluded the one campaign where the
+    # check then failed -- by 0.7 of a level, because the probe side was selected over all three
+    # threshold policies instead of the matched `global` one. With that filter corrected in
+    # probe_ceiling.py the reproduction is exact everywhere, so the scope is widened rather than
+    # declared. An external adversarial review found the exclusion.
     prim_all = {}
-    for camp in ("e7", "e7_stageC"):
+    for camp in ("e7", "e7_stageB", "e7_stageC"):
         for c in load(f"{camp}/derived/primary_comparison.json")["cells"]:
-            prim_all[(c["loss"], c["d"])] = c["network_minus_probe"]["post_relu"]["s95"]["mean"]
-    worst = max(abs((c["net_test_s95_mean"] - c["probe_test_s95_mean"]) - prim_all[(k[1], k[3])])
-                for k, c in ceil.items()
-                if k[0] in ("e7", "e7_stageC") and k[2] == 0.01 and (k[1], k[3]) in prim_all)
-    m.num("CeilReproMaxDelta", worst, 2)
+            prim_all[(camp, c["loss"], c["d"], c.get("p_train"))] =                 c["network_minus_probe"]["post_relu"]["s95"]["mean"]
+    deltas = []
+    for k, c in ceil.items():
+        pub = prim_all.get((k[0], k[1], k[3], k[2]), prim_all.get((k[0], k[1], k[3], None)))
+        if pub is None:
+            raise SystemExit(f"probe_ceiling cell {k} has no primary_comparison counterpart")
+        deltas.append(abs((c["net_test_s95_mean"] - c["probe_test_s95_mean"]) - pub))
+    m.num("CeilReproMaxDelta", max(deltas), 2)
+    m.integer("CeilReproCells", len(deltas))
 
     # ---------------- E8: which half of the training does the work ----------------
     import collections
@@ -763,9 +773,14 @@ def build() -> Macros:
         m = _re.search(r"[Ll](?:ayer)?[ _]?(\d+)", label)
         return int(m.group(1)) if m else None
 
+    # `trained`, not `sae`: the randomly-initialised arm is also kind == "dictionary" and its labels
+    # also begin "SmolLM2", so grouping over the whole pool put the random arm's minimum (1.0038 at
+    # layer 0) into a sentence about the trained suite, whose real minimum is at layer 3. The macro
+    # was faithfully equal to the minimum of the wrong set, which is a defect no value check can see.
+    # Found by an external adversarial review.
     by_suite: Dict[str, List[tuple]] = {}
     for r in sae:
-        if r["kind"] != "dictionary":
+        if r["kind"] != "dictionary" or "random" in r["label"]:
             continue
         ell = _layer(r["label"])
         if ell is not None:

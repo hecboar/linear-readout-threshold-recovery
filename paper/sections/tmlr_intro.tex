@@ -23,7 +23,8 @@ training discovers efficient geometry.
 anything a code learned, because it is what an unstructured code gives for free; the quantity that
 distance from the floor actually measures is the \emph{dispersion of leverage} across features; and
 measured this way, no released sparse-autoencoder dictionary we examined is near the floor --- every
-one is worse conditioned for linear readout than a random code of its own shape, while an
+one carries more cross-talk under the best linear readout it admits than a random code of its own
+shape does, while an
 autoencoder trained by the same recipe on a randomly initialised model is not. The practical
 consequence is that the excess is a property of the represented content rather than of the fitting
 procedure, and that it moves with depth but not with dictionary width.
@@ -119,7 +120,7 @@ alongside it.
 
 \item \textbf{An artefact that can be checked.} The weights of all 400 trained networks are
 released, along with the SHA-256 of every third-party dictionary analysed, a decision log recording
-what was registered before each campaign, and a register of six defects found during this work
+what was registered before each campaign, and a register of nine defects found during this work
 together with what each invalidated. Section~\ref{sec:limitations} states which readings we
 withdrew and why.
 
@@ -133,7 +134,7 @@ guarantee, not what fails in typical use. The comparison between a network's own
 affine probe (Section~\ref{sec:probes}) measures what supervised fitting recovers rather than what an
 affine map can express, because the probe class contains the network's decoder --- and we verify
 that the class membership is not hypothetical: the selection misses the network's own map, on the
-very validation objective it maximises, in every trained model above the tie width. We report the
+very validation objective it maximises, in every $L^4$ model above the tie width. We report the
 comparison for completeness and build nothing on it. And the controlled campaigns use one task family at widths up
 to $d=400$, so they establish the mechanism, not its magnitude in a deployed model --- which is
 precisely why the dictionary measurements are the other half of the paper.

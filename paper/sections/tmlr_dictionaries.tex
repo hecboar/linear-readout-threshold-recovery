@@ -87,8 +87,8 @@ The direction is worth pausing on, because it is the opposite of the natural gue
 a dictionary trained to represent a model's features to be at least as well arranged for linear
 readout as an unstructured code. It is not: a random code of the same shape carries strictly less
 cross-talk under the best linear readout each admits. Whatever these dictionaries optimise --- sparse
-reconstruction of activations, under an $\ell_0$ or TopK constraint --- it is not the conditioning of
-their own linear readout, and the two objectives are not aligned.
+reconstruction of activations, under an $\ell_0$ or TopK constraint --- it is not the evenness of
+their own leverage, and the two objectives are not aligned.
 
 By the identity, the excess has a single source: leverage dispersion, \SaeDictCvMin{} to
 \SaeDictCvMax{} against the controls' \SaeCtlCvMin{} to \SaeCtlCvMax{}. A released dictionary
@@ -114,7 +114,7 @@ the deepest layer sampled sits closest --- $\Rgeom=\SaeDictRgeomMax{}$ at layer 
 against \SaeQwenDeepestRgeom{} at its own last layer. In the other two suites it is not. The deepest
 LFM2.5 layer is \SaeLfmDeepestRgeom{} while the closest to the floor is the layer before it
 (\SaeLfmClosestRgeom{}), and the deepest SmolLM2 layer is \SaeSmolDeepestRgeom{} against a minimum of
-\SaeSmolClosestRgeom{} at layer 0. So the safe statement is the one the data supports in every
+\SaeSmolClosestRgeom{} at layer 3. So the safe statement is the one the data supports in every
 suite: the layer a dictionary is trained on changes its linear readability by far more than its
 width does, and the direction of that change is not the same in every family.
 

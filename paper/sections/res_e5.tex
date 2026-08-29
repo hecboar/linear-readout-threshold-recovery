@@ -60,11 +60,13 @@ a code that gradient descent actually produced, and how far the thresholded deco
 that error stops it.
 
 \paragraph{The $L^2$ model is maintaining a linear interface.} This is the finding we did not
-plan for. In the $L^2$ models the ReLU is active on only \EfiveLtwoNegPre\% of preactivations,
-the learned decoder sits at relative distance \EfiveLtwoWoutPinvDist{} from the pseudoinverse of
-the encoder, and the network's thresholded decision agrees with that of a plain linear readout
-on \EfiveLtwoAgreeLinear\% of evaluation states. The $L^4$ models are elsewhere: ReLU active on
-\EfiveLfourNegPre\% of preactivations, decoder at relative distance \EfiveLfourWoutPinvDist,
+plan for. In the $L^2$ models the ReLU \emph{clips} only \EfiveLtwoNegPre\% of preactivations ---
+the macro is the negative fraction, so the unit is very nearly linear --- the learned decoder sits at
+relative distance \EfiveLtwoWoutPinvDist{} from the pseudoinverse of the encoder, and the network's
+thresholded decision agrees with that of a plain linear readout on \EfiveLtwoAgreeLinear\% of
+evaluation states, which the two preceding facts are what make possible. The $L^4$ models are
+elsewhere: the ReLU clips \EfiveLfourNegPre\% of preactivations, decoder at relative distance
+\EfiveLfourWoutPinvDist,
 and agreement with the linear readout down to \EfiveLfourAgreeLinear\%. The diagnostic thus
 reproduces, from interface measurements alone and without any mechanistic reverse-engineering,
 the distinction that~\cite{bhagat2026cc} and~\cite{ferreiradasilva2026l4} reached by other

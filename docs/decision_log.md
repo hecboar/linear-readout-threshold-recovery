@@ -679,3 +679,43 @@ limitation in its own right rather than a clause inside another one.
 
 **On sequencing.** We waited for these reviews before posting the arXiv v2. Three of the seven errors
 are in v1 as well, and two we would have introduced into v2. That decision is worth keeping.
+
+---
+
+## D23 — The second review round, and what it caught
+
+**Decided** 2026-08-29. The round-two verification review returned *accept with minor revision*,
+unchanged from round one, with six items. All six are applied.
+
+**It was worth running, and the reason is the one we predicted.** Every item it found is in text
+written while fixing round one. Two are substantive. The manuscript's conclusion had its integer
+corrected and the inference that integer carried left standing, so it still asserted that the
+nonlinearity does not out-decode a linear probe — which the results section had already replaced with
+a three-way ordering. And a new macro cited the wrong arm: the SmolLM2 depth minimum came out at
+1.0038 from the randomly-initialised dictionaries, whose labels also begin "SmolLM2", when the
+trained suite's minimum is 1.0105 at layer 3. Both are the class of error the number checker cannot
+see, because in both cases the value is faithfully equal to something — just not to what the sentence
+says it is.
+
+**Where the reviewer was right about the symptom and wrong about the cause, and why that mattered.**
+It found that the ceiling analysis's reproduction check verified only because its scope excluded the
+one campaign where it failed, by 0.7 of a sparsity level, and diagnosed a seed mismatch between the
+audit and stage B. The seeds are right: the recomputed network score matches the campaign record in
+all 220 models of all 22 cells. The actual cause was that the audit selected the probe over all three
+threshold policies while the matched comparison it audits uses only the global one — KD9, and the
+eighth instance of this project's recurring trap, committed for the third time inside the
+probe-ceiling analysis. Chasing the reviewer's diagnosis rather than the symptom would have found
+nothing; taking the symptom seriously and finding our own cause fixed it. With the filter corrected
+the reproduction is exact in every cell, so the claim is widened rather than qualified.
+
+**One correction to the reviewer, recorded because it cuts the other way.** Its round-one finding of
+a systematic ceiling gap in the L2 arm was an artefact of our defective objective, and its round-two
+recount of the corrected figure gives 52 of 110 where we had written 54. Both are in the change
+manifest we sent, not in the paper, which says "essentially zero" and is right. We have not
+propagated either number to the manuscript.
+
+**The count is now nine defects and eight withdrawn readings.** Three rounds of adversarial review
+have each found something the previous round's fixes introduced or left. That is the argument for
+external review over more self-checking, and it is stated in the withdrawn-readings appendix in those
+terms, because a reader deciding what to trust should know the shape of the process and not only its
+output.

@@ -40,10 +40,13 @@ against \SbMatchFiftyPtwoKappa{}. At $d=200$ the higher sparsity is \emph{worse}
 [\SbMatchPoneKappaLo, \SbMatchPoneKappaHi], with the per-model ranges disjoint.
 
 An earlier version reported the opposite as ``the cleanest small result in the campaign'' by
-comparing across the load. We withdraw it. What remains is a null: over the one width where a
+comparing across the load. We withdraw it. What remains is a null: over the two widths where a
 matched comparison exists, doubling the training sparsity does not improve the geometry the code
-presents, and the decoder ordering survives the change ($L^4$ at \SbLoadLfourFiftyDiff{} and
-\SbLoadLfourTwoHundredDiff{}, $L^2$ still pinned at $\kappa_{\min}=\SbKappaLoadLtwoTwoHundred$).
+presents --- indistinguishable at $d=50$ and worse at $d=200$ --- and the decoder ordering survives
+the change ($L^4$ at \SbLoadLfourFiftyDiff{} and \SbLoadLfourTwoHundredDiff{}, $L^2$ still pinned at
+$\kappa_{\min}=\SbKappaLoadLtwoTwoHundred$). Both matched widths rest on 10 models against stage A's
+20, and the direction at $d=200$ comes from one width, so we read this as an absence of evidence for
+the withdrawn claim rather than as evidence for its converse.
 
 \begin{table}[t]
 \centering

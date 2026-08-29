@@ -4,8 +4,10 @@
 This appendix exists because the alternative is worse. Over the course of this work eight readings of
 our own measurements turned out not to survive a check, and in every case the reading we had chosen
 was the more interesting of the available ones. The last two were found by an external adversarial
-review of the submitted manuscript, after the other six had been written up here --- which is the
-most useful thing this appendix can tell a reader about how much to trust the rest. Listing them costs us the appearance of a clean
+review of the submitted manuscript, after the other six had been written up here, and a second round
+of that review --- of the fixes for the first two --- found a ninth defect, in the audit tooling
+itself. That sequence is the most useful thing this appendix can tell a reader about how much to
+trust the rest. Listing them costs us the appearance of a clean
 result and buys the reader the only thing that makes the surviving claims worth anything: a record
 of how hard they were pushed. The register in \code{docs/known\_defects.md} carries the code-level
 detail; what follows is the manuscript-level consequence of each.
@@ -153,7 +155,7 @@ absent where neither decoder recovers anything, and strongly negative where the 
 record it because a corrected measurement that happens to help is exactly the kind a reader should be
 told about.
 
-\paragraph{What the pattern says.} Four of the eight are the same trap in four different code paths:
+\paragraph{What the pattern says.} Five of the nine defects behind them are the same trap in five different code paths:
 an operating point or an objective chosen by maximising something, with no check that it is the thing
 it claims to be. Two are a reading chosen from among several that the data permitted, selected after
 the fact for being the stronger claim. One --- item 7 --- is a comparison made without checking that

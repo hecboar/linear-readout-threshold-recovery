@@ -9,16 +9,16 @@
    "d": 100,
    "F": 200,
    "n_models": 20,
-   "duration_seconds": 40.7,
+   "duration_seconds": 28.9,
    "validation_gap_net_minus_probe": {
-    "mean": -0.00031776870389883837,
-    "ci_low": -0.0010570337197049477,
-    "ci_high": 0.00039515279241306747,
-    "n_positive": 9,
-    "n_zero": 2,
+    "mean": -0.0002914251844046343,
+    "ci_low": -0.0010323366701791338,
+    "ci_high": 0.00042149631190727224,
+    "n_positive": 10,
+    "n_zero": 1,
     "n_negative": 9
    },
-   "models_where_selection_missed_the_network": 9,
+   "models_where_selection_missed_the_network": 10,
    "net_test_s95_mean": 0.0,
    "net_test_s95_at_fixed_theta_mean": 0.0,
    "probe_test_s95_mean": 0.0,
@@ -79,7 +79,7 @@
       "auc": 0.07069545200892857
      },
      "probe_val": 0.049459957850368816,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -159,7 +159,7 @@
       "auc": 0.06848493303571428
      },
      "probe_val": 0.06776870389884088,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -179,7 +179,7 @@
       "auc": 0.0673681640625
      },
      "probe_val": 0.0571654373024236,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -218,8 +218,8 @@
       "s95": 0.0,
       "auc": 0.06973772321428572
      },
-     "probe_val": 0.058252107481559526,
-     "probe_family": "ridge_fixed",
+     "probe_val": 0.057725237091675444,
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -279,7 +279,7 @@
       "auc": 0.07337890625
      },
      "probe_val": 0.0494599578503688,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -319,7 +319,7 @@
       "auc": 0.06721051897321428
      },
      "probe_val": 0.06437697576396206,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -432,11 +432,11 @@
    "d": 200,
    "F": 400,
    "n_models": 20,
-   "duration_seconds": 89.8,
+   "duration_seconds": 59.4,
    "validation_gap_net_minus_probe": {
-    "mean": 0.0007528848860118186,
-    "ci_low": 0.000494886949995307,
-    "ci_high": 0.001027330190449383,
+    "mean": 0.0007657847828126442,
+    "ci_low": 0.0005077868467961311,
+    "ci_high": 0.0010402007693029354,
     "n_positive": 18,
     "n_zero": 0,
     "n_negative": 2
@@ -462,7 +462,7 @@
       "auc": 0.046974609375
      },
      "probe_val": 0.04226475279106858,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -522,7 +522,7 @@
       "auc": 0.05134716796875001
      },
      "probe_val": 0.041162397973543485,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -542,7 +542,7 @@
       "auc": 0.04918896484375
      },
      "probe_val": 0.03755042686931232,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -562,7 +562,7 @@
       "auc": 0.04932373046875
      },
      "probe_val": 0.03989586265128061,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -582,7 +582,7 @@
       "auc": 0.050701171875000006
      },
      "probe_val": 0.03830096631954217,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -602,7 +602,7 @@
       "auc": 0.048786621093749996
      },
      "probe_val": 0.03546298902336055,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -622,7 +622,7 @@
       "auc": 0.04827441406250001
      },
      "probe_val": 0.03281264658973638,
-     "probe_family": "ridge_fixed",
+     "probe_family": "svm_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -662,7 +662,7 @@
       "auc": 0.04901806640625
      },
      "probe_val": 0.03827751196172249,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -682,7 +682,7 @@
       "auc": 0.051834960937499994
      },
      "probe_val": 0.037503518153672956,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -702,7 +702,7 @@
       "auc": 0.05078808593749999
      },
      "probe_val": 0.038887325265034245,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -722,7 +722,7 @@
       "auc": 0.0471630859375
      },
      "probe_val": 0.03937986677924758,
-     "probe_family": "ridge_fixed",
+     "probe_family": "svm_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -741,8 +741,8 @@
       "s95": 0.0,
       "auc": 0.05098876953125
      },
-     "probe_val": 0.03677643306126278,
-     "probe_family": "ridge_fixed",
+     "probe_val": 0.03651843512524627,
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -782,7 +782,7 @@
       "auc": 0.0476083984375
      },
      "probe_val": 0.03393845576508116,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -802,7 +802,7 @@
       "auc": 0.05094433593750001
      },
      "probe_val": 0.03874659911811615,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -855,14 +855,14 @@
    "d": 50,
    "F": 100,
    "n_models": 20,
-   "duration_seconds": 21.1,
+   "duration_seconds": 15.6,
    "validation_gap_net_minus_probe": {
-    "mean": -6.821304890239146e-05,
-    "ci_low": -0.0007451014524862632,
-    "ci_high": 0.000662518825350863,
+    "mean": 0.00010836940151868826,
+    "ci_low": -0.0006451086727171519,
+    "ci_high": 0.0009018084865077306,
     "n_positive": 8,
-    "n_zero": 3,
-    "n_negative": 9
+    "n_zero": 4,
+    "n_negative": 8
    },
    "models_where_selection_missed_the_network": 8,
    "net_test_s95_mean": 0.0,
@@ -905,7 +905,7 @@
       "auc": 0.09954537563131313
      },
      "probe_val": 0.08073322598597361,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -925,7 +925,7 @@
       "auc": 0.10824815538194446
      },
      "probe_val": 0.08000345516071772,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -945,7 +945,7 @@
       "auc": 0.0893197206439394
      },
      "probe_val": 0.09101101035756959,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -985,7 +985,7 @@
       "auc": 0.10389302201704545
      },
      "probe_val": 0.07687221576028042,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -1025,7 +1025,7 @@
       "auc": 0.1116692412405303
      },
      "probe_val": 0.08546560928198595,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -1045,7 +1045,7 @@
       "auc": 0.10286435645517678
      },
      "probe_val": 0.0993177376346128,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -1085,7 +1085,7 @@
       "auc": 0.08863963857323233
      },
      "probe_val": 0.08656216124259185,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -1124,8 +1124,8 @@
       "s95": 0.0,
       "auc": 0.10231047782512626
      },
-     "probe_val": 0.07769825633072482,
-     "probe_family": "ridge_fixed",
+     "probe_val": 0.07443827263064333,
+     "probe_family": "logistic_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -1144,8 +1144,8 @@
       "s95": 0.0,
       "auc": 0.09763195430871212
      },
-     "probe_val": 0.0682997576112443,
-     "probe_family": "logistic_fixed",
+     "probe_val": 0.06802809230290419,
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -1278,7 +1278,7 @@
    "d": 100,
    "F": 200,
    "n_models": 20,
-   "duration_seconds": 51.8,
+   "duration_seconds": 27.7,
    "validation_gap_net_minus_probe": {
     "mean": 0.022187829293993683,
     "ci_low": 0.01952054794520547,
@@ -1701,7 +1701,7 @@
    "d": 200,
    "F": 400,
    "n_models": 20,
-   "duration_seconds": 100.1,
+   "duration_seconds": 65.9,
    "validation_gap_net_minus_probe": {
     "mean": 0.03682275541795664,
     "ci_low": 0.03508126934984521,
@@ -2124,7 +2124,7 @@
    "d": 50,
    "F": 100,
    "n_models": 20,
-   "duration_seconds": 22.6,
+   "duration_seconds": 15.2,
    "validation_gap_net_minus_probe": {
     "mean": 0.003918772072806271,
     "ci_low": 0.0024721543058951077,
@@ -2547,7 +2547,7 @@
    "d": 100,
    "F": 200,
    "n_models": 20,
-   "duration_seconds": 42.3,
+   "duration_seconds": 25.2,
    "validation_gap_net_minus_probe": {
     "mean": -0.20950671759747097,
     "ci_low": -0.21675283192834555,
@@ -2970,11 +2970,11 @@
    "d": 200,
    "F": 400,
    "n_models": 20,
-   "duration_seconds": 99.7,
+   "duration_seconds": 59.3,
    "validation_gap_net_minus_probe": {
-    "mean": -0.184538887325265,
-    "ci_low": -0.18909498428558028,
-    "ci_high": -0.18003210315226567,
+    "mean": -0.18287480063795852,
+    "ci_low": -0.18751996552209402,
+    "ci_high": -0.1783316622103387,
     "n_positive": 0,
     "n_zero": 0,
     "n_negative": 20
@@ -2982,7 +2982,7 @@
    "models_where_selection_missed_the_network": 0,
    "net_test_s95_mean": 1.0,
    "net_test_s95_at_fixed_theta_mean": 0.0,
-   "probe_test_s95_mean": 3.2,
+   "probe_test_s95_mean": 3.3,
    "per_model": [
     {
      "seed": 100000,
@@ -3019,9 +3019,9 @@
       "s95": 1.0,
       "auc": 0.16464990234375
      },
-     "probe_val": 0.3348813209494324,
-     "probe_family": "ridge_per_feature",
-     "probe_test_s95": 3.0,
+     "probe_val": 0.3323013415892673,
+     "probe_family": "svm_global",
+     "probe_test_s95": 4.0,
      "campaign_network_s95": 0.0
     },
     {
@@ -3039,9 +3039,9 @@
       "s95": 1.0,
       "auc": 0.1681708984375
      },
-     "probe_val": 0.33255933952528377,
-     "probe_family": "ridge_per_feature",
-     "probe_test_s95": 3.0,
+     "probe_val": 0.3315273477812177,
+     "probe_family": "svm_global",
+     "probe_test_s95": 4.0,
      "campaign_network_s95": 0.0
     },
     {
@@ -3059,8 +3059,8 @@
       "s95": 1.0,
       "auc": 0.1678056640625
      },
-     "probe_val": 0.3395252837977296,
-     "probe_family": "ridge_per_feature",
+     "probe_val": 0.33694530443756454,
+     "probe_family": "ridge_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3079,8 +3079,8 @@
       "s95": 1.0,
       "auc": 0.17131494140624998
      },
-     "probe_val": 0.33462332301341585,
-     "probe_family": "ridge_per_feature",
+     "probe_val": 0.33204334365325083,
+     "probe_family": "ridge_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3100,7 +3100,7 @@
       "auc": 0.16410107421875
      },
      "probe_val": 0.3335913312693498,
-     "probe_family": "ridge_per_feature",
+     "probe_family": "svm_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3119,8 +3119,8 @@
       "s95": 1.0,
       "auc": 0.16994091796875
      },
-     "probe_val": 0.34262125902992774,
-     "probe_family": "ridge_per_feature",
+     "probe_val": 0.33823529411764713,
+     "probe_family": "ridge_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3139,8 +3139,8 @@
       "s95": 1.0,
       "auc": 0.1766357421875
      },
-     "probe_val": 0.3343653250773994,
-     "probe_family": "ridge_per_feature",
+     "probe_val": 0.33333333333333337,
+     "probe_family": "ridge_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3179,8 +3179,8 @@
       "s95": 1.0,
       "auc": 0.1677314453125
      },
-     "probe_val": 0.34004127966976266,
-     "probe_family": "ridge_per_feature",
+     "probe_val": 0.33771929824561403,
+     "probe_family": "ridge_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3199,8 +3199,8 @@
       "s95": 1.0,
       "auc": 0.18231835937500002
      },
-     "probe_val": 0.33617131062951494,
-     "probe_family": "ridge_per_feature",
+     "probe_val": 0.3335913312693498,
+     "probe_family": "ridge_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3219,8 +3219,8 @@
       "s95": 1.0,
       "auc": 0.15426220703125
      },
-     "probe_val": 0.33875128998968007,
-     "probe_family": "ridge_per_feature",
+     "probe_val": 0.3374613003095975,
+     "probe_family": "ridge_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3259,8 +3259,8 @@
       "s95": 1.0,
       "auc": 0.1712353515625
      },
-     "probe_val": 0.3320433436532508,
-     "probe_family": "ridge_per_feature",
+     "probe_val": 0.3255933952528379,
+     "probe_family": "ridge_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3319,8 +3319,8 @@
       "s95": 1.0,
       "auc": 0.171466796875
      },
-     "probe_val": 0.3379772961816306,
-     "probe_family": "ridge_per_feature",
+     "probe_val": 0.33384932920536636,
+     "probe_family": "ridge_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3339,8 +3339,8 @@
       "s95": 1.0,
       "auc": 0.1586259765625
      },
-     "probe_val": 0.33746130030959753,
-     "probe_family": "ridge_per_feature",
+     "probe_val": 0.3351393188854489,
+     "probe_family": "ridge_global",
      "probe_test_s95": 3.0,
      "campaign_network_s95": 0.0
     },
@@ -3393,11 +3393,11 @@
    "d": 50,
    "F": 100,
    "n_models": 20,
-   "duration_seconds": 19.5,
+   "duration_seconds": 14.0,
    "validation_gap_net_minus_probe": {
-    "mean": -0.2180285373856302,
-    "ci_low": -0.22669353771202425,
-    "ci_high": -0.20908532594397097,
+    "mean": -0.2180149541202132,
+    "ci_low": -0.226678508545918,
+    "ci_high": -0.2090829424847617,
     "n_positive": 0,
     "n_zero": 0,
     "n_negative": 20
@@ -3762,8 +3762,8 @@
       "s95": 0.0,
       "auc": 0.10841560132575759
      },
-     "probe_val": 0.30188939265659653,
-     "probe_family": "svm_per_feature",
+     "probe_val": 0.3016177273482565,
+     "probe_family": "svm_global",
      "probe_test_s95": 1.0,
      "campaign_network_s95": 0.0
     },

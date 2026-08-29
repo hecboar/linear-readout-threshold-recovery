@@ -3,13 +3,14 @@
 Every defect found in this work, what it invalidated, and what was done about it. A defect's status
 changes only when the fix is committed and verified, not when it is understood, and no entry is
 deleted once fixed: the record of what was wrong is worth more than a short file, because the pattern
-across entries is the useful part. **Four of these eight are the same trap in four different code
+across entries is the useful part. **Five of these nine are the same trap in five different code
 paths**: a threshold or operating point chosen by maximising something, with no check that the
 choice beats the baseline it replaced. That pattern is the most useful thing in this file.
 
-All eight are fixed and all eight sets of affected measurements have been recomputed. KD7 and
-KD8 were found by an external adversarial review of the submitted manuscript, after the first six
-had been written up — the most useful fact in this file. The file was
+All nine are fixed and all nine sets of affected measurements have been recomputed. KD7 and KD8 were
+found by an external adversarial review of the submitted manuscript, after the first six had been
+written up; KD9 by a second round of the same review, of the fixes for the first two — the most
+useful fact in this file. The file was
 called *Known defects, open* while some were not; it is kept as a register rather than a queue. The
 manuscript-level consequences — which readings were withdrawn and what caused each — are in
 `paper/sections/app_withdrawn.tex`, which is an appendix of the paper rather than a file only a
@@ -342,3 +343,36 @@ systematic gap — now sits at zero, which is the better outcome.
 while writing the section that documents the other six. Knowing the failure mode is not the same as
 being immune to it, which is the argument for external review rather than for more self-checking.
 
+
+---
+
+## KD9 — The ceiling analysis selected the probe over three threshold policies, not the matched one
+
+**Status: FIXED** 2026-08-29 in `scripts/probe_ceiling.py`.
+
+**Found:** 2026-08-29 by the second round of external adversarial review, from the symptom rather
+than the cause: the reviewer noticed that `\CeilReproMaxDelta` verified as written only because its
+scope excluded stage B, where the worst cell missed by 0.7 of a sparsity level, and diagnosed a seed
+mismatch. The seeds were right — `net_test_at_fixed_theta` matches `campaign_network_s95` in all 220
+models of all 22 cells — and the filter was wrong.
+
+**Where.** `_cell` chose the probe as `max(val_criterion)` over every `_post_` key of
+`probes_global`, which spans all three threshold policies. `primary_comparison.py` restricts to
+`key.endswith("_global")`, the matched policy the comparison is defined by. In most cells the global
+policy wins on validation anyway and the two agree; in stage B's untrained cell at `d = 200` it does
+not, in 6 of 10 models.
+
+**What it invalidated.** Nothing in the manuscript, because `probe_ceiling.py` is an audit of the
+comparison rather than a source for it. But the audit was comparing against a probe the paper never
+reports — a slightly stronger one, so the reported ceiling gaps were if anything conservative — and
+its reproduction claim was scoped to the two campaigns where it happened to hold.
+
+**What changed after the fix.** The reproduction is now exact across all 22 cells of all three
+campaigns, so the claim in Section~\ref{sec:probes} is widened rather than qualified. The headline
+counts are unchanged: 80 of 80 `L4` models at `d >= 100`, 0 of 90 untrained. Two stage B gaps moved
+slightly (0.0362 to 0.0261, 0.0529 to 0.0520).
+
+**Precedent.** The eighth instance of the trap in KD1, KD2, KD6 and KD8, and the third committed
+inside the probe-ceiling analysis itself. The pattern is now specific enough to state as a rule: any
+comparison against a "best" of a family must name the family, and the name must be checked against
+the one the thing being audited uses.

@@ -48,11 +48,16 @@ Leverage links the two: low leverage forces the affine frontier down, with no de
 argument, and an explicit code refutes the converse, so the hierarchy holds in one direction
 only.
 
-Applied to 180 trained models, the instrument returns a negative result and two positive ones. The
-negative: given the same representation and the same threshold treatment, the network and a fitted
-affine probe tie on exact support recovery in \PrimTies{} of \PrimModels{} models, so on this task
-the nonlinearity
-does not out-decode a linear probe of the state it produces. The first positive: what separates
+Applied to 180 models, the instrument returns one result that resists summary and two that do not.
+The first: given the same representation and the same threshold treatment, the comparison between the
+network and a fitted affine probe has no single sign. It is positive under $L^4$ and grows with width
+to \ScPrimDiff{} levels in \ScPrimNetWins{} of \ScSeeds{} models at $d=400$; it is exactly zero under
+$L^2$, where both decoders fail together; and it is negative by up to
+\PrimRandFourHundredDiff{} levels on a code that was never trained. The \PrimTies{} ties out of
+\PrimModels{} are therefore not evidence of equivalence --- \PrimLtwoJointFailures{} of them are
+joint failures --- and the $L^4$ lead is not evidence of nonlinear expressive power either, since the
+probe class contains the network's own decoder (Section~\ref{sec:probes}). What the comparison
+identifies is the code, not the decoder. The first positive: what separates
 models is the loss, not the architecture --- $L^2$ pushes $R_{\mathrm{geom}}$ to
 \SALtwoTwoHundredRgeom{} and collapses its frontier to $1$, while $L^4$ holds
 \SALfourTwoHundredRgeom{} and a frontier of \FullLfourTwoHundredKappaMin{}. The second: that

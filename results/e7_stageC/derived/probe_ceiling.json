@@ -9,11 +9,11 @@
    "d": 400,
    "F": 800,
    "n_models": 10,
-   "duration_seconds": 153.1,
+   "duration_seconds": 102.4,
    "validation_gap_net_minus_probe": {
-    "mean": 0.0006568731454576215,
-    "ci_low": 0.0002936518918254079,
-    "ci_high": 0.001037390649262796,
+    "mean": 0.0006595636732623044,
+    "ci_low": 0.0002936518918254083,
+    "ci_high": 0.001040148440262592,
     "n_positive": 8,
     "n_zero": 0,
     "n_negative": 2
@@ -78,8 +78,8 @@
       "s95": 0.0,
       "auc": 0.03550990513392857
      },
-     "probe_val": 0.03019540919084298,
-     "probe_family": "ridge_fixed",
+     "probe_val": 0.03016850391279615,
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -99,7 +99,7 @@
       "auc": 0.03700823102678571
      },
      "probe_val": 0.023784265793398214,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -119,7 +119,7 @@
       "auc": 0.034502999441964284
      },
      "probe_val": 0.029019264179081534,
-     "probe_family": "ridge_fixed",
+     "probe_family": "ridge_global",
      "probe_test_s95": 0.0,
      "campaign_network_s95": 0.0
     },
@@ -232,7 +232,7 @@
    "d": 400,
    "F": 800,
    "n_models": 10,
-   "duration_seconds": 144.0,
+   "duration_seconds": 103.8,
    "validation_gap_net_minus_probe": {
     "mean": 0.07149923896499237,
     "ci_low": 0.06771911466260776,
@@ -455,7 +455,7 @@
    "d": 400,
    "F": 800,
    "n_models": 10,
-   "duration_seconds": 141.5,
+   "duration_seconds": 105.9,
    "validation_gap_net_minus_probe": {
     "mean": -0.18127853881278538,
     "ci_low": -0.18939624556062912,

@@ -164,7 +164,15 @@ def _cell(campaign: str, arm: str, p: str, d: int, cfg: Dict[str, Any], workers:
         if row is None:
             continue
         g = rec["diagnoses"][i]
-        post = [v for k, v in g["probes_global"].items() if "_post_" in k]
+        # Restricted to the `global` threshold policy, which is the one the matched comparison
+        # uses (primary_comparison.py filters the same way). Selecting over all three policies
+        # compares against a probe the paper never reports: in most cells the global policy wins
+        # on validation anyway and the two agree, but in stage B's untrained cell at d = 200 it
+        # does not, and that single cell was the one place this script failed to reproduce
+        # Table 1's differences. Found by an external adversarial review, which read the
+        # discrepancy as a seed mismatch; the seeds are right and the filter was wrong.
+        post = [v for k, v in g["probes_global"].items()
+                if "_post_" in k and k.endswith("_global")]
         best = max(post, key=lambda v: v["val_criterion"])
         row["probe_val"] = float(best["val_criterion"])
         row["probe_family"] = f"{best['family']}_{best['policy']}"
