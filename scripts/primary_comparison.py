@@ -165,7 +165,10 @@ def main(argv: List[str]) -> int:
 
         # p_train identifies the cell alongside (loss, d): stage B runs two training sparsities at
         # one width, so the pair alone collides there and the two rows were indistinguishable.
-        row = {"loss": loss, "d": d, "p_train": p_train, "policy": POLICY,
+        # F is recorded because it was not, and a campaign run at F = 4d was consequently
+        # described in the manuscript as an exact repeat of one run at F = 2d. The number that
+        # distinguishes two designs has to be in the file the tables are generated from.
+        row = {"loss": loss, "d": d, "F": F, "p_train": p_train, "policy": POLICY,
                "n_seeds": len(post["s95"]),
                "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
                "network_minus_probe": {"post_relu": blk(post), "pre_relu": blk(pre)}}

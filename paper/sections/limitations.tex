@@ -92,6 +92,19 @@ $1$ on both sides. A larger sampling budget would lift the ceiling and we have n
 claim that the cost is small on trained codes rests on $d=50$ plus the decoder comparison, and not on
 the frontier at the two larger widths.
 
+\item \textbf{A dictionary-only score is not quite a property of the autoencoder.} Every decoder is
+analysed under a declared unit-column gauge (Section~\ref{sec:dictionaries}), which removes the
+scaling freedom, but not the one that matters most in practice. A dead latent --- a column whose
+encoder never fires on the data --- still occupies a direction, still enters the row space, and still
+changes the leverage of every other feature, while leaving the function the autoencoder computes
+untouched. Two functionally identical dictionaries can therefore receive different scores here, and
+the dictionaries most likely to carry such columns are the widest ones, which is the axis
+Section~\ref{sec:dictionaries} varies. Resolving it needs matched activation data to define the
+active support, which is exactly the input this section is built to avoid using, so it is a real
+limit on the method and not only on this application of it. What the section measures is the geometry
+the released matrix presents; whether that matrix has columns the model never uses is a separate
+question we do not answer.
+
 \item \textbf{One control the analysis wants and does not have.} A random \emph{tight frame}, whose
 $R_{\mathrm{geom}}$ is exactly $1$ rather than the \SaeCtlRgeomMax{} an i.i.d.\ code reaches at
 worst, would sharpen

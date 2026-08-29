@@ -111,6 +111,9 @@ def main(argv: List[str]) -> int:
             # p_train identifies the cell alongside (loss, d): stage B runs two training
             # sparsities at the same width, so the pair alone collides there.
             "loss": loss, "d": d, "p_train": p_train, "n_models": len(got),
+            # See primary_comparison.py: the load has to be in the derived file, not only in the
+            # per-model block, or two different designs are indistinguishable downstream.
+            "F": int(got[0]["n_features"]),
             "kappa_min_full_mean": float(np.mean([g["kappa_min_full"] for g in got])),
             "kappa_min_subset_mean": float(np.mean([g["kappa_min_subset"] for g in got])),
             "subset_overestimate_mean": float(over.mean()),

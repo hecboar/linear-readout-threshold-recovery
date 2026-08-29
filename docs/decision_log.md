@@ -632,3 +632,50 @@ stronger claim, which no additional test would have caught. That distinction is 
 **Not decided here.** The repository name and public URL, whether `internal/` ships in the release,
 and whether the 204 MB `.git` history is acceptable for a public push. All three are the principal
 investigator's calls and all three are blockers for the anonymised archive TMLR wants attached.
+
+---
+
+## D22 — What the external adversarial review changed
+
+**Decided** 2026-08-29, after two independent adversarial reviews of the submitted manuscript.
+
+**The reviews were not equal and the difference is instructive.** One verified: it reproduced every
+number from the released JSON, found seven factual errors in the manuscript, and reached
+*accept with minor revision*. The other produced a mostly template-generated claim inventory,
+verified nothing — its own log records that every generation and checking script failed to run in
+its sandbox — and reached *reject*. The reject verdict rests on real conceptual objections about
+what the metric can support, but a decision reached without executing a single check is not a
+calibrated decision, and it labelled the notation table and the reproduction instructions as
+overstated claims. We take the findings from both and the verdict from neither.
+
+**Seven confirmed errors, all fixed.** Stage B's design (KD7), the probe-ceiling objective (KD8), a
+stale pre-correction conclusion still asserting the tie count the results section had already
+replaced, a depth claim false in two of five suites, a separability claim contradicted by our own
+exact frontier at three of four widths, a readout ratio attributed to the wrong decoder, and an
+abstract that called sixteen MLP down-projections sparse autoencoders. Every one is verified against
+the data before being accepted; one reviewer finding — a systematic ceiling gap in the L2 arm — was
+an artefact of our own defective objective and disappears once KD8 is fixed, so it is not adopted.
+
+**One finding we could refute with a pointer, and should have pre-empted.** Both reviews raised
+column normalisation, and one demonstrated that shrinking five columns of an i.i.d. code moves its
+ratio further than any dictionary excess we report. The code has always applied `unit_cols` to every
+dictionary and every control; the manuscript never said so. That is a documentation failure with the
+same consequence as a methodological one, since a reader cannot distinguish them. Section 5 now
+declares the gauge before anything is measured.
+
+**One gift.** The repeated-basis counterexample — stack k copies of an orthonormal basis and every
+leverage is exactly d/F, so the code attains the floor while being maximally unidentifiable — is
+correct and is now in the paper. It was offered as a refutation; it is a sharper statement of our own
+deflationary thesis than the i.i.d. control we had. Where it does bite is the wording: a ratio
+invariant to every invertible left transform cannot be called "conditioning for linear readout", and
+that phrase is gone.
+
+**What we are not doing.** The reject verdict asks for activation-weighted endpoints, structured
+nulls, multiple base-model seeds, and a nested selection experiment. Those would make a better paper
+and they are the honest answer to "what would change your mind". They are also a different paper, and
+the one we have states what it measures and what it does not. The dead-latent objection is the part
+of that critique we can neither dismiss nor resolve from decoder matrices alone, so it is now a
+limitation in its own right rather than a clause inside another one.
+
+**On sequencing.** We waited for these reviews before posting the arXiv v2. Three of the seven errors
+are in v1 as well, and two we would have introduced into v2. That decision is worth keeping.

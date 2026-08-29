@@ -166,10 +166,14 @@ $\kappa_{\min}$, random & \FullRandFiftyKappaMin & \FullRandHundredKappaMin & \F
 \end{center}
 
 $L^2$ drives $R_{\mathrm{geom}}$ into the tens and rising with width, and its frontier collapses to
-$1$ --- by Theorem~\ref{thm:frontier} some feature is not separable even at $s=1$, which for
-singleton states means two features share a representation. The mechanism is a spread of column
-norms: a feature whose direction is a fraction of a typical length lies inside the convex hull of
-the others, and no duplicate is needed. $L^4$ does not do this, and its
+$1$. By Theorem~\ref{thm:frontier} a feature is separable at $s$ only when $\kappa_i>s$, so a
+frontier at $1$ means the worst feature is separable at singletons and at nothing beyond them. Only
+at $d=50$, where $\kappa_{\min}=\FullLtwoFiftyKappaMin{}$ exactly, does the bound reach the
+degenerate case in which two features share a representation; at the larger widths
+$\kappa_{\min}$ is \FullLtwoHundredKappaMin{}, \FullLtwoTwoHundredKappaMin{} and \ScLtwoKappa{}, so
+every feature is separable at $s=1$ and fails at $s=2$. The mechanism is a spread of column norms: a
+feature whose direction is a fraction of a typical length lies inside the convex hull of the others,
+and no duplicate is needed. $L^4$ does not do this, and its
 $R_{\mathrm{readout}}$ of \SALfourFiftyRreadout{} says its own output layer is near-optimal for the
 code it built.
 

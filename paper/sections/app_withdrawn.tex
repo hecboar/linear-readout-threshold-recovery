@@ -1,9 +1,11 @@
 \section{Readings we withdrew, and what caused each}
 \label{app:withdrawn}
 
-This appendix exists because the alternative is worse. Over the course of this work six readings of
+This appendix exists because the alternative is worse. Over the course of this work eight readings of
 our own measurements turned out not to survive a check, and in every case the reading we had chosen
-was the more interesting of the available ones. Listing them costs us the appearance of a clean
+was the more interesting of the available ones. The last two were found by an external adversarial
+review of the submitted manuscript, after the other six had been written up here --- which is the
+most useful thing this appendix can tell a reader about how much to trust the rest. Listing them costs us the appearance of a clean
 result and buys the reader the only thing that makes the surviving claims worth anything: a record
 of how hard they were pushed. The register in \code{docs/known\_defects.md} carries the code-level
 detail; what follows is the manuscript-level consequence of each.
@@ -113,10 +115,50 @@ passed --- they sampled only the region where the statement is true, which is a 
 not a false test. An earlier preprint carries the incorrect statements and will be corrected with an
 explicit erratum rather than a silent replacement.
 
-\paragraph{What the pattern says.} Three of the six defects are the same trap in three different code
-paths: an operating point chosen by maximising something, with no check that the choice beats the
-baseline it replaced. Two of the six are a reading chosen from among several that the data permitted,
-selected after the fact for being the stronger claim. We mention the count because a reader deciding
-how much weight to put on this paper's surviving claims should know both the rate at which we found
-our own errors and the direction they pointed, and because the second pattern is not one that more
-tests would have caught.
+\paragraph{7. ``Stage B repeats stage A's protocol exactly, and denser training states buy frontier''
+(withdrawn; cause: comparing two cells without checking they had the same shape).} Stage B was
+described in the submitted manuscript as an independent replication of two stage A cells plus a
+clean one-variable sparsity contrast. Both halves were false. Its $p=0.01$ cells are at
+$F=\SbLoadHigh d$, twice stage A's load, so they are not repeats of anything; and the difference in
+effect size between the two campaigns, which we attributed to the imprecision of a cell mean over ten
+seeds, is a design difference. Worse, the ``cleanest small result in the campaign'' --- that
+$\kappa_{\min}$ rises by a third with the training sparsity --- compared an $F=4d$ cell against an
+$F=2d$ one. Made at matched load the comparison reverses: \SbMatchPtwoKappa{}
+[\SbMatchPtwoKappaLo, \SbMatchPtwoKappaHi] at $p=0.02$ against \SbMatchPoneKappa{}
+[\SbMatchPoneKappaLo, \SbMatchPoneKappaHi] at $p=0.01$, per-model ranges disjoint, in the direction
+opposite to the claim.
+
+The claim is withdrawn and Section~\ref{sec:stageb} now reports the null. What survives, correctly
+described, is a genuine load axis: the loss--geometry separation and the sign structure of the
+decoder comparison hold at twice the feature load. The structural cause is worth more than the
+correction: neither \code{primary\_comparison.json} nor \code{all\_feature\_frontier.json} recorded
+$F$, so the number distinguishing the two designs was absent from the files every table is generated
+from, and no check could have caught the error. Both now record it, and Table~\ref{tab:stageb} carries
+it as a column.
+
+\paragraph{8. ``The ceiling analysis evaluates the same objective the selection maximised''
+(corrected; cause: the seventh instance of the trap in items 1 and 5).} Section~\ref{sec:probes}
+scores the network's own map under the campaign's probe-selection objective. The campaign maximises a
+normalised trapezoid over the validation recovery curve; the script computed the plain mean over grid
+points, and its own documentation asserted that the mean \emph{was} the selection objective. On a
+uniform integer grid the two differ by endpoint reweighting of the same order as the smallest gap the
+analysis reports.
+
+Recomputed under the correct functional the result survives and strengthens --- the gaps grow, the
+count is unchanged --- so nothing in Section~\ref{sec:probes} is withdrawn. Two things move. The
+$d=50$ cell is no longer indistinguishable from zero, so it is no longer offered as a consistency
+check. And the $L^2$ cells, which under the wrong functional showed a systematic positive gap, sit at
+essentially zero, which is the better outcome: the gap is positive exactly where the network leads,
+absent where neither decoder recovers anything, and strongly negative where the probe leads. We
+record it because a corrected measurement that happens to help is exactly the kind a reader should be
+told about.
+
+\paragraph{What the pattern says.} Four of the eight are the same trap in four different code paths:
+an operating point or an objective chosen by maximising something, with no check that it is the thing
+it claims to be. Two are a reading chosen from among several that the data permitted, selected after
+the fact for being the stronger claim. One --- item 7 --- is a comparison made without checking that
+the two things compared had the same shape, which is the same failure at the level of experimental
+design rather than of code. We mention the count because a reader deciding how much weight to put on
+this paper's surviving claims should know both the rate at which we found our own errors and the
+direction they pointed. Only the first pattern is one that more tests would have caught; the last was
+caught by recording the variable that distinguished the designs, which is now done.

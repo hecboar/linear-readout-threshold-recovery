@@ -451,15 +451,21 @@ def build() -> Macros:
         if d in (50, 400):
             m.num(f"PrimRand{tag}AucDiff", post["auc"]["mean"], 4)
 
-    # ---------------- Stage B: an independent replication, and a sparsity axis ----------------
-    # Stage B was run as a separate campaign with its own seeds and its own run record. Two of its
-    # cells repeat stage A's protocol exactly (p_train = 0.01 at d in {100, 200}); the other two
-    # double the training sparsity, which is the one axis stage A held fixed.
+    # ---------------- Stage B: a doubled feature load, and a sparsity contrast ----------------
+    # Stage B is a separate campaign with its own seeds and run record. Its two p = 0.01 cells are
+    # at F = 4d, NOT stage A's F = 2d -- an earlier version of this file and of the manuscript
+    # described them as exact repeats of stage A, which was false and attributed a design difference
+    # to sampling noise. Its p = 0.02 cells are at F = 2d and are the sparsity contrast. Both facts
+    # are emitted as macros so the manuscript cannot restate the design without them. Found by an
+    # external adversarial review.
     sb = {(c["loss"], c["d"], c["p_train"]): c for c in
           load("e7_stageB/derived/primary_comparison.json")["cells"]}
     sbf = {(c["loss"], c["d"], c["p_train"]): c for c in
            load("e7_stageB/derived/all_feature_frontier.json")["cells"]}
     m.integer("SbSeeds", sb[("L4", 200, 0.01)]["n_seeds"])
+    # The load of each block, which Table 4 now carries as a column.
+    m.integer("SbLoadHigh", sb[("L4", 200, 0.01)]["F"] // 200)      # 4, the p = 0.01 cells
+    m.integer("SbLoadMatched", sb[("L4", 200, 0.02)]["F"] // 200)   # 2, the p = 0.02 cells
     SB_CELLS = {("L4", 100, 0.01): "SbLfourHundred",
                 ("L4", 200, 0.01): "SbLfourTwoHundred",
                 ("L4", 50, 0.02): "SbLoadLfourFifty",
@@ -468,7 +474,7 @@ def build() -> Macros:
                 ("random", 200, 0.01): "SbRandTwoHundred"}
     # The untrained rows and the d = 50 row are quoted as bare differences; the rest carry their
     # interval and their winning count, which is the form the prose uses. tab_stageb has all of it.
-    SB_FULL = {"SbLfourHundred", "SbLfourTwoHundred", "SbLoadLfourTwoHundred"}
+    SB_FULL = {"SbLfourHundred", "SbLfourTwoHundred"}
     for key, tag in SB_CELLS.items():
         v = sb[key]["network_minus_probe"]["post_relu"]["s95"]
         m.num(tag + "Diff", v["mean"], 2)
@@ -483,10 +489,27 @@ def build() -> Macros:
     m.integer("SbLtwoCells", sum(1 for k in sb if k[0] == "L2"))
     # The sparsity axis, on the frontier rather than on the decoder comparison: at d = 200 the
     # exact frontier is higher at the higher training sparsity, while L2 stays pinned at 1.
-    for key, tag in ((("L4", 200, 0.01), "SbKappaLfourTwoHundred"),
-                     (("L4", 200, 0.02), "SbKappaLoadLfourTwoHundred"),
+    for key, tag in ((("L4", 100, 0.01), "SbKappaLfourHundred"),
+                     (("L4", 200, 0.01), "SbKappaLfourTwoHundred"),
                      (("L2", 200, 0.02), "SbKappaLoadLtwoTwoHundred")):
         m.num(tag, sbf[key]["kappa_min_full_mean"], 4)
+    # The training-sparsity contrast, at MATCHED load. Stage B's p = 0.02 cells are F = 2d, so the
+    # cell they must be compared against is stage A's own p = 0.01 cell at the same d and the same
+    # F -- not stage B's p = 0.01 cell, which is F = 4d. Comparing across the load was the error
+    # that produced the withdrawn "denser training buys frontier" claim; these macros carry the
+    # per-model ranges so the manuscript can state that the two do not overlap.
+    fullA = {(c["loss"], c["d"]): c for c in
+             load("e7/derived/all_feature_frontier.json")["cells"]}
+    for src, key, tag, ranges in ((fullA, ("L4", 200), "SbMatchPone", True),
+                                  (sbf, ("L4", 200, 0.02), "SbMatchPtwo", True),
+                                  (fullA, ("L4", 50), "SbMatchFiftyPone", False),
+                                  (sbf, ("L4", 50, 0.02), "SbMatchFiftyPtwo", False)):
+        cell = src[key]
+        m.num(tag + "Kappa", cell["kappa_min_full_mean"], 4)
+        if ranges:                       # quoted only at d = 200, where the two do not overlap
+            vals = [x["kappa_min_full"] for x in cell["per_model"]]
+            m.num(tag + "KappaLo", min(vals), 4)
+            m.num(tag + "KappaHi", max(vals), 4)
 
     # The pre-ReLU arm. Before KD6 was fixed this was a headline: the probe reading the
     # preactivation beat the network by a full sparsity level, which we read as a statement about
@@ -727,6 +750,39 @@ def build() -> Macros:
     # controls. The middle one is a control in substance even though the pipeline records it as a
     # dictionary, so it gets its own macros rather than being folded into the range.
     sae = load("sae/derived/sae_axes.json")["rows"]
+    # The depth ordering, per suite rather than asserted globally. An earlier version claimed that in
+    # every suite the deepest layer sampled sits closest to the floor; it holds in the three Qwen
+    # suites and fails in the other two, which an external adversarial review found in the paper's
+    # own table. These macros make the exception quotable instead of hidden.
+    import re as _re
+
+    def _suite(label: str) -> str:
+        return label.split()[0]
+
+    def _layer(label: str):
+        m = _re.search(r"[Ll](?:ayer)?[ _]?(\d+)", label)
+        return int(m.group(1)) if m else None
+
+    by_suite: Dict[str, List[tuple]] = {}
+    for r in sae:
+        if r["kind"] != "dictionary":
+            continue
+        ell = _layer(r["label"])
+        if ell is not None:
+            by_suite.setdefault(_suite(r["label"]), []).append((ell, r["R_geom"]))
+    for name, tag in (("Qwen3-8B", "SaeQwen"), ("LFM2.5-350M", "SaeLfm"),
+                      ("SmolLM2", "SaeSmol")):
+        rowsx = sorted(by_suite[name])
+        m.num(tag + "DeepestRgeom", rowsx[-1][1], 4)
+        if name != "Qwen3-8B":          # there the deepest layer *is* the closest, which is the claim
+            m.num(tag + "ClosestRgeom", min(v for _, v in rowsx), 4)
+    # What the 40 objects actually are: the abstract called all of them sparse autoencoders.
+    # `trained` is the same set SaeDicts counts, so the two halves add up to it in the abstract.
+    n_mlp = sum(1 for r in sae
+                if r["kind"] == "dictionary" and r["axis"] == "architecture"
+                and "rand" not in r["label"].lower())
+    m.integer("SaeMlpCount", n_mlp)
+
     ctl = [r for r in sae if r["kind"] == "control"]
     trained = [r for r in sae if r["kind"] == "dictionary" and "random" not in r["label"]]
     randinit = [r for r in sae if r["kind"] == "dictionary" and "random" in r["label"]]
@@ -742,6 +798,10 @@ def build() -> Macros:
     span(randinit, "R_geom", 4, "RandInitRgeom")
     span(randinit, "h_cv", 3, "RandInitCv")
     m.integer("SaeDicts", len(trained))
+    # What those objects are: 16 of them are a hybrid model's MLP down-projections, not
+    # autoencoders. The abstract called all of them sparse autoencoders.
+    m.integer("SaeSaeCount",
+              len(trained) - sum(1 for r in trained if r["axis"] == "architecture"))
     m.integer("SaeControls", len(ctl))
     m.integer("SaePairedLayers", len(randinit))
     m.integer("SaeDMin", min(r["d"] for r in trained))

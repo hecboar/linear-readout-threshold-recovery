@@ -1,50 +1,58 @@
-\subsection{An independent replication, and the one training variable stage A held fixed}
+\subsection{A second campaign, at double the feature load}
 \label{sec:stageb}
 
-Everything above comes from one campaign. Stage B is a second one, run separately with its own seeds
-and its own run record, and it does two jobs (Table~\ref{tab:stageb}). Two of its cells repeat stage
-A's protocol exactly at $d\in\{100,200\}$, which tests whether the effects replicate. The other two
-double the training sparsity from $p=0.01$ to $p=0.02$, which is the one variable stage A held fixed
-throughout and the obvious place for a result of this kind to be fragile.
+Everything above comes from one campaign at one feature load, $F=2d$. Stage B is a separate
+campaign, run with its own seeds and its own run record, and it varies that load
+(Table~\ref{tab:stageb}). Its $p=0.01$ cells sit at $F=\SbLoadHigh d$ --- twice stage A's load, at
+$d\in\{100,200\}$ --- and its $p=0.02$ cells stay at $F=\SbLoadMatched d$ and double the training
+sparsity instead. Every other setting matches stage A: the same optimiser, step count, batch size,
+probe budget and evaluation grid, verified against the two configuration files.
 
-\paragraph{The replication is stronger than the original.} At the matched post-ReLU comparison the
-network leads the affine probe by \SbLfourHundredDiff{} of a sparsity level at $d=100$
-([\SbLfourHundredCiLow, \SbLfourHundredCiHigh], \SbLfourHundredNetWins{} of \SbSeeds{} models) and
-\SbLfourTwoHundredDiff{} at $d=200$ ([\SbLfourTwoHundredCiLow, \SbLfourTwoHundredCiHigh],
-\SbLfourTwoHundredNetWins{} of \SbSeeds{}), against stage A's \PrimLfourHundredPostDiff{} and
-\PrimLfourTwoHundredPostDiff{} in the same cells. The direction and the growth with width replicate;
-the magnitude is roughly double, which is a reminder that a cell mean over ten or twenty seeds is not
-a precise quantity even when its sign is stable. The untrained arm replicates too, and on the other
-side: \SbRandHundredDiff{} and \SbRandTwoHundredDiff{} levels to the probe, unanimously.
+An earlier version of this section described the $p=0.01$ cells as exact repeats of stage A and read
+their larger effects as a replication. That was wrong: they are a different design, and
+Appendix~\ref{app:withdrawn} records the error and what it cost.
 
-Every $L^2$ cell in stage B has both decoders at $s_{95}=0$ --- \SbLtwoJointFailures{} models across
-\SbLtwoCells{} cells --- which is the same joint failure stage A shows and is reported as such rather
-than as agreement.
+\paragraph{At double the load the ordering holds and the frontier falls.} The decoder comparison
+keeps its sign and grows: the network leads the affine probe by \SbLfourHundredDiff{} of a sparsity
+level at $d=100$ ([\SbLfourHundredCiLow, \SbLfourHundredCiHigh], \SbLfourHundredNetWins{} of
+\SbSeeds{} models) and \SbLfourTwoHundredDiff{} at $d=200$
+([\SbLfourTwoHundredCiLow, \SbLfourTwoHundredCiHigh], \SbLfourTwoHundredNetWins{} of \SbSeeds{}),
+against \PrimLfourHundredPostDiff{} and \PrimLfourTwoHundredPostDiff{} at the same widths and half
+the load. The untrained arm keeps its own opposite sign, \SbRandHundredDiff{} and
+\SbRandTwoHundredDiff{} levels to the probe; and every $L^2$ cell has both decoders at $s_{95}=0$,
+\SbLtwoJointFailures{} models across \SbLtwoCells{} cells, the same joint failure stage A shows.
 
-\paragraph{Doubling the training sparsity does not break the effect, and improves the frontier.}
-At the higher sparsity the decoder difference shrinks but never turns negative:
-\SbLoadLfourFiftyDiff{} at $d=50$, with all \SbSeeds{} seeds tied exactly as they are at that width
-under $p=0.01$, and \SbLoadLfourTwoHundredDiff{} at $d=200$
-([\SbLoadLfourTwoHundredCiLow, \SbLoadLfourTwoHundredCiHigh], \SbLoadLfourTwoHundredNetWins{} of
-\SbSeeds{}). The frontier moves the other way and by more: at $d=200$ the exact $\kappa_{\min}$ of the
-$L^4$ code rises from \SbKappaLfourTwoHundred{} at $p=0.01$ to \SbKappaLoadLfourTwoHundred{} at
-$p=0.02$, while $L^2$ stays pinned at \SbKappaLoadLtwoTwoHundred{} --- a code trained on denser states
-admits affine recovery at higher sparsity, and the loss still decides whether it admits any.
+The frontier moves the other way, as it must: doubling the number of features in the same $d$ costs
+recovery, and $\kappa_{\min}$ falls from \FullLfourHundredKappaMin{} to \SbKappaLfourHundred{} at
+$d=100$ and from \SbMatchPoneKappa{} to \SbKappaLfourTwoHundred{} at $d=200$. So the two campaigns
+together say that the loss--geometry separation and the sign structure of the decoder comparison are
+not artefacts of $F=2d$, while the absolute frontier is a strong function of the load. The
+comparison is across campaigns with different seeds, which is why we read the ordering and not the
+difference of the means.
 
-That last pair is the cleanest small result in the campaign, because the two arms differ in one
-variable and move in opposite directions on it: the geometry the code presents improves with training
-sparsity ($\kappa_{\min}$ up by a third), while the network's edge over a supervised affine fit of
-that same code narrows. The two quantities are measuring different things --- what an affine rule can
-guarantee in the worst case, against what a particular fitting procedure recovers on average --- and
-it is useful to see them come apart, because a reader who takes them as interchangeable will draw the
-wrong conclusion from either.
+\paragraph{Training sparsity, at matched load, buys nothing.} Stage B's $p=0.02$ cells are the only
+place any training variable other than the loss is varied, and they must be compared against stage
+A's cells at the \emph{same} load, $F=\SbLoadMatched d$ --- not against stage B's own $p=0.01$ cells,
+which are at twice that. Made correctly, the comparison gives nothing to the hypothesis that denser
+training states buy frontier. At $d=50$ the two are indistinguishable, \SbMatchFiftyPoneKappa{}
+against \SbMatchFiftyPtwoKappa{}. At $d=200$ the higher sparsity is \emph{worse}, \SbMatchPtwoKappa{}
+[\SbMatchPtwoKappaLo, \SbMatchPtwoKappaHi] against \SbMatchPoneKappa{}
+[\SbMatchPoneKappaLo, \SbMatchPoneKappaHi], with the per-model ranges disjoint.
+
+An earlier version reported the opposite as ``the cleanest small result in the campaign'' by
+comparing across the load. We withdraw it. What remains is a null: over the one width where a
+matched comparison exists, doubling the training sparsity does not improve the geometry the code
+presents, and the decoder ordering survives the change ($L^4$ at \SbLoadLfourFiftyDiff{} and
+\SbLoadLfourTwoHundredDiff{}, $L^2$ still pinned at $\kappa_{\min}=\SbKappaLoadLtwoTwoHundred$).
 
 \begin{table}[t]
 \centering
-\caption{Stage B: a separate campaign with its own seeds and run record. The two $p=0.01$ rows per
-arm repeat stage A's cells at $d\in\{100,200\}$; the two $p=0.02$ rows double the training sparsity.
-``mean difference'' is network minus best post-ReLU affine probe in $s_{95}$, paired within seed, and
-$\kappa_{\min}$ is the exact minimum over all $F$ features. Generated from
+\caption{Stage B: a separate campaign with its own seeds and run record. The $F/d$ column is the one
+to read first. The $p=0.01$ rows are at $F=\SbLoadHigh d$, twice stage A's load; the $p=0.02$ rows
+are at $F=\SbLoadMatched d$ and vary the training sparsity instead. ``mean difference'' is network
+minus best post-ReLU affine probe in $s_{95}$, paired within seed, and $\kappa_{\min}$ is the exact
+minimum over all $F$ features. Any comparison against stage A must hold $F/d$ fixed; doing otherwise
+produced a claim we withdraw in Appendix~\ref{app:withdrawn}. Generated from
 \texttt{results/e7\_stageB/derived/}.}
 \label{tab:stageb}
 \small

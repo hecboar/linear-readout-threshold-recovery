@@ -8,11 +8,12 @@ is $\frac{d}{F(F-d)}\left(\sum_i h_i^{-1}-F\right)$ with $\sum_i h_i=d$, so it e
 when the leverage $h_i$ is equalised across features: distance from the floor \emph{is} leverage
 dispersion.
 
-The floor then separates what training buys from what comes for free. On \SaeDicts{} decoder matrices
-from released sparse autoencoders --- five model families, $d$ from \SaeDMin{} to \SaeDMax{}, loads
-from \SaeLoadMin$\times$ to \SaeLoadMax$\times$ --- all \SaeDictsAboveControl{} sit \emph{above}
-their matched control (\SaeDictRgeomMin--\SaeDictRgeomMax): a random code of the same shape is better
-conditioned for linear readout than any dictionary we measured. Autoencoders trained by the same
+The floor then separates what training buys from what comes for free. On \SaeDicts{} released decoder
+matrices --- \SaeSaeCount{} sparse-autoencoder decoders plus \SaeMlpCount{} MLP down-projections of
+a hybrid model, five families --- all
+\SaeDictsAboveControl{} sit \emph{above} their matched control
+(\SaeDictRgeomMin--\SaeDictRgeomMax): a random code of the same shape carries less cross-talk under
+the best linear readout each admits. Autoencoders trained by the same
 recipe on a \emph{randomly initialised} copy of the same model return to the floor
 (\SaeRandInitRgeomMin--\SaeRandInitRgeomMax) in all \SaePairedLayers{} paired layers, so the excess
 reflects what the model learned rather than the act of fitting an autoencoder. Under controlled

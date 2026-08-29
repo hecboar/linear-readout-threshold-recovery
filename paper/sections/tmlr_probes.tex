@@ -38,11 +38,19 @@ validation gap between the network's own map and the selected probe is
 $d=200$ and \CeilLfourFourHundredValGap{}
 ([\CeilLfourFourHundredValCiLow, \CeilLfourFourHundredValCiHigh]) at $d=400$, all positive, and
 positive in \CeilLfourMissed{} of \CeilLfourModels{} models across the \CeilLfourCells{} $L^4$ cells
-at $d\ge100$ in both campaigns. Stage B replicates it independently
-(\CeilSbLfourHundredValGap{} and \CeilSbLfourTwoHundredValGap). At $d=50$, the width where the paper
-reports a tie, the gap is \CeilLfourFiftyValGap{}
-([\CeilLfourFiftyValCiLow, \CeilLfourFiftyValCiHigh]) --- indistinguishable from zero, which is what
-a tie should look like on this measurement and is a check that the quantity tracks the reported one.
+at $d\ge100$ in both campaigns, at both feature loads
+(\CeilSbLfourHundredValGap{} and \CeilSbLfourTwoHundredValGap{} in stage B's $F=\SbLoadHigh d$ cells).
+
+The gap tracks the reported difference in size as well as in sign. It is largest at $d=400$, the
+width where the network's lead is \ScPrimDiff{} levels, and smallest at $d=50$
+(\CeilLfourFiftyValGap, [\CeilLfourFiftyValCiLow, \CeilLfourFiftyValCiHigh]), the width where the
+lead is zero. It is not zero there, so we do not offer $d=50$ as a null: a small failure to find the
+better map need not cost a whole sparsity level, and $s_{95}$ is floored.
+
+The $L^2$ cells are the internal control for the measurement itself. There neither decoder recovers
+anything and the network has no lead, and there the validation gap sits at essentially zero. So a
+positive gap is not something this analysis produces wherever it looks: it appears where the network
+leads, vanishes where nothing does, and reverses where the probe leads.
 
 So the residual $L^4$ difference is a search failure, measured rather than assumed. A better member
 of the probe's own class was available, validation could see that it was better, and the procedure

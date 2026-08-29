@@ -280,23 +280,25 @@ def table_primary() -> None:
 
 
 def table_stageb() -> None:
-    """Stage B: an independent replication of two stage A cells, plus the sparsity axis.
+    """Stage B: a doubled feature load, and a training-sparsity contrast.
 
-    Separate campaign, separate seeds, separate run record. The two p = 0.01 rows are the
-    replication; the two p = 0.02 rows double the one training variable stage A held fixed.
+    Separate campaign, separate seeds, separate run record. The p = 0.01 rows are at F = 4d, twice
+    stage A's load; the p = 0.02 rows are at F = 2d and are the sparsity contrast. The F column is
+    the point of this table: without it the two blocks look like one design, which is how the
+    manuscript came to describe the p = 0.01 rows as exact repeats of stage A.
     """
     cells = {(c["loss"], c["d"], c["p_train"]): c for c in
              load("e7_stageB/derived/primary_comparison.json")["cells"]}
     front = {(c["loss"], c["d"], c["p_train"]): c for c in
              load("e7_stageB/derived/all_feature_frontier.json")["cells"]}
     names = {"L4": r"$L^4$", "L2": r"$L^2$", "random": "untrained"}
-    out = [r"\begin{tabular}{llccccc}", r"\toprule",
-           r"code & $d$ & $p$ & mean difference & 95\% interval & net / tie / probe "
+    out = [r"\begin{tabular}{llcccccc}", r"\toprule",
+           r"code & $d$ & $F/d$ & $p$ & mean difference & 95\% interval & net / tie / probe "
            r"& $\kappa_{\min}$ \\", r"\midrule"]
     for key in sorted(cells, key=lambda k: (("L4", "L2", "random").index(k[0]), k[2], k[1])):
         v = cells[key]["network_minus_probe"]["post_relu"]["s95"]
         loss, d, p = key
-        out.append(f"{names[loss]} & {d} & {p:.2f} & {v['mean']:+.2f} & "
+        out.append(f"{names[loss]} & {d} & {front[key]['F'] // d} & {p:.2f} & {v['mean']:+.2f} & "
                    f"[{v['ci_low']:+.2f}, {v['ci_high']:+.2f}] & "
                    f"{v['n_positive']} / {v['n_zero']} / {v['n_negative']} & "
                    f"{front[key]['kappa_min_full_mean']:.4f}" + r" \\")

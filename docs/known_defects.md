@@ -3,11 +3,13 @@
 Every defect found in this work, what it invalidated, and what was done about it. A defect's status
 changes only when the fix is committed and verified, not when it is understood, and no entry is
 deleted once fixed: the record of what was wrong is worth more than a short file, because the pattern
-across entries is the useful part. **Three of these six are the same trap in three different code
+across entries is the useful part. **Four of these eight are the same trap in four different code
 paths**: a threshold or operating point chosen by maximising something, with no check that the
 choice beats the baseline it replaced. That pattern is the most useful thing in this file.
 
-All six are fixed and all six sets of affected measurements have been recomputed. The file was
+All eight are fixed and all eight sets of affected measurements have been recomputed. KD7 and
+KD8 were found by an external adversarial review of the submitted manuscript, after the first six
+had been written up — the most useful fact in this file. The file was
 called *Known defects, open* while some were not; it is kept as a register rather than a queue. The
 manuscript-level consequences — which readings were withdrawn and what caused each — are in
 `paper/sections/app_withdrawn.tex`, which is an appendix of the paper rather than a file only a
@@ -277,3 +279,66 @@ the probe again. That is the third time a threshold-selection criterion has prod
 comparison in this repository, after per-feature accuracy tuning and after KD1's accuracy-selected
 operating point. The lesson that did not propagate: a selection routine needs a post-condition
 against the baseline it replaces, not just an objective to maximise.
+
+---
+
+## KD7 — A campaign run at a different feature load was compared as if it were the same design
+
+**Status: FIXED** 2026-08-29, in the manuscript and, more importantly, in the derived files.
+
+**Found:** 2026-08-29 by an external adversarial review of the submitted manuscript, verified against
+`results/*/derived/probe_ceiling.json`, which records `F`.
+
+**Where.** Stage B's `p = 0.01` cells are `F = 4d`; stage A is `F = 2d` everywhere. The manuscript
+described them as exact repeats of stage A at `d in {100, 200}`, read their larger decoder
+differences (+0.70, +1.00 against +0.35, +0.35) as a replication whose magnitude happened to differ,
+and attributed that difference to the imprecision of a cell mean over ten seeds. It is a design
+difference.
+
+**What it invalidated.** The claim that doubling the training sparsity raises the frontier — called
+"the cleanest small result in the campaign" — compared stage B's `p = 0.02` cell at `F = 400` against
+its own `p = 0.01` cell at `F = 800`. At matched load the comparison reverses and the per-model
+ranges are disjoint: `kappa_min = 7.6479 [7.5971, 7.7063]` at `p = 0.02` against stage A's
+`8.0352 [7.9971, 8.0787]` at `p = 0.01`, both at `F = 400`, `d = 200`. The claim is withdrawn; the
+manuscript now reports the null.
+
+**What it did not invalidate.** The `p = 0.01` cells are a genuine feature-load axis, and the
+loss–geometry separation and the sign structure of the decoder comparison hold at twice the load.
+Stage B is reframed as that, which is a better experiment than the replication it was described as.
+
+**Why no check could catch it.** Neither `primary_comparison.json` nor `all_feature_frontier.json`
+recorded `F`. The number that distinguishes the two designs was absent from the files every table and
+macro is generated from, so `check_manuscript_numbers.py` could verify every value and still not see
+that two different designs were being compared. **This is the fix that matters**: both writers now
+record `F`, the existing files are backfilled from the saved weights, and `tab_stageb` carries `F/d`
+as its first column after `d`.
+
+**Precedent.** This is the same class as KD1, KD2 and KD6 — a quantity compared against a baseline
+without checking that the baseline is what it is claimed to be — but one level up, at the design
+rather than in the code. Tests do not reach it. Recording the distinguishing variable does.
+
+---
+
+## KD8 — The probe-ceiling analysis maximised one objective and scored another
+
+**Status: FIXED** 2026-08-29 in `scripts/probe_ceiling.py`.
+
+**Found:** 2026-08-29, same external review.
+
+**Where.** `select_probe` chooses a configuration by `trapezoid(ys, xs) / (max(xs) - min(xs))` over
+the validation recovery curve. `probe_ceiling._curve` computed the plain mean over grid points, and
+its docstring asserted that the mean *was* the campaign's selection objective. On a uniform integer
+grid the two differ by `[(y_1 + y_n)/2 - mean] / (n - 1)`, the same order as the smallest gap the
+script reports.
+
+**What it changes.** Nothing is withdrawn. Recomputed under the correct functional the result
+strengthens: the selection still misses `W_net` in 80 of 80 `L4` models at `d >= 100`, and the gaps
+grow from 0.0163/0.0294/0.0638 to 0.0222/0.0368/0.0715 at `d = 100/200/400`. The untrained control is
+still 0 of 90. Two readings move: `d = 50` is no longer indistinguishable from zero and is no longer
+offered as a consistency check, and the `L2` arm — which under the wrong functional showed a spurious
+systematic gap — now sits at zero, which is the better outcome.
+
+**Precedent.** This is the seventh instance of the trap in KD1, KD2 and KD6, and it was committed
+while writing the section that documents the other six. Knowing the failure mode is not the same as
+being immune to it, which is the argument for external review rather than for more self-checking.
+

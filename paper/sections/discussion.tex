@@ -21,23 +21,23 @@ learned.} All \SaeDictsAboveControl{} of \SaeDicts{} decoders sit above their ow
 from \SaeDictRgeomMin{} to \SaeDictRgeomMax{}, with no exception across five model families, three
 training recipes and two decoder sites. The direction is the opposite of the natural guess: a random
 code of the same shape carries strictly \emph{less} cross-talk under the best linear readout each
-admits, so whatever sparse reconstruction optimises, it is not the conditioning of the dictionary's
-own linear readout. The matched pair EleutherAI released settles where the excess comes from: an
+admits, so whatever sparse reconstruction optimises, it is not the evenness of its own leverage. The matched pair EleutherAI released settles where the excess comes from: an
 autoencoder trained by an identical recipe on a \emph{randomly initialised} copy of the same model
 returns to the floor (\SaeRandInitRgeomMin--\SaeRandInitRgeomMax) in all \SaePairedLayers{} paired
 layers. Fitting a sparse autoencoder does not by itself produce dispersed leverage; representing a
 trained model's features does. For practice this reorders two intuitions: the layer a dictionary is
-trained on matters far more for linear readability than its width, and the coefficient of variation
---- the obvious summary --- is the wrong one, because it moves when the ratio does not.
+trained on changes its linear readability by far more than its width does, though not in one ordering
+that holds across families; and the coefficient of variation --- the obvious summary --- is the wrong
+one, because it moves when the ratio does not.
 
 \textbf{The loss decides whether a linear interface exists at all.} This is the largest effect we
 report and the one that replicates most widely. $L^2$ drives $\Rgeom$ to \SALtwoTwoHundredRgeom{} at
-$d=200$ and \ScLtwoRgeom{} at $d=400$ while collapsing its frontier to $1$ --- some feature is not
-separable even at $s=1$, which for singleton states means two features share a representation --- and
-$L^4$ stays at \SALfourTwoHundredRgeom{} with a frontier that grows to \ScMeasured{}. What
+$d=200$ and \ScLtwoRgeom{} at $d=400$ while collapsing its frontier to $1$ --- its worst feature is
+separable at singletons and at no larger sparsity --- and $L^4$ stays at \SALfourTwoHundredRgeom{}
+with a frontier that grows to \ScMeasured{}. What
 distinguishes models is therefore not whether they approach the floor but whether the floor
-\emph{binds} them, and Stage B reproduces the separation in an independent campaign at two training
-sparsities.
+\emph{binds} them, and Stage B reproduces the separation in an independent campaign at twice the
+feature load.
 
 \textbf{What training buys is the code, not the readout.} A random code with only its readout trained
 keeps an untrained code's frontier, \EeightFrozenHundredKappa{} against \EeightRandomHundredKappa{},
@@ -94,7 +94,11 @@ with four others.
 in~\cite{bhagat2026cc,ferreiradasilva2026l4} something to measure. ``Does this network compute in
 superposition?'' becomes three questions with numerical answers: how far the code is from its own
 floor rather than from the ensemble's, how that distance decomposes into leverage dispersion, and, per
-feature, the largest sparsity at which any affine rule could succeed. None requires
+feature, the largest sparsity at which any affine rule could succeed. The first two are statements
+about the row space under a declared unit-column gauge, and are invariant to any invertible
+transformation of the ambient coordinates --- which is what makes them properties of the code rather
+than of a basis, and equally what stops them from being claims about numerical conditioning or
+noise robustness. None requires
 reverse-engineering a mechanism, and the third is exact rather than sampled --- which matters, because
 this project's history is a series of empirical readings that reversed when an estimand or a baseline
 was tightened, while $\kappa_i$ never moved. What the instrument does not settle is consequence: we

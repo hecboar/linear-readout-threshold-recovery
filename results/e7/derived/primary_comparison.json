@@ -1,708 +1,717 @@
 {
-  "campaign": "e7",
-  "policy": "global",
-  "cells": [
-    {
-      "loss": "L2",
-      "d": 100,
-      "p_train": 0.01,
-      "policy": "global",
-      "n_seeds": 20,
-      "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
-      "network_minus_probe": {
-        "post_relu": {
-          "s95": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc": {
-            "mean": 0.0003826246995192302,
-            "ci_low": -4.187058668870161e-05,
-            "ci_high": 0.0007732581505408637,
-            "n_positive": 15,
-            "n_zero": 0,
-            "n_negative": 5
-          },
-          "s95_test_max": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc_test_max": {
-            "mean": 0.0002868840144230764,
-            "ci_low": -0.00011547851562499978,
-            "ci_high": 0.0006591440054086534,
-            "n_positive": 15,
-            "n_zero": 0,
-            "n_negative": 5
-          }
-        },
-        "pre_relu": {
-          "s95": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc": {
-            "mean": 0.000361027644230769,
-            "ci_low": -6.252863957331713e-05,
-            "ci_high": 0.0007511282113882205,
-            "n_positive": 15,
-            "n_zero": 0,
-            "n_negative": 5
-          },
-          "s95_test_max": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc_test_max": {
-            "mean": 0.00026810396634615387,
-            "ci_low": -0.00013277024489182675,
-            "ci_high": 0.0006389916053185092,
-            "n_positive": 15,
-            "n_zero": 0,
-            "n_negative": 5
-          }
-        }
-      }
+ "campaign": "e7",
+ "policy": "global",
+ "cells": [
+  {
+   "loss": "L2",
+   "d": 100,
+   "p_train": 0.01,
+   "policy": "global",
+   "n_seeds": 20,
+   "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
+   "network_minus_probe": {
+    "post_relu": {
+     "s95": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc": {
+      "mean": 0.0003826246995192302,
+      "ci_low": -4.187058668870161e-05,
+      "ci_high": 0.0007732581505408637,
+      "n_positive": 15,
+      "n_zero": 0,
+      "n_negative": 5
+     },
+     "s95_test_max": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc_test_max": {
+      "mean": 0.0002868840144230764,
+      "ci_low": -0.00011547851562499978,
+      "ci_high": 0.0006591440054086534,
+      "n_positive": 15,
+      "n_zero": 0,
+      "n_negative": 5
+     }
     },
-    {
-      "loss": "L2",
-      "d": 200,
-      "p_train": 0.01,
-      "policy": "global",
-      "n_seeds": 20,
-      "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
-      "network_minus_probe": {
-        "post_relu": {
-          "s95": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc": {
-            "mean": 0.0007495374177631568,
-            "ci_low": 0.000479414447985196,
-            "ci_high": 0.0010407078793174325,
-            "n_positive": 18,
-            "n_zero": 0,
-            "n_negative": 2
-          },
-          "s95_test_max": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc_test_max": {
-            "mean": 0.0005937499999999994,
-            "ci_low": 0.000375821725945723,
-            "ci_high": 0.000836407791940788,
-            "n_positive": 18,
-            "n_zero": 0,
-            "n_negative": 2
-          }
-        },
-        "pre_relu": {
-          "s95": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc": {
-            "mean": 0.0007484066611842099,
-            "ci_low": 0.00047828047902960497,
-            "ci_high": 0.001041324013157893,
-            "n_positive": 18,
-            "n_zero": 0,
-            "n_negative": 2
-          },
-          "s95_test_max": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc_test_max": {
-            "mean": 0.0005945466694078944,
-            "ci_low": 0.00037278924239309176,
-            "ci_high": 0.0008400005139802628,
-            "n_positive": 18,
-            "n_zero": 0,
-            "n_negative": 2
-          }
-        }
-      }
-    },
-    {
-      "loss": "L2",
-      "d": 50,
-      "p_train": 0.01,
-      "policy": "global",
-      "n_seeds": 20,
-      "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
-      "network_minus_probe": {
-        "post_relu": {
-          "s95": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc": {
-            "mean": 0.0007297801693146727,
-            "ci_low": -9.913056070689787e-05,
-            "ci_high": 0.0016222136663400475,
-            "n_positive": 15,
-            "n_zero": 0,
-            "n_negative": 5
-          },
-          "s95_test_max": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc_test_max": {
-            "mean": 0.00048158368625490983,
-            "ci_low": -0.00022298590834561,
-            "ci_high": 0.001242933444141941,
-            "n_positive": 15,
-            "n_zero": 0,
-            "n_negative": 5
-          }
-        },
-        "pre_relu": {
-          "s95": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc": {
-            "mean": 0.0007261791635977822,
-            "ci_low": -9.491379178065691e-05,
-            "ci_high": 0.0016143323288220744,
-            "n_positive": 15,
-            "n_zero": 0,
-            "n_negative": 5
-          },
-          "s95_test_max": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc_test_max": {
-            "mean": 0.0004829400230604651,
-            "ci_low": -0.00021722512122089287,
-            "ci_high": 0.0012420805069466392,
-            "n_positive": 15,
-            "n_zero": 0,
-            "n_negative": 5
-          }
-        }
-      }
-    },
-    {
-      "loss": "L4",
-      "d": 100,
-      "p_train": 0.01,
-      "policy": "global",
-      "n_seeds": 20,
-      "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
-      "network_minus_probe": {
-        "post_relu": {
-          "s95": {
-            "mean": 0.35,
-            "ci_low": 0.05,
-            "ci_high": 0.6,
-            "n_positive": 9,
-            "n_zero": 9,
-            "n_negative": 2
-          },
-          "auc": {
-            "mean": 0.020990929236778838,
-            "ci_low": 0.019330726036658648,
-            "ci_high": 0.022636073185847365,
-            "n_positive": 20,
-            "n_zero": 0,
-            "n_negative": 0
-          },
-          "s95_test_max": {
-            "mean": -0.15,
-            "ci_low": -0.3,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 17,
-            "n_negative": 3
-          },
-          "auc_test_max": {
-            "mean": 0.020990929236778838,
-            "ci_low": 0.019330726036658648,
-            "ci_high": 0.022636073185847365,
-            "n_positive": 20,
-            "n_zero": 0,
-            "n_negative": 0
-          }
-        },
-        "pre_relu": {
-          "s95": {
-            "mean": -0.25,
-            "ci_low": -0.5,
-            "ci_high": 0.0,
-            "n_positive": 1,
-            "n_zero": 13,
-            "n_negative": 6
-          },
-          "auc": {
-            "mean": -0.08118426983173077,
-            "ci_low": -0.08272189800555887,
-            "ci_high": -0.07973304161658654,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "s95_test_max": {
-            "mean": -0.65,
-            "ci_low": -0.9,
-            "ci_high": -0.4,
-            "n_positive": 0,
-            "n_zero": 8,
-            "n_negative": 12
-          },
-          "auc_test_max": {
-            "mean": -0.08188664362980769,
-            "ci_low": -0.08323223407451923,
-            "ci_high": -0.0807076908991887,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          }
-        }
-      }
-    },
-    {
-      "loss": "L4",
-      "d": 200,
-      "p_train": 0.01,
-      "policy": "global",
-      "n_seeds": 20,
-      "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
-      "network_minus_probe": {
-        "post_relu": {
-          "s95": {
-            "mean": 0.35,
-            "ci_low": 0.1,
-            "ci_high": 0.6,
-            "n_positive": 6,
-            "n_zero": 14,
-            "n_negative": 0
-          },
-          "auc": {
-            "mean": 0.03794941149259868,
-            "ci_low": 0.03647134881270559,
-            "ci_high": 0.039411050896895554,
-            "n_positive": 20,
-            "n_zero": 0,
-            "n_negative": 0
-          },
-          "s95_test_max": {
-            "mean": 0.35,
-            "ci_low": 0.1,
-            "ci_high": 0.6,
-            "n_positive": 6,
-            "n_zero": 14,
-            "n_negative": 0
-          },
-          "auc_test_max": {
-            "mean": 0.03794941149259868,
-            "ci_low": 0.03647134881270559,
-            "ci_high": 0.039411050896895554,
-            "n_positive": 20,
-            "n_zero": 0,
-            "n_negative": 0
-          }
-        },
-        "pre_relu": {
-          "s95": {
-            "mean": -0.25,
-            "ci_low": -0.55,
-            "ci_high": 0.05,
-            "n_positive": 1,
-            "n_zero": 12,
-            "n_negative": 7
-          },
-          "auc": {
-            "mean": -0.069903564453125,
-            "ci_low": -0.07130319695723683,
-            "ci_high": -0.06844771535773027,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "s95_test_max": {
-            "mean": -0.7,
-            "ci_low": -0.9,
-            "ci_high": -0.5,
-            "n_positive": 0,
-            "n_zero": 6,
-            "n_negative": 14
-          },
-          "auc_test_max": {
-            "mean": -0.069903564453125,
-            "ci_low": -0.07130319695723683,
-            "ci_high": -0.06844771535773027,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          }
-        }
-      }
-    },
-    {
-      "loss": "L4",
-      "d": 50,
-      "p_train": 0.01,
-      "policy": "global",
-      "n_seeds": 20,
-      "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
-      "network_minus_probe": {
-        "post_relu": {
-          "s95": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc": {
-            "mean": 0.00528632269965279,
-            "ci_low": 0.003836398654513906,
-            "ci_high": 0.006808149549696194,
-            "n_positive": 19,
-            "n_zero": 0,
-            "n_negative": 1
-          },
-          "s95_test_max": {
-            "mean": 0.0,
-            "ci_low": 0.0,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 20,
-            "n_negative": 0
-          },
-          "auc_test_max": {
-            "mean": 0.0044793023003472324,
-            "ci_low": 0.0033983018663194587,
-            "ci_high": 0.005518273247612863,
-            "n_positive": 19,
-            "n_zero": 0,
-            "n_negative": 1
-          }
-        },
-        "pre_relu": {
-          "s95": {
-            "mean": -0.1,
-            "ci_low": -0.25,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 18,
-            "n_negative": 2
-          },
-          "auc": {
-            "mean": -0.07772352430555556,
-            "ci_low": -0.07936538696289062,
-            "ci_high": -0.07603013780381944,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "s95_test_max": {
-            "mean": -0.1,
-            "ci_low": -0.25,
-            "ci_high": 0.0,
-            "n_positive": 0,
-            "n_zero": 18,
-            "n_negative": 2
-          },
-          "auc_test_max": {
-            "mean": -0.07794596354166665,
-            "ci_low": -0.07968683878580728,
-            "ci_high": -0.07619086371527777,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          }
-        }
-      }
-    },
-    {
-      "loss": "random",
-      "d": 100,
-      "p_train": 0.01,
-      "policy": "global",
-      "n_seeds": 20,
-      "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
-      "network_minus_probe": {
-        "post_relu": {
-          "s95": {
-            "mean": -2.0,
-            "ci_low": -2.0,
-            "ci_high": -2.0,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc": {
-            "mean": -0.20975461989182692,
-            "ci_low": -0.2159781217134916,
-            "ci_high": -0.20363217303936298,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "s95_test_max": {
-            "mean": -2.0,
-            "ci_low": -2.0,
-            "ci_high": -2.0,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc_test_max": {
-            "mean": -0.20975461989182692,
-            "ci_low": -0.2159781217134916,
-            "ci_high": -0.20363217303936298,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          }
-        },
-        "pre_relu": {
-          "s95": {
-            "mean": -4.05,
-            "ci_low": -4.15,
-            "ci_high": -4.0,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc": {
-            "mean": -0.5277398024338942,
-            "ci_low": -0.5330317786583533,
-            "ci_high": -0.5227191025954028,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "s95_test_max": {
-            "mean": -4.05,
-            "ci_low": -4.15,
-            "ci_high": -4.0,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc_test_max": {
-            "mean": -0.5277398024338942,
-            "ci_low": -0.5330317786583533,
-            "ci_high": -0.5227191025954028,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          }
-        }
-      }
-    },
-    {
-      "loss": "random",
-      "d": 200,
-      "p_train": 0.01,
-      "policy": "global",
-      "n_seeds": 20,
-      "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
-      "network_minus_probe": {
-        "post_relu": {
-          "s95": {
-            "mean": -2.3,
-            "ci_low": -2.5,
-            "ci_high": -2.1,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc": {
-            "mean": -0.18049031147203948,
-            "ci_low": -0.18418197663959704,
-            "ci_high": -0.17693534256784538,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "s95_test_max": {
-            "mean": -2.8,
-            "ci_low": -2.95,
-            "ci_high": -2.6,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc_test_max": {
-            "mean": -0.1817938939144737,
-            "ci_low": -0.1860114810341283,
-            "ci_high": -0.17783281571237664,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          }
-        },
-        "pre_relu": {
-          "s95": {
-            "mean": -6.55,
-            "ci_low": -6.75,
-            "ci_high": -6.35,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc": {
-            "mean": -0.5693807822779604,
-            "ci_low": -0.5734464564273233,
-            "ci_high": -0.5656835805792558,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "s95_test_max": {
-            "mean": -6.55,
-            "ci_low": -6.75,
-            "ci_high": -6.35,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc_test_max": {
-            "mean": -0.5693807822779604,
-            "ci_low": -0.5734464564273233,
-            "ci_high": -0.5656835805792558,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          }
-        }
-      }
-    },
-    {
-      "loss": "random",
-      "d": 50,
-      "p_train": 0.01,
-      "policy": "global",
-      "n_seeds": 20,
-      "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
-      "network_minus_probe": {
-        "post_relu": {
-          "s95": {
-            "mean": -1.0,
-            "ci_low": -1.0,
-            "ci_high": -1.0,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc": {
-            "mean": -0.212192127985585,
-            "ci_low": -0.21870824163674504,
-            "ci_high": -0.2057427659365465,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "s95_test_max": {
-            "mean": -1.0,
-            "ci_low": -1.0,
-            "ci_high": -1.0,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc_test_max": {
-            "mean": -0.212192127985585,
-            "ci_low": -0.21870824163674504,
-            "ci_high": -0.2057427659365465,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          }
-        },
-        "pre_relu": {
-          "s95": {
-            "mean": -2.45,
-            "ci_low": -2.65,
-            "ci_high": -2.25,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc": {
-            "mean": -0.5039769230937851,
-            "ci_low": -0.5101940498120858,
-            "ci_high": -0.49799411830709445,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "s95_test_max": {
-            "mean": -2.5,
-            "ci_low": -2.7,
-            "ci_high": -2.3,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          },
-          "auc_test_max": {
-            "mean": -0.5039769230937851,
-            "ci_low": -0.5101940498120858,
-            "ci_high": -0.49799411830709445,
-            "n_positive": 0,
-            "n_zero": 0,
-            "n_negative": 20
-          }
-        }
-      }
+    "pre_relu": {
+     "s95": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc": {
+      "mean": 0.000361027644230769,
+      "ci_low": -6.252863957331713e-05,
+      "ci_high": 0.0007511282113882205,
+      "n_positive": 15,
+      "n_zero": 0,
+      "n_negative": 5
+     },
+     "s95_test_max": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc_test_max": {
+      "mean": 0.00026810396634615387,
+      "ci_low": -0.00013277024489182675,
+      "ci_high": 0.0006389916053185092,
+      "n_positive": 15,
+      "n_zero": 0,
+      "n_negative": 5
+     }
     }
-  ]
+   },
+   "F": 200
+  },
+  {
+   "loss": "L2",
+   "d": 200,
+   "p_train": 0.01,
+   "policy": "global",
+   "n_seeds": 20,
+   "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
+   "network_minus_probe": {
+    "post_relu": {
+     "s95": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc": {
+      "mean": 0.0007495374177631568,
+      "ci_low": 0.000479414447985196,
+      "ci_high": 0.0010407078793174325,
+      "n_positive": 18,
+      "n_zero": 0,
+      "n_negative": 2
+     },
+     "s95_test_max": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc_test_max": {
+      "mean": 0.0005937499999999994,
+      "ci_low": 0.000375821725945723,
+      "ci_high": 0.000836407791940788,
+      "n_positive": 18,
+      "n_zero": 0,
+      "n_negative": 2
+     }
+    },
+    "pre_relu": {
+     "s95": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc": {
+      "mean": 0.0007484066611842099,
+      "ci_low": 0.00047828047902960497,
+      "ci_high": 0.001041324013157893,
+      "n_positive": 18,
+      "n_zero": 0,
+      "n_negative": 2
+     },
+     "s95_test_max": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc_test_max": {
+      "mean": 0.0005945466694078944,
+      "ci_low": 0.00037278924239309176,
+      "ci_high": 0.0008400005139802628,
+      "n_positive": 18,
+      "n_zero": 0,
+      "n_negative": 2
+     }
+    }
+   },
+   "F": 400
+  },
+  {
+   "loss": "L2",
+   "d": 50,
+   "p_train": 0.01,
+   "policy": "global",
+   "n_seeds": 20,
+   "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
+   "network_minus_probe": {
+    "post_relu": {
+     "s95": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc": {
+      "mean": 0.0007297801693146727,
+      "ci_low": -9.913056070689787e-05,
+      "ci_high": 0.0016222136663400475,
+      "n_positive": 15,
+      "n_zero": 0,
+      "n_negative": 5
+     },
+     "s95_test_max": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc_test_max": {
+      "mean": 0.00048158368625490983,
+      "ci_low": -0.00022298590834561,
+      "ci_high": 0.001242933444141941,
+      "n_positive": 15,
+      "n_zero": 0,
+      "n_negative": 5
+     }
+    },
+    "pre_relu": {
+     "s95": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc": {
+      "mean": 0.0007261791635977822,
+      "ci_low": -9.491379178065691e-05,
+      "ci_high": 0.0016143323288220744,
+      "n_positive": 15,
+      "n_zero": 0,
+      "n_negative": 5
+     },
+     "s95_test_max": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc_test_max": {
+      "mean": 0.0004829400230604651,
+      "ci_low": -0.00021722512122089287,
+      "ci_high": 0.0012420805069466392,
+      "n_positive": 15,
+      "n_zero": 0,
+      "n_negative": 5
+     }
+    }
+   },
+   "F": 100
+  },
+  {
+   "loss": "L4",
+   "d": 100,
+   "p_train": 0.01,
+   "policy": "global",
+   "n_seeds": 20,
+   "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
+   "network_minus_probe": {
+    "post_relu": {
+     "s95": {
+      "mean": 0.35,
+      "ci_low": 0.05,
+      "ci_high": 0.6,
+      "n_positive": 9,
+      "n_zero": 9,
+      "n_negative": 2
+     },
+     "auc": {
+      "mean": 0.020990929236778838,
+      "ci_low": 0.019330726036658648,
+      "ci_high": 0.022636073185847365,
+      "n_positive": 20,
+      "n_zero": 0,
+      "n_negative": 0
+     },
+     "s95_test_max": {
+      "mean": -0.15,
+      "ci_low": -0.3,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 17,
+      "n_negative": 3
+     },
+     "auc_test_max": {
+      "mean": 0.020990929236778838,
+      "ci_low": 0.019330726036658648,
+      "ci_high": 0.022636073185847365,
+      "n_positive": 20,
+      "n_zero": 0,
+      "n_negative": 0
+     }
+    },
+    "pre_relu": {
+     "s95": {
+      "mean": -0.25,
+      "ci_low": -0.5,
+      "ci_high": 0.0,
+      "n_positive": 1,
+      "n_zero": 13,
+      "n_negative": 6
+     },
+     "auc": {
+      "mean": -0.08118426983173077,
+      "ci_low": -0.08272189800555887,
+      "ci_high": -0.07973304161658654,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "s95_test_max": {
+      "mean": -0.65,
+      "ci_low": -0.9,
+      "ci_high": -0.4,
+      "n_positive": 0,
+      "n_zero": 8,
+      "n_negative": 12
+     },
+     "auc_test_max": {
+      "mean": -0.08188664362980769,
+      "ci_low": -0.08323223407451923,
+      "ci_high": -0.0807076908991887,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     }
+    }
+   },
+   "F": 200
+  },
+  {
+   "loss": "L4",
+   "d": 200,
+   "p_train": 0.01,
+   "policy": "global",
+   "n_seeds": 20,
+   "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
+   "network_minus_probe": {
+    "post_relu": {
+     "s95": {
+      "mean": 0.35,
+      "ci_low": 0.1,
+      "ci_high": 0.6,
+      "n_positive": 6,
+      "n_zero": 14,
+      "n_negative": 0
+     },
+     "auc": {
+      "mean": 0.03794941149259868,
+      "ci_low": 0.03647134881270559,
+      "ci_high": 0.039411050896895554,
+      "n_positive": 20,
+      "n_zero": 0,
+      "n_negative": 0
+     },
+     "s95_test_max": {
+      "mean": 0.35,
+      "ci_low": 0.1,
+      "ci_high": 0.6,
+      "n_positive": 6,
+      "n_zero": 14,
+      "n_negative": 0
+     },
+     "auc_test_max": {
+      "mean": 0.03794941149259868,
+      "ci_low": 0.03647134881270559,
+      "ci_high": 0.039411050896895554,
+      "n_positive": 20,
+      "n_zero": 0,
+      "n_negative": 0
+     }
+    },
+    "pre_relu": {
+     "s95": {
+      "mean": -0.25,
+      "ci_low": -0.55,
+      "ci_high": 0.05,
+      "n_positive": 1,
+      "n_zero": 12,
+      "n_negative": 7
+     },
+     "auc": {
+      "mean": -0.069903564453125,
+      "ci_low": -0.07130319695723683,
+      "ci_high": -0.06844771535773027,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "s95_test_max": {
+      "mean": -0.7,
+      "ci_low": -0.9,
+      "ci_high": -0.5,
+      "n_positive": 0,
+      "n_zero": 6,
+      "n_negative": 14
+     },
+     "auc_test_max": {
+      "mean": -0.069903564453125,
+      "ci_low": -0.07130319695723683,
+      "ci_high": -0.06844771535773027,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     }
+    }
+   },
+   "F": 400
+  },
+  {
+   "loss": "L4",
+   "d": 50,
+   "p_train": 0.01,
+   "policy": "global",
+   "n_seeds": 20,
+   "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
+   "network_minus_probe": {
+    "post_relu": {
+     "s95": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc": {
+      "mean": 0.00528632269965279,
+      "ci_low": 0.003836398654513906,
+      "ci_high": 0.006808149549696194,
+      "n_positive": 19,
+      "n_zero": 0,
+      "n_negative": 1
+     },
+     "s95_test_max": {
+      "mean": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 20,
+      "n_negative": 0
+     },
+     "auc_test_max": {
+      "mean": 0.0044793023003472324,
+      "ci_low": 0.0033983018663194587,
+      "ci_high": 0.005518273247612863,
+      "n_positive": 19,
+      "n_zero": 0,
+      "n_negative": 1
+     }
+    },
+    "pre_relu": {
+     "s95": {
+      "mean": -0.1,
+      "ci_low": -0.25,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 18,
+      "n_negative": 2
+     },
+     "auc": {
+      "mean": -0.07772352430555556,
+      "ci_low": -0.07936538696289062,
+      "ci_high": -0.07603013780381944,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "s95_test_max": {
+      "mean": -0.1,
+      "ci_low": -0.25,
+      "ci_high": 0.0,
+      "n_positive": 0,
+      "n_zero": 18,
+      "n_negative": 2
+     },
+     "auc_test_max": {
+      "mean": -0.07794596354166665,
+      "ci_low": -0.07968683878580728,
+      "ci_high": -0.07619086371527777,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     }
+    }
+   },
+   "F": 100
+  },
+  {
+   "loss": "random",
+   "d": 100,
+   "p_train": 0.01,
+   "policy": "global",
+   "n_seeds": 20,
+   "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
+   "network_minus_probe": {
+    "post_relu": {
+     "s95": {
+      "mean": -2.0,
+      "ci_low": -2.0,
+      "ci_high": -2.0,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc": {
+      "mean": -0.20975461989182692,
+      "ci_low": -0.2159781217134916,
+      "ci_high": -0.20363217303936298,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "s95_test_max": {
+      "mean": -2.0,
+      "ci_low": -2.0,
+      "ci_high": -2.0,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc_test_max": {
+      "mean": -0.20975461989182692,
+      "ci_low": -0.2159781217134916,
+      "ci_high": -0.20363217303936298,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     }
+    },
+    "pre_relu": {
+     "s95": {
+      "mean": -4.05,
+      "ci_low": -4.15,
+      "ci_high": -4.0,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc": {
+      "mean": -0.5277398024338942,
+      "ci_low": -0.5330317786583533,
+      "ci_high": -0.5227191025954028,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "s95_test_max": {
+      "mean": -4.05,
+      "ci_low": -4.15,
+      "ci_high": -4.0,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc_test_max": {
+      "mean": -0.5277398024338942,
+      "ci_low": -0.5330317786583533,
+      "ci_high": -0.5227191025954028,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     }
+    }
+   },
+   "F": 200
+  },
+  {
+   "loss": "random",
+   "d": 200,
+   "p_train": 0.01,
+   "policy": "global",
+   "n_seeds": 20,
+   "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
+   "network_minus_probe": {
+    "post_relu": {
+     "s95": {
+      "mean": -2.3,
+      "ci_low": -2.5,
+      "ci_high": -2.1,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc": {
+      "mean": -0.18049031147203948,
+      "ci_low": -0.18418197663959704,
+      "ci_high": -0.17693534256784538,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "s95_test_max": {
+      "mean": -2.8,
+      "ci_low": -2.95,
+      "ci_high": -2.6,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc_test_max": {
+      "mean": -0.1817938939144737,
+      "ci_low": -0.1860114810341283,
+      "ci_high": -0.17783281571237664,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     }
+    },
+    "pre_relu": {
+     "s95": {
+      "mean": -6.55,
+      "ci_low": -6.75,
+      "ci_high": -6.35,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc": {
+      "mean": -0.5693807822779604,
+      "ci_low": -0.5734464564273233,
+      "ci_high": -0.5656835805792558,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "s95_test_max": {
+      "mean": -6.55,
+      "ci_low": -6.75,
+      "ci_high": -6.35,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc_test_max": {
+      "mean": -0.5693807822779604,
+      "ci_low": -0.5734464564273233,
+      "ci_high": -0.5656835805792558,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     }
+    }
+   },
+   "F": 400
+  },
+  {
+   "loss": "random",
+   "d": 50,
+   "p_train": 0.01,
+   "policy": "global",
+   "n_seeds": 20,
+   "probe_selection": "validation (val_criterion); test-set maximum reported alongside",
+   "network_minus_probe": {
+    "post_relu": {
+     "s95": {
+      "mean": -1.0,
+      "ci_low": -1.0,
+      "ci_high": -1.0,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc": {
+      "mean": -0.212192127985585,
+      "ci_low": -0.21870824163674504,
+      "ci_high": -0.2057427659365465,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "s95_test_max": {
+      "mean": -1.0,
+      "ci_low": -1.0,
+      "ci_high": -1.0,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc_test_max": {
+      "mean": -0.212192127985585,
+      "ci_low": -0.21870824163674504,
+      "ci_high": -0.2057427659365465,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     }
+    },
+    "pre_relu": {
+     "s95": {
+      "mean": -2.45,
+      "ci_low": -2.65,
+      "ci_high": -2.25,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc": {
+      "mean": -0.5039769230937851,
+      "ci_low": -0.5101940498120858,
+      "ci_high": -0.49799411830709445,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "s95_test_max": {
+      "mean": -2.5,
+      "ci_low": -2.7,
+      "ci_high": -2.3,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     },
+     "auc_test_max": {
+      "mean": -0.5039769230937851,
+      "ci_low": -0.5101940498120858,
+      "ci_high": -0.49799411830709445,
+      "n_positive": 0,
+      "n_zero": 0,
+      "n_negative": 20
+     }
+    }
+   },
+   "F": 100
+  }
+ ]
 }

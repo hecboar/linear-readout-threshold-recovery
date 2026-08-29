@@ -6,6 +6,22 @@ Section~\ref{sec:setting}: $F$ unit-norm directions in $d<F$ dimensions, used in
 inner products with feature directions. It is therefore an object the diagnostic applies to without
 adaptation, and it is one that people deploy. This section measures \SaeDicts{} of them.
 
+\paragraph{The gauge, stated before anything is measured.} Leverage is not invariant to rescaling
+a column, so a measurement of it is meaningless without a declared normalisation. Every decoder
+analysed here, and every control it is compared against, is normalised to unit column norms before
+anything is computed (\code{unit\_cols} in \code{scripts/sae\_diagnostic.py}). That is the same
+convention the theory of Section~\ref{sec:floor} assumes, and it is what makes the comparison against
+a shape-matched control a comparison of directions rather than of scales. Without it the excess we
+report could be manufactured: shrinking a handful of columns of an i.i.d.\ code, directions untouched,
+moves its ratio further than any dictionary in this section sits above its control.
+
+A residual of the same kind survives the gauge and we do not resolve it. A dead latent --- a decoder
+column whose encoder never fires on the data --- still has a direction, still enters the row space,
+and still moves the leverage of every other feature, while changing nothing the model computes. So
+two functionally identical autoencoders can receive different scores here. Fixing that needs matched
+activation data to define the active support, which this section deliberately does not use; we return
+to it in Section~\ref{sec:limitations}.
+
 \paragraph{What is and is not computed.} Everything below comes from a decoder matrix. No model
 weights are loaded, no activations are collected, no autoencoder is trained, and no linear programme
 is solved. The cost is seconds per dictionary, which is why the section can span five model families
@@ -41,6 +57,18 @@ pseudoinverse readout, is consistent with a code that has learned nothing at all
 about training only when compared against a shape-matched baseline, and that comparison is the first
 thing we could not find in the work we build on.
 
+It is worth seeing how little the ratio constrains a code, because the identity makes the extreme
+case constructible. Stack $k$ copies of the same orthonormal basis, $\Phi=[I_d\;I_d\;\cdots\;I_d]$
+with $F=kd$. Then $\Phi\Phi^{\top}=k I_d$, every leverage score is exactly $1/k=d/F$, and by
+Proposition~\ref{prop:leverage} the code attains the floor exactly: $\Rgeom=1$. Yet features $i$ and
+$i+d$ have identical directions, so no readout of any kind --- linear, affine or otherwise --- can
+tell which of the two is active. A code can therefore sit exactly on the rank--trace floor and be
+maximally unidentifiable. Attaining the floor is not a certificate of anything; it is the statement
+that the unavoidable cross-talk is spread evenly, and evenness is compatible with duplication. This
+cuts both ways, and we take the cut: it is why we report the excess above a matched control as a
+measured difference in leverage dispersion, and not as a claim that one code is ``better conditioned''
+than another.
+
 \subsection{No released dictionary we measured is at the floor}
 
 All \SaeDictsAboveControl{} of the \SaeDicts{} dictionaries sit above their own control, at $\Rgeom$
@@ -60,12 +88,16 @@ By the identity, the excess has a single source: leverage dispersion, \SaeDictCv
 allocates its directions unevenly with respect to the space it lives in, and a handful of features
 with small $h_i$ dominate the harmonic sum that sets the ratio.
 
-\paragraph{Depth, not width.} The excess is not uniform across a model. In every suite we measured,
-mid-depth dictionaries sit furthest from the floor and the deepest layer sampled sits closest ---
-$\Rgeom=\SaeDictRgeomMax{}$ at mid-depth against \SaeDictRgeomMin{} at the last layer of one family,
-with the same ordering in the others. Whatever a practitioner is choosing when they pick a layer to
-train a dictionary on, they are also choosing how well that dictionary can be read linearly, by a
-margin far larger than any width effect below.
+\paragraph{Depth matters more than width, but not in one clean ordering.} The excess is far from
+uniform across a model, and within a suite it varies by more than any width effect we measure below.
+In the three Qwen suites the pattern is clean: mid-depth dictionaries sit furthest from the floor and
+the deepest layer sampled sits closest --- $\Rgeom=\SaeDictRgeomMax{}$ at layer 17 of Qwen3-8B
+against \SaeQwenDeepestRgeom{} at its own last layer. In the other two suites it is not. The deepest
+LFM2.5 layer is \SaeLfmDeepestRgeom{} while the closest to the floor is the layer before it
+(\SaeLfmClosestRgeom{}), and the deepest SmolLM2 layer is \SaeSmolDeepestRgeom{} against a minimum of
+\SaeSmolClosestRgeom{} at layer 0. So the safe statement is the one the data supports in every
+suite: the layer a dictionary is trained on changes its linear readability by far more than its
+width does, and the direction of that change is not the same in every family.
 
 \subsection{A randomly initialised control shows where the excess comes from}
 

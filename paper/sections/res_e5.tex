@@ -70,7 +70,10 @@ reproduces, from interface measurements alone and without any mechanistic revers
 the distinction that~\cite{bhagat2026cc} and~\cite{ferreiradasilva2026l4} reached by other
 means. It also explains why the $L^2$ model is bound by Theorem~\ref{thm:floor} at all: a
 network that keeps an effectively linear readout \emph{is} a linear readout for these inputs,
-and its measured ratio of \EfiveLtwoRatioLsMean{} says how far from optimal that readout is.
+and the best affine readout of that code sits at \EfiveLtwoRatioLsMean{} times the floor. That
+number is the fitted least-squares probe's, not the network's own: by the factorisation above the
+network's own readout is $\Rgeom\times\Rreadout$, which is a third smaller. Every ratio quoted in
+this subsection names its readout, because the two differ by more than the effect under discussion.
 Its thresholded output recovers even a single active feature only \EfiveLtwoPmodelOne{} of the
 time.
 
