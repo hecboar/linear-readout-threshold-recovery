@@ -46,6 +46,13 @@ shape-matched control carries information about the code.
 
 \subsection{Near-floor geometry is generic}
 
+Each control is a single i.i.d.\ draw at its block's shape rather than a Monte Carlo ensemble.
+That is deliberate and it is defensible: by Proposition~\ref{prop:leverage} the ratio is a function
+of the leverage profile, whose concentration at these dimensions is tight enough that the whole set
+of controls spans less than \SaeCtlRgeomMax{} $-$ \SaeCtlRgeomMin{} in $\Rgeom$ across every shape
+and load we measure. A reader who wants the sampling spread rather than our word for it can generate
+it in seconds from the released script.
+
 The \SaeControls{} matched controls attain the floor: $\Rgeom$ from \SaeCtlRgeomMin{} to
 \SaeCtlRgeomMax{} across every shape and every load from \SaeLoadMin$\times$ to
 \SaeLoadMax$\times$, with leverage dispersion \SaeCtlCvMin{} to \SaeCtlCvMax{}. This is
@@ -87,6 +94,18 @@ By the identity, the excess has a single source: leverage dispersion, \SaeDictCv
 \SaeDictCvMax{} against the controls' \SaeCtlCvMin{} to \SaeCtlCvMax{}. A released dictionary
 allocates its directions unevenly with respect to the space it lives in, and a handful of features
 with small $h_i$ dominate the harmonic sum that sets the ratio.
+
+\paragraph{The second statistic agrees, in sparsity units.} The diagnostic returns a failure
+threshold as well as a ratio: the smallest sparsity at which Corollary~\ref{cor:failthresh}
+guarantees that some feature cannot be recovered by any affine rule. Its absolute value is a property
+of the shape --- at the operating sparsities these dictionaries are used at, the sufficient condition
+rules out essentially every feature of the controls too --- so it carries information only as a
+matched difference. Matched, it is unanimous: all \SaeFailEarlier{} of \SaeDicts{} dictionaries reach
+guaranteed failure \emph{earlier} than the i.i.d.\ code of their own shape and operating sparsity, by
+\SaeFailGapMin{} to \SaeFailGapMax{} sparsity levels, with the trained thresholds running from
+\SaeFailTrainedMin{} to \SaeFailTrainedMax{}. This is a different functional of the leverage
+distribution from $\Rgeom$ --- a worst-case statement about one feature rather than an average over
+all of them --- and it points the same way, which is the main reason we report it.
 
 \paragraph{Depth matters more than width, but not in one clean ordering.} The excess is far from
 uniform across a model, and within a suite it varies by more than any width effect we measure below.

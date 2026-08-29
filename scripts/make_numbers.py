@@ -798,6 +798,19 @@ def build() -> Macros:
     span(randinit, "R_geom", 4, "RandInitRgeom")
     span(randinit, "h_cv", 3, "RandInitCv")
     m.integer("SaeDicts", len(trained))
+    # The failure threshold, which the introduction promises and nothing reported. It is the second
+    # statistic the diagnostic produces from a decoder, in sparsity units rather than as a ratio, and
+    # it must be read per shape: the absolute value is a property of (d, F, s), so only the matched
+    # difference carries information. Matched, it is unanimous and in the same direction as R_geom.
+    ctl_by_shape = {(r["d"], r["F"], r["s_operating"]): r for r in ctl}
+    fail_gaps = [ctl_by_shape[(r["d"], r["F"], r["s_operating"])]["first_failure_s"]
+                 - r["first_failure_s"] for r in trained]
+    m.integer("SaeFailEarlier", sum(1 for g in fail_gaps if g > 0))
+    m.integer("SaeFailGapMin", min(fail_gaps))
+    m.integer("SaeFailGapMax", max(fail_gaps))
+    m.integer("SaeFailTrainedMin", min(r["first_failure_s"] for r in trained))
+    m.integer("SaeFailTrainedMax", max(r["first_failure_s"] for r in trained))
+
     # What those objects are: 16 of them are a hybrid model's MLP down-projections, not
     # autoencoders. The abstract called all of them sparse autoencoders.
     m.integer("SaeSaeCount",

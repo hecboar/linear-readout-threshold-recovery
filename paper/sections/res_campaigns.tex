@@ -64,7 +64,11 @@ is \PrimLfourTies{} ties, \PrimNetWins{} to the network and \PrimProbeWins{} to 
 difference grows with width.
 
 The registered outcome was that a properly trained, validation-selected affine decoder would
-\emph{match} the network, and at the smallest width it does. It stops doing so as width grows. We
+\emph{match} the network. Under $s_{95}$ it does at the smallest width and stops doing so as width
+grows. Under the other co-primary estimand it does not hold even there: the AUC difference at $d=50$
+is \AucFiftyDiff{} ([\AucFiftyCiLow, \AucFiftyCiHigh]) on \AucFiftyNetWins{} of \EsevenSeeds{} seeds,
+so the registered prediction fails at every width once the finer statistic is used, and what $s_{95}$
+shows at $d=50$ is a difference below its own resolution rather than a match. We
 report that, and Section~\ref{sec:probes} states what the comparison can and cannot mean, because
 the probe class contains the network's own decoder and the gap therefore measures the fitting
 procedure rather than the expressiveness of affine maps.
