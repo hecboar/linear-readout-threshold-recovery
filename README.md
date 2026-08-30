@@ -299,11 +299,9 @@ This repository supersedes an earlier version of the work. The illustration scri
 (`synthetic_illustrations.py`) and the figures it produced are kept, since they are still what
 `figures/` and `data/` contain.
 
-The present version is not an edit of it. The theory is unchanged and correct, but the
-contribution is now stated as a method and the experiments were rewritten from scratch, because
-an audit found that several numerical claims in the earlier appendix are not reproduced by its
-own published code. Every number in the current manuscript is generated from saved results by
-`scripts/make_numbers.py` and checked against the manuscript by
+The present version is not an edit of it: the theory is unchanged, the contribution is restated as
+a method, and the experiments were rewritten from scratch. Every number in the current manuscript is
+generated from saved results by `scripts/make_numbers.py` and checked against the manuscript by
 `scripts/check_manuscript_numbers.py`.
 
 The analysis plan, including the predictions registered before the results were in, is in
