@@ -249,10 +249,8 @@ paper/                  manuscript sources, figures, tables, highlights
   generated/numbers.tex 409 macros, produced from results/ and verified against it
   legacy/               the retired elsarticle version, kept as a record
 docs/                   decision log, defect register and supporting analyses
-superseded-submission/
-                        the earlier version, kept unmodified as a record
 synthetic_illustrations.py, figures/, data/
-                        the illustration script and outputs of that earlier submission
+                        the illustration script and figures of the earlier version
 ```
 
 ---
@@ -297,9 +295,9 @@ figures may differ in the last displayed digit on a different platform.
 
 ## Relationship to the earlier version
 
-This repository supersedes an earlier version of the work, preserved unmodified in
-`superseded-submission/` together with the illustration script
-(`synthetic_illustrations.py`) and figures it shipped.
+This repository supersedes an earlier version of the work. The illustration script
+(`synthetic_illustrations.py`) and the figures it produced are kept, since they are still what
+`figures/` and `data/` contain.
 
 The present version is not an edit of it. The theory is unchanged and correct, but the
 contribution is now stated as a method and the experiments were rewritten from scratch, because

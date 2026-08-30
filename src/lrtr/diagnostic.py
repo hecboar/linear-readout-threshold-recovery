@@ -418,7 +418,7 @@ def random_code_scaling_experiment(d: int, F: int, sparsities: Sequence[int], tr
     }
 
 
-# Former name of the routine above. It was called ALG-2 in the earlier submission,
-# which conflated the ensemble experiment with the per-code diagnostic; the alias keeps older
-# scripts working while the two are named apart.
+# Former name of the routine above. It was called ALG-2 in the first version of this work, which
+# conflated the ensemble experiment with the per-code diagnostic; the alias keeps older scripts
+# working while the two are named apart.
 interface_separation_profile = random_code_scaling_experiment

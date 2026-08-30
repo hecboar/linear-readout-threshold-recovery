@@ -141,4 +141,4 @@ marginals, and the reported quantities are marginal.
 | Algorithm 2 regenerates random codes instead of accepting a fixed code | **Was true; fixed.** Split into `fixed_code_separation_profile` (the diagnostic) and `random_code_scaling_experiment` (the ensemble study). E2/E6 numbers unchanged — same routine, renamed. |
 | `p_train = 0.02`: `W_out` has `s95 = 4` on every seed | **Was false; corrected.** Measured `[3, 4, 4, 3, 4]`. The manuscript now says the best linear readout is ahead on 3 of 5 seeds, tied on the rest, and the figure is a generated macro. |
 | The abstract compares the `L4` pseudoinverse ratio against the `L2` least-squares ratio | **Was true; fixed.** Now a within-readout comparison. |
-| The public repository may not contain the claimed implementation | **Open.** See `repository_gap_audit.md`. |
+| The public repository may not contain the claimed implementation | **Open.** See `the phase-0 audits`. |

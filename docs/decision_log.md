@@ -108,14 +108,15 @@ publishable systems paper into an open-ended search for a larger theorem.
 
 ---
 
-## D5 — 2026-08-08 — Venue decision is deferred to a gate
+## D5 — 2026-08-08 — The target is deferred to a gate
 
 **Status:** binding
 
-Neurocomputing is the primary target and the work is designed to clear its standard. The final
-choice among Neurocomputing / TMLR / Neural Networks is deferred until G1 and G2 are closed and
-audited, the multi-width campaign has run, the optimal affine baseline is in, Boolean vs native
-is characterised, and the second-system pilot has resolved.
+The work is designed to clear the standard of a strong archival venue, and the choice of which is
+deferred until G1 and G2 are closed and audited, the multi-width campaign has run, the optimal
+affine baseline is in, Boolean vs native is characterised, and the second-system pilot has
+resolved. Designing for a specific venue before the results are in is how a paper gets shaped to
+fit a target rather than to fit its evidence.
 
 No irreversible journal-specific framing before that gate. In particular the title, the abstract
 and the emphasis of the contribution stay provisional.
@@ -353,23 +354,22 @@ forces full device-independence and exists so the gate can test arithmetic in is
 
 **Status:** executed for the renames; the pruning is pending approval
 
-Seven top-level paths named the target journal, and the venue is not decided until after Stage
-A. Renaming is hygiene rather than framing, so it was done now: `paper/` became
-`paper/`, and the six venue-named documents moved into `internal/` under neutral names, joined
+Seven top-level paths named a target journal, and the venue is not decided until after Stage
+A. Renaming is hygiene rather than framing, so it was done now: the venue-named manuscript
+directory became `paper/`, and six venue-named documents moved out of the release under neutral
+names, joined
 by the submission material that has no place in a public repository — cover letter, reviewer
 candidates, prepared rebuttals, external-review prompt.
 
-**On the earlier version.** The artefacts stay and the labels go. Preserving a superseded
-manuscript is normal practice; naming the venues it passed through, and publishing our own
-enumerated defect list, is not, and neither belongs in the scientific record. The README
-now states the substantive fact — an audit found numerical claims in the earlier appendix that
-its own published code does not reproduce — and points at `docs/decision_log.md` for the
-registered predictions, which is the part that is evidence rather than confession.
+**On the earlier version.** The labels go. Which venues a manuscript was sent to is not part of
+the scientific record, and neither is our own enumerated defect list of a superseded draft. What
+is part of the record is the substantive fact — an audit found numerical claims in the earlier
+appendix that its own published code does not reproduce — and the registered predictions in this
+log, which are evidence rather than confession. The README states the first and points at the
+second.
 
-**Open.** `superseded-submission/` is preserved
-intact by instruction. Either keep it as it is or exclude it from the
-public release. `internal/` must not ship; removing it costs no reproducibility, since it holds
-no code, no configuration and no results.
+**Open.** Whether the superseded submission package ships at all. `internal/` must not; removing
+it costs no reproducibility, since it holds no code, no configuration and no results.
 
 ---
 
@@ -740,9 +740,11 @@ no longer add. Having chosen to keep the history for what it documents, that inc
 than the convenience is worth. The largest single file is 58 MB, under GitHub's 100 MB limit, and the
 README documents `git clone --filter=blob:none` for readers who want the code without the binaries.
 
-**`superseded-submission/` is preserved intact**, by standing instruction. It
-is a deliberate record rather than an
-oversight, and it is left for the principal investigator to decide whether to keep it.
+**The superseded submission package does not ship.** Its directory name carried a venue label, and
+the package itself has no reproducibility value: no code, no configuration, no results that
+`results/` does not already hold. The earlier version's existence is not concealed — the README says
+this repository supersedes it and that the preprint is superseded, and the manuscript's own appendix
+records what changed. What goes is the copy of a submission and the label on it.
 
 **The commit history is kept and rewritten rather than squashed.** The 101 messages document nine
 defects and eight withdrawn readings, which is the same record the manuscript's own appendix rests

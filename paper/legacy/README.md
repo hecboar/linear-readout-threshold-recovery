@@ -1,9 +1,8 @@
 # Legacy manuscript sources
 
-`main_elsevier.tex` is the `elsarticle` version of this manuscript, kept as a historical record and
-no longer built. It was the source for the Neurocomputing / earlier submissions; the
-submitted packages themselves are preserved unchanged under
-`superseded-submission/`.
+`main_elsevier.tex` is the `elsarticle` version of this manuscript, kept as a historical record
+and no longer built. It was the source for the earlier version of this work, which the current
+manuscript supersedes.
 
 It is **out of date and must not be reused**. Two of its readings did not survive the threshold
 defect KD6 and are corrected in the current manuscript: the claim that the two pre-registered

@@ -15,7 +15,7 @@ minimisation solved here is the minimum-variance distortionless-response (Capon)
 with the frame operator in place of the covariance, and the minimiser is the canonical dual
 frame vector rescaled to unit gain. The optimisation is classical. What is used here is the
 reading of `h_i` as a leverage score, the resulting code-specific floor, and the exact
-attribution of the gap. See `docs/novelty_matrix.md`.
+attribution of the gap. See.
 """
 from __future__ import annotations
 

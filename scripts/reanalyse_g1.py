@@ -21,7 +21,7 @@ of the representation, the other of the decoder, and the published number confla
 
 The interesting question this can settle: is `L2` geometry-limited while its own decoder is
 already near-optimal for the code it built? That would be an interpretive result even though
-G1's optimisation is classical (Capon/MVDR; see docs/G2_NOVELTY_GO_NO_GO.md).
+G1's optimisation is classical (Capon/MVDR;.
 
 Requires weights, which the committed `results/e5/` does not carry -- run
 `python experiments/e5_trained_toy.py --out-dir results/e5_weights` first.
