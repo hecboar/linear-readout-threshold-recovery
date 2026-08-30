@@ -4,9 +4,9 @@
 
 === constructed cases ===
 Traceback (most recent call last):
-  File "C:\Users\HectorBorobia\proyectos\papers\paper-tecnico-5\computer sn\github-repo\linear-readout-threshold-recovery\linear-readout-threshold-recovery\scratch\validate_rho.py", line 59, in <module>
+  File "<local-path> sn\github-repo\linear-readout-threshold-recovery\linear-readout-threshold-recovery\scratch\validate_rho.py", line 59, in <module>
     "orthonormal basis tiled": np.hstack([B4, B4]),
                               ^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\HectorBorobia\proyectos\papers\paper-tecnico-5\computer sn\github-repo\linear-readout-threshold-recovery\linear-readout-threshold-recovery\src\lrtr\codes.py", line 58, in harmonic_tight_frame
+  File "<local-path> sn\github-repo\linear-readout-threshold-recovery\linear-readout-threshold-recovery\src\lrtr\codes.py", line 58, in harmonic_tight_frame
     raise ValueError(f"harmonic_tight_frame requires even d, got {d}")
 ValueError: harmonic_tight_frame requires even d, got 3
