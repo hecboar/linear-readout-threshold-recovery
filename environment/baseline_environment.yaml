@@ -3,7 +3,7 @@
 # This records the interpreter that produced the E1-E6 results currently reported in the
 # manuscript. It is a description of what was used, not a specification of what is required:
 # the lower bounds that are also known to work are in requirements.txt, and the accelerator
-# campaign (E7) deliberately needs a different torch build (see SPARK_CAMPAIGN.md).
+# campaign (E7) deliberately needs a different torch build.
 
 name: lrtr-baseline
 description: CPU-only environment for campaigns E1-E6.

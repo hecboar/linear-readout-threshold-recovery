@@ -30,7 +30,7 @@ accelerator and hide any that is present. E7 and E8 do need one to *train*, but 
 produce is committed under `results/*/weights/`, and every figure
 the paper draws from them is computed from those weights by the CPU-only analysis step of
 `scripts/run_all.sh`. So retraining is opt-in (`--with-campaigns`) and is only necessary for a
-reader who doubts the training itself rather than the analysis of it. See `SPARK_CAMPAIGN.md`.
+reader who doubts the training itself rather than the analysis of it.
 
 ---
 
@@ -113,7 +113,7 @@ seeds, environment, wall-clock duration and exit status, plus raw results under
 | E4 | Do *learned* codes attain the floor? | `python experiments/e4_optimized_codes.py` | see `results/e4/run_record.json` |
 | E5 | Does the separation appear inside a *trained* network? | `python experiments/e5_trained_toy.py` | see `results/e5/run_record.json` |
 | E6 | How does the recovery threshold scale, up to `d = 1024`? | `python experiments/e6_threshold_scaling.py` | see `results/e6/run_record.json` |
-| E7 | The same question as E5, across widths, feature loads, losses and training sparsities | `bash scripts/run_spark.sh` | accelerator campaign, see `SPARK_CAMPAIGN.md` |
+| E7 | The same question as E5, across widths, feature loads, losses and training sparsities | `bash scripts/run_spark.sh` | accelerator campaign |
 | E8 | Which half of the training does the work: the code, or the readout? | `python experiments/e8_frozen_encoder.py --device cuda --widths 50 100 --seeds 10` | accelerator campaign |
 
 Measured durations are reported in Table 8 of the manuscript and are read from the run records
@@ -138,8 +138,8 @@ accelerator cannot make a published run irreproducible on a CPU-only machine. Pa
 
 ### E7, E8 and the accelerator
 
-E1-E6 run on a laptop. E7 and E8 do not. E7 exists because the single-width, five-seed evidence of
-E5 is single-width and five-seed, and it runs in three stages: **A**, the main grid
+E1-E6 run on a laptop. E7 and E8 do not. E7 broadens E5's evidence, which is single-width and
+five-seed, across widths, losses, feature loads and training sparsities. It runs in three stages: **A**, the main grid
 of 180 models over three widths and two losses; **B**, 100 models re-scoped after stage A to test the
 two claims that survived it, at four times the feature load and at double the training sparsity; and
 **C**, 30 models at `d = 400`, to test whether the frontier's growth over the first three widths is
@@ -150,7 +150,7 @@ batched computation -- at these widths a single model leaves an accelerator idle
 `tests/test_batched_training.py` asserts in float64 that this reproduces individually-trained
 models exactly, so batching is a scheduling decision and not a modelling one.
 
-Read `SPARK_CAMPAIGN.md` before starting. Run `python scripts/check_env_gpu.py` first: it
+Run `python scripts/check_env_gpu.py` first: it
 verifies that the torch build matches the card's architecture and then retrains the same model
 on CPU and GPU in float64 and compares the weights, because an accelerator that runs but
 returns different numbers is the failure mode that would otherwise go unnoticed.
