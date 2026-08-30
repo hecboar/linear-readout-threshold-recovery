@@ -1,6 +1,7 @@
 # External adversarial audit, 2026-08-12 — what verified and what did not
 
-The audit was run on `internal/gpt_pro_audit_prompt.md`. Its recommendation was reject-and-resubmit
+The audit was commissioned externally against a self-contained packet of the campaign's
+numbers. Its recommendation was reject-and-resubmit
 or major structural revision. Every checkable claim was verified independently before being
 accepted; the reproductions are one-liners against the committed weights and are recorded below so
 they can be rerun.

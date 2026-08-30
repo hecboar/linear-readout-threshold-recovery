@@ -18,7 +18,7 @@ authors:
   - family-names: Tormo-Carbo
     given-names: Guillermina
     affiliation: "Universitat Politecnica de Valencia"
-version: "1.0.0"
+version: "1.1.0"
 year: 2026
 license: MIT
 repository-code: "https://github.com/hecboar/linear-readout-threshold-recovery"
@@ -31,7 +31,7 @@ keywords:
   - neural network capacity
 preferred-citation:
   type: article
-  title: "Linear-Readout Reconstruction Floors and Support Recovery in Computation in Superposition"
+  title: "Near-Floor Geometry Is Generic: Leverage Dispersion in Trained Overcomplete Codes"
   authors:
     - family-names: Borobia
       given-names: Hector
@@ -41,4 +41,4 @@ preferred-citation:
       given-names: Guillermina
   year: 2026
   url: "https://arxiv.org/abs/2605.01192"
-  notes: "Preprint arXiv:2605.01192; under review."
+  notes: "arXiv:2605.01192 is an earlier version under the earlier title 'Linear-Readout Reconstruction Floors and Support Recovery in Computation in Superposition'; a revised version is in preparation. Under review."

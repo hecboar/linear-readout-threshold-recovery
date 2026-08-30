@@ -1,10 +1,23 @@
-# Linear-Readout Reconstruction Floors and Support Recovery in Computation in Superposition
+# Near-Floor Geometry Is Generic: Leverage Dispersion in Trained Overcomplete Codes
 
 Reference implementation, experimental campaigns and manuscript sources for:
 
-> **Linear-Readout Reconstruction Floors and Support Recovery in Computation in Superposition**
+> **Near-Floor Geometry Is Generic: Leverage Dispersion in Trained Overcomplete Codes**
 > H. Borobia, E. Seguí-Mas, G. Tormo-Carbó.
-> Preprint: [arXiv:2605.01192](https://arxiv.org/abs/2605.01192).
+
+**On the preprint.** [arXiv:2605.01192](https://arxiv.org/abs/2605.01192) is an earlier version of
+this work, under its earlier title. It is superseded by the manuscript in `paper/`, and a revised
+arXiv version is in preparation. Two of its theorem statements are too broad as written and two of
+its readings did not survive later measurement; `docs/known_defects.md` records every defect found
+during this work and `paper/sections/app_withdrawn.tex` records what each one cost. Cite the
+repository, or wait for the revision, rather than the current preprint.
+
+**Getting just the code.** The repository commits the trained weights and raw results deliberately,
+so a clone is large. To skip the binaries until you touch them:
+
+```bash
+git clone --filter=blob:none https://github.com/hecboar/linear-readout-threshold-recovery
+```
 
 The repository contains the **Interface Diagnostic**, a computable procedure that takes an
 overcomplete code — hand-built, gradient-optimised, or read off a trained network — and
@@ -48,7 +61,7 @@ bash scripts/run_all.sh --smoke     # same shape in minutes, to check the plumbi
 ```
 
 That reproduces E1-E6, the CPU analysis of the committed E7 and E8 models, every figure and table,
-all 238 generated numbers, and the PDF. Add `--with-campaigns` to retrain E7 and E8 as well; that
+all 409 generated numbers, and the PDF. Add `--with-campaigns` to retrain E7 and E8 as well; that
 needs a GPU and takes days.
 
 ---
@@ -233,10 +246,9 @@ tests/                  370 tests, including numerical verification of the theor
 paper/                  manuscript sources, figures, tables, highlights
   tmlr.tex              the live manuscript (TMLR, anonymous by default)
   sections/             one file per section; every measured number is a generated macro
-  generated/numbers.tex 366 macros, produced from results/ and verified against it
+  generated/numbers.tex 409 macros, produced from results/ and verified against it
   legacy/               the retired elsarticle version, kept as a record
-docs/                   decision log and supporting analyses
-internal/               working documents, not part of the release (see internal/README.md)
+docs/                   decision log, defect register and supporting analyses
 superseded-submission/
                         the earlier version, kept unmodified as a record
 synthetic_illustrations.py, figures/, data/

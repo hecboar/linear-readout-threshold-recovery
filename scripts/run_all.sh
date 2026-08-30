@@ -12,7 +12,7 @@
 # Why the split. The campaigns train and diagnose several hundred networks; that needs an accelerator
 # and most of a week. Everything the manuscript actually quotes is then computed from the *committed*
 # weights and run records by the derived-analysis step below, which is CPU-only and takes minutes.
-# So a reader with a laptop can regenerate all 238 generated numbers and the PDF, and only a reader
+# So a reader with a laptop can regenerate all 409 generated numbers and the PDF, and only a reader
 # who doubts the training itself needs the GPU. That is the point of committing the weights.
 set -euo pipefail
 

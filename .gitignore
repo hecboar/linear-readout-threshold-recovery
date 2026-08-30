@@ -22,3 +22,20 @@ paper/*.fls
 # Smoke-test output; the committed results/ are the real campaigns
 results/*_smoke/
 results/logs/smoke/
+
+# Test and tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Editor and OS junk
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Archives: results/ is the record; a zip or rar of it is a duplicate that drifts
+*.rar
+*.zip
+*.7z

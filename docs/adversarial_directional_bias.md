@@ -1,6 +1,6 @@
 # Adversarial audit: does the directional bias persist in the surviving claims?
 
-**Date:** 2026-08-14. **Scope:** the claims currently standing in `paper/main.tex`, attacked for
+**Date:** 2026-08-14. **Scope:** the claims currently standing in `paper/legacy/main_elsevier.tex`, attacked for
 selection-after-the-fact bias in the estimand, statistic, aggregation, subset, or framing. Nothing in
 `results/` was modified; every number below was recomputed from the raw records or from saved weights
 with read-only scripts.
@@ -94,14 +94,14 @@ network's threshold is broken.
 
 **What this invalidates or endangers:**
 - "the probe's advantage grows with width" and "the matched decoder comparison continues in the
-  direction the smaller widths established, more sharply" (`paper/main.tex:2239–2243`);
+  direction the smaller widths established, more sharply" (`paper/legacy/main_elsevier.tex:2239–2243`);
 - the AUC paragraph's story that the network's edge "exists only at the smallest width and reverses
   at the two larger ones — the opposite of a nonlinear advantage that strengthens with scale"
-  (`paper/main.tex:2049–2068`, and D17's 2026-08-14 resolution, which was reasoned on the same
+  (`paper/legacy/main_elsevier.tex:2049–2068`, and D17's 2026-08-14 resolution, which was reasoned on the same
   broken numbers): at fixed θ the network's AUC lead *is* a nonlinear advantage that strengthens
   with scale, +0.018 → +0.044 → +0.111 → +0.229;
-- contribution 7 (`paper/main.tex:251–258`), Discussion reading 2 (`paper/main.tex:2415–2422`), and
-  the Conclusion's "negative result" (`paper/main.tex:2604–2607`);
+- contribution 7 (`paper/legacy/main_elsevier.tex:251–258`), Discussion reading 2 (`paper/legacy/main_elsevier.tex:2415–2422`), and
+  the Conclusion's "negative result" (`paper/legacy/main_elsevier.tex:2604–2607`);
 - the d=400 pre-ReLU gap of −3.3 levels (`results/e7_stageC/derived/primary_comparison.json`): at
   fixed θ the network beats even the best pre-ReLU probe 10/10 at d=400. (The representation-level
   claim — pre-ReLU probe beats post-ReLU probe, 12 vs 9 — survives; the network-vs-pre-probe
@@ -135,7 +135,7 @@ per model from `results/e7/raw/cell_relu_L2_*.json`: network fixed s95 = 0 and b
 s95 = 0 in all 60). A tie between two decoders that both fail at s=1 is not evidence that "the
 network does not out-decode an affine probe"; it is the absence of resolution. The informative
 sample is the 60 L4 models. The composition is disclosed nowhere the claim is made
-(`paper/main.tex:254`, `2045`, `2417`, `2606`). The headline should say 59 of 60, on the models
+(`paper/legacy/main_elsevier.tex:254`, `2045`, `2417`, `2606`). The headline should say 59 of 60, on the models
 where the statistic can move at all — and after F1, not even that without a repaired threshold.
 
 ### F3 (moderate): the d=400 AUC is on disk, unreported, and disagrees with the published growth claim even inside the matched framework
@@ -151,7 +151,7 @@ operating independently of the code defect.)
 
 ### F4 (moderate): "some feature is not separable even at s=1" is false at three of four widths
 
-`paper/main.tex:2113–2115` (and contribution 8 at 263–264) glosses the L2 collapse as "the collision
+`paper/legacy/main_elsevier.tex:2113–2115` (and contribution 8 at 263–264) glosses the L2 collapse as "the collision
 frontier collapses to 1 — by Theorem 5 some feature is not separable even at s=1". Per-model
 κ_min from `results/e7/derived/all_feature_frontier.json` and
 `results/e7_stageC/all_feature_frontier.json`: at d=50, 19/20 L2 models have κ_min = 1.0 exactly
@@ -159,7 +159,7 @@ frontier collapses to 1 — by Theorem 5 some feature is not separable even at s
 1.0077, at d=400 1.065 — **every model separable at s=1** and lost at s=2. The sentence is also
 internally inconsistent (a frontier of 1 means separable *at* 1) and contradicts the paper's own
 theory prediction, which says the L2 code loses separability *at s=2*
-(`paper/main.tex:1984–1990`) — a prediction the data confirms exactly. The dramatised version is
+(`paper/legacy/main_elsevier.tex:1984–1990`) — a prediction the data confirms exactly. The dramatised version is
 strictly more favourable to "the loss decides the interface" than the true one. The true one is
 still strong; state it.
 
@@ -167,7 +167,7 @@ still strong; state it.
 
 `configs/e7_stageC.json` (committed `ab68f01`, before the run; run record confirms the tree was
 clean at that commit) registers the extrapolation **10.79**, from the subset-frontier fit. The
-manuscript (`paper/main.tex:2228–2231`) reports exponent 0.4202 and prediction **10.759**, computed
+manuscript (`paper/legacy/main_elsevier.tex:2228–2231`) reports exponent 0.4202 and prediction **10.759**, computed
 in `scripts/make_numbers.py:477–483` from the *exact* frontier — a fit performed after the run
 (the comment says "fit on the three widths that existed when d=400 was committed to", which is true
 of the widths and not of the fit). Measured 10.510: error −2.31% against the post-hoc fit, −2.60%
@@ -178,20 +178,20 @@ fit, computed afterwards, gives 10.759 (−2.31%).
 
 ### F6 (low–moderate): the Conclusion mislabels the L2 number and uses the larger of the two
 
-`paper/main.tex:2596–2597`: "The trained $L^4$ network's 1.0006 and the $L^2$ baseline's factor
+`paper/legacy/main_elsevier.tex:2596–2597`: "The trained $L^4$ network's 1.0006 and the $L^2$ baseline's factor
 **28.8135** are statements about leverage profiles." 28.8135 is `\EfiveLtwoRatioLsMean` — the ratio
 under the *fitted least-squares readout*, which is R_geom × R_readout(ls); the leverage-profile
 statement is the pseudoinverse ratio **19.0052**, which the abstract (line 93) correctly pairs with
 1.0006. The paper's own E5 text says the LS number measures "how far from optimal that readout is"
-(`paper/main.tex:1894`). The Conclusion both mislabels the quantity and picks the larger number for
+(`paper/legacy/main_elsevier.tex:1894`). The Conclusion both mislabels the quantity and picks the larger number for
 the contrast.
 
 ### F7 (low): the Conclusion states the frozen-arm frontier comparison as evidence after 10.5 concedes it is a consistency check
 
 κ_min is a function of the code alone, so "a frozen random code with a fully trained readout keeps
 an untrained code's frontier" is true by construction. Section 10.5 says so in terms
-(`paper/main.tex:2163–2167`: "a consistency check rather than a result — but it is the point"); the
-Conclusion (`paper/main.tex:2610–2612`) restates it bare, as the second positive finding, with the
+(`paper/legacy/main_elsevier.tex:2163–2167`: "a consistency check rather than a result — but it is the point"); the
+Conclusion (`paper/legacy/main_elsevier.tex:2610–2612`) restates it bare, as the second positive finding, with the
 by-construction caveat dropped. The non-tautological content of "training buys the code" is
 joint-vs-untrained (the code moves) plus the R_readout/task-loss trade-off, which is honestly
 reported; the three-arm frontier table adds no evidence for the κ half and the Conclusion should not
@@ -199,7 +199,7 @@ lean on it.
 
 ### F8 (low): "paired bootstrap over models" is not paired
 
-`paper/main.tex:2253–2255` describes the d=200→d=400 margin drop (0.1940 [0.0903, 0.2818]) as a
+`paper/legacy/main_elsevier.tex:2253–2255` describes the d=200→d=400 margin drop (0.1940 [0.0903, 0.2818]) as a
 "paired bootstrap over models". The code (`scripts/make_numbers.py:494–500`) resamples the four
 groups independently — necessarily, since the models at the two widths are different models. The
 interval is fine as an unpaired two-group bootstrap; the label claims a pairing that does not exist.
@@ -218,7 +218,7 @@ interval is fine as an unpaired two-group bootstrap; the label claims a pairing 
   checked. Robust to any aggregation I tried; the only defect is F4's s=1 gloss. Sound.
 - **Claim 4 (near-floor geometry is generic).** Untrained codes at R_geom ≈ 1.002–1.019 and within
   1.3–1.8 sparsity levels of the L4 frontier; "one to two levels" is accurate; the missing
-  tight-frame control is disclosed as a limitation (`paper/main.tex:2535–2539`). Sound, and stated
+  tight-frame control is disclosed as a limitation (`paper/legacy/main_elsevier.tex:2535–2539`). Sound, and stated
   *against* the paper's interest.
 - **Claims 5–6 (E8, the trade-off).** `scripts/frozen_readout_tradeoff.py` scores both readouts
   under the arm's own training loss, in its own representation, on a held-out seed (777001, disjoint
@@ -248,7 +248,7 @@ interval is fine as an unpaired two-group bootstrap; the label claims a pairing 
   deflationary reading; the highlights are theory-only plus E4, whose "gradient-optimised codes
   reach the floor" refers to direct cross-talk optimisation, not the trained task models. Clean.
 - **Seed counts and comparability.** d=400 has 10 models per arm vs 20 at d≤200; disclosed
-  (`\ScSeeds`, `paper/main.tex:2230–2232`, 2158 for E8's separate d=200 run). The mixed-n margin
+  (`\ScSeeds`, `paper/legacy/main_elsevier.tex:2230–2232`, 2158 for E8's separate d=200 run). The mixed-n margin
   bootstrap is valid as computed. No hidden n-asymmetry found beyond what is stated.
 - **E5 and the G1 reanalysis.** The "uncomfortable" reading (the attainment ratio measures the code,
   not the decoder; L2 has the *better* decoder for its own code) is reported at full strength,

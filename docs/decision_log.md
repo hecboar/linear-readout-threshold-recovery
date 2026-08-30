@@ -719,3 +719,37 @@ have each found something the previous round's fixes introduced or left. That is
 external review over more self-checking, and it is stated in the withdrawn-readings appendix in those
 terms, because a reader deciding what to trust should know the shape of the process and not only its
 output.
+
+---
+
+## D24 — What ships in the public release
+
+**Decided** 2026-08-31, resolving the item D22 left open.
+
+**`internal/` does not ship, and is purged from the history rather than merely deleted at the tip.**
+It held the venue-selection playbook, the cover letter, the reviewer candidate list, the prepared
+rebuttals, and the packets sent to the external reviewers. None of it is code, configuration or
+results, so removing it costs no reproducibility — which is what its own README had claimed all
+along while the directory sat tracked in every commit. The public repository had exactly one commit
+at this point, so purging from history was free; it would not have been a month later.
+
+**The weights and raw results stay in the repository.** They are 407 MB of the 424, and the
+alternative — a light repository with the heavy artefacts as release assets — only saves anything if
+they are purged from the history too, which would leave commits whose messages announce results they
+no longer add. Having chosen to keep the history for what it documents, that incoherence costs more
+than the convenience is worth. The largest single file is 58 MB, under GitHub's 100 MB limit, and the
+README documents `git clone --filter=blob:none` for readers who want the code without the binaries.
+
+**`superseded-submission/` is preserved intact**, by standing instruction. It
+is a deliberate record rather than an
+oversight, and it is left for the principal investigator to decide whether to keep it.
+
+**The commit history is kept and rewritten rather than squashed.** The 101 messages document nine
+defects and eight withdrawn readings, which is the same record the manuscript's own appendix rests
+on; squashing would discard it. The rewrite strips the assistant co-author trailers and normalises
+author and committer to a single identity.
+
+**The README says the preprint is superseded.** arXiv:2605.01192 carries the earlier title, two
+theorem statements that are too broad as written, and two readings later withdrawn. Pointing readers
+at it without saying so would be the same failure the defect register exists to prevent, so the
+README says it plainly and points at `docs/known_defects.md`. Posting the revision is the next task.

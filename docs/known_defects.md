@@ -143,7 +143,7 @@ untuned decoder against the best of a tuned family.
 
 ## KD3 — Two theorems are false as stated, and one proposition draws the wrong conclusion
 
-**Status: FIXED** 2026-08-12, in `paper/main.tex` and `src/lrtr/affine_frontier.py`, with the
+**Status: FIXED** 2026-08-12, in `paper/legacy/main_elsevier.tex` and `src/lrtr/affine_frontier.py`, with the
 counterexamples added as regression tests in `tests/test_arrow_counterexamples.py`. Kept here
 because the record of what was wrong is worth more than a clean file.
 

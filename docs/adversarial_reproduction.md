@@ -34,7 +34,7 @@ E4, E5, E6 cost ~5.7 h total per the cost table).
 ### Major
 
 **M1. A quoted result has no committed artefact and is outside the macro system.**
-`paper/main.tex:2530` states the ReLU frontier gap: "At `d=50` that difference is `0.87` levels
+`paper/legacy/main_elsevier.tex:2530` states the ReLU frontier gap: "At `d=50` that difference is `0.87` levels
 `[0.63,1.10]` for `L4` and `2.03` `[1.77,2.27]` for an untrained code." These are typed literals, not
 macros, and the file the producing script writes — `results/e7/derived/relu_frontier_gap.json`
 (`scripts/relu_frontier_gap.py:139`) — does not exist and has never been committed
@@ -47,7 +47,7 @@ L4     d=50  gap=+0.87 [+0.63,+1.10]
 random d=50  gap=+2.03 [+1.77,+2.27]
 ```
 So the numbers are honest — but a referee cannot know that without an hour of CPU, and the checker
-cannot see them at all. Related, same paragraph (`main.tex:2529`): "it overestimates the frontier —
+cannot see them at all. Related, same paragraph (`paper/legacy/main_elsevier.tex:2529`): "it overestimates the frontier —
 by two to eight levels here". Measured looseness at `d=50` is +2.87 (L4), +1.93 (random), **+0.13
 (L2)** — two of the three cells sit at or below the claimed lower edge. I stopped the run after the
 three `d=50` cells (the only ones the manuscript quotes numerically); the `d=100/200` cells may
@@ -59,15 +59,15 @@ recompute or scope the "two to eight" range.*
 `scripts/check_manuscript_numbers.py` makes three claims (docstring, lines 4–11). Tested adversarially:
 
 - *A falsified measured number passes.* The generated tables (`paper/tables/*.tex`) carry literal
-  values and are `\input` by the manuscript (`main.tex:1760,1819,1939,2358,2382,2392`), but the
-  checker reads only `main.tex` (`TEX_SOURCES`, line 26). I edited `tab_e1_floor.tex` to say
+  values and are `\input` by the manuscript (`paper/legacy/main_elsevier.tex:1760,1819,1939,2358,2382,2392`), but the
+  checker reads only `paper/legacy/main_elsevier.tex` (`TEX_SOURCES`, line 26). I edited `tab_e1_floor.tex` to say
   `9.999` where the results say `1.999`, ran the checker: **exit 0, all green**. (Restored.) Only a
   full `run_all.sh` re-generation would catch this, and nothing diffs the tables the way
   `run_all.sh:114-119` diffs `results/e7/raw/`.
 - *An undefined generated macro passes.* The undefined-use check (lines 65–67) filters by the prefix
   list `Eone…Esix, Dur, Env`, but `make_numbers.py` emits 288 macros across ~30 prefixes including
   `Eseven*`, `Eeight*`, `Prim*`, `Margin*`, `Sc*`, `Full*`, `Gone*`, `Subset*`, `Auc*`, `SAL*`,
-  `SAR*`. I appended `\EeightBogusNumber{}` to `main.tex` and ran the checker: **exit 0**. (Restored.
+  `SAR*`. I appended `\EeightBogusNumber{}` to `paper/legacy/main_elsevier.tex` and ran the checker: **exit 0**. (Restored.
   LaTeX would fail later, but the checker's stated guarantee — "every macro the manuscript uses is
   actually defined" — is false for the majority of the macro namespace, including everything E7/E8.)
 - *Inherent, worth stating:* the checker verifies name-level traceability, not semantics. Swapping
@@ -106,17 +106,17 @@ only on the archiving machine — the README's own "Determinism caveat" paragrap
 about figures.*
 
 **Mo2. Measured literals typed in prose, invisible to the checker.** Found by regex sweep of
-`main.tex` (`grep -nE '[0-9]+\.[0-9]+'` minus macro lines):
-- `main.tex:254, 2417, 2606` — "119 of 120": hand-summed from the six `\Prim*PostTies` macros
+`paper/legacy/main_elsevier.tex` (`grep -nE '[0-9]+\.[0-9]+'` minus macro lines):
+- `paper/legacy/main_elsevier.tex:254, 2417, 2606` — "119 of 120": hand-summed from the six `\Prim*PostTies` macros
   (20+20+20+20+19+20). If a re-run changed one cell the macros would update and the checker would
   stay green while "119" went stale. Three occurrences, one in the introduction.
-- `main.tex:2530` — the four ReLU-gap numbers (see M1).
-- `main.tex:2529` — "two to eight levels" (see M1).
-- `main.tex:2512` — "about $0.24$\,s at `d=200`": a measured timing with no backing artefact
+- `paper/legacy/main_elsevier.tex:2530` — the four ReLU-gap numbers (see M1).
+- `paper/legacy/main_elsevier.tex:2529` — "two to eight levels" (see M1).
+- `paper/legacy/main_elsevier.tex:2512` — "about $0.24$\,s at `d=200`": a measured timing with no backing artefact
   anywhere in `results/`.
-- `main.tex:264, 2536` — "$\approx1.01$" for the untrained code's `R_geom`; a macro carrying this
+- `paper/legacy/main_elsevier.tex:264, 2536` — "$\approx1.01$" for the untrained code's `R_geom`; a macro carrying this
   measurement exists (`\EeightRandomHundredRgeom` = 1.0100) but is not used here.
-- `main.tex:901` — "sits $0.06\%$ above" is phrased as a hypothetical but is recognisably the
+- `paper/legacy/main_elsevier.tex:901` — "sits $0.06\%$ above" is phrased as a hypothetical but is recognisably the
   measured E5/E7 `L4` ratio (1.0006); borderline, flagging for the author to decide.
 
 **Mo3. Stale counts in the documentation.** README:51 and `run_all.sh:15` say "all 238 generated
@@ -142,7 +142,7 @@ the one record where the dirty file is code rather than results.
 - `results/g1/g1_reanalysis.json` has no run record (`reanalyse_g1.py` writes none); the E7/E8
   `derived/` files likewise have none. For deterministic re-analyses of recorded runs this is
   defensible, but D8 says "every run".
-- The `unused` check reads only `main.tex` (plus a `paper/sections/` that does not exist), so a
+- The `unused` check reads only `paper/legacy/main_elsevier.tex` (plus a `paper/sections/` that does not exist), so a
   macro used solely inside a generated table would be falsely flagged unused. None currently is.
 - `check_manuscript_numbers.py:44-45` builds `d_disk` with a spurious `and` expression; harmless
   (both operands truthy on the failure path) but it is not doing what it looks like it does.
@@ -226,9 +226,9 @@ python scripts/check_manuscript_numbers.py                       # green baselin
 sed -i 's/128 & 1.999/128 \& 9.999/' paper/tables/tab_e1_floor.tex
 python scripts/check_manuscript_numbers.py                       # still green = M2a
 git checkout -- paper/tables/tab_e1_floor.tex
-printf '\\EeightBogusNumber{}\n' >> paper/main.tex
+printf '\\EeightBogusNumber{}\n' >> paper/legacy/main_elsevier.tex
 python scripts/check_manuscript_numbers.py                       # still green = M2b
-git checkout -- paper/main.tex
+git checkout -- paper/legacy/main_elsevier.tex
 git log --oneline -- results/e7/derived/relu_frontier_gap.json   # empty = M1
 python -c "import json; d=json.load(open('results/e1/run_record.json')); print(d['environment']['git_commit'])"
 git log -1 --format='%ci %s' 33016a6                             # M3
@@ -247,7 +247,7 @@ git log -1 --format='%ci %s' 33016a6                             # M3
 ```
 
 The two other untracked `docs/adversarial_*.md` files appeared during this session from concurrent
-audit sessions and are not mine; every tracked file I touched (`paper/main.tex`,
+audit sessions and are not mine; every tracked file I touched (`paper/legacy/main_elsevier.tex`,
 `paper/tables/tab_e1_floor.tex`, `paper/figures/*.pdf`, `paper/generated/numbers.tex`,
 `src/lrtr/toymodel.py`, `src/lrtr/threshold.py`, `src/lrtr/codes.py`,
 `results/e1/run_record.json`, `results/e3/run_record.json`,
