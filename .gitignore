@@ -39,3 +39,6 @@ Thumbs.db
 *.rar
 *.zip
 *.7z
+
+# The arXiv build is generated from tmlr.tex; its PDF is not committed.
+paper/arxiv_v2.pdf

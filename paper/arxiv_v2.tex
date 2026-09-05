@@ -1,0 +1,120 @@
+% ============================================================================
+% arXiv preprint build (v2). Identical body to the TMLR submission; the only
+% differences are the `preprint` option, which reveals the author block, the
+% erratum recording what changed from v1, and the trimmed back matter.
+% The anonymous submission build is tmlr.tex.
+%
+% Build:  latexmk -pdf tmlr.tex
+%
+% Every measured number is a macro from generated/numbers.tex, produced from
+% results/ by scripts/make_numbers.py and verified by
+% scripts/check_manuscript_numbers.py. No measured quantity is typed by hand.
+%
+% paper/legacy/main_elsevier.tex is the retired elsarticle version, kept as a record.
+% ============================================================================
+\documentclass{article}
+\usepackage[preprint]{tmlr}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[expansion=false]{microtype}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{enumitem}
+\usepackage{placeins}
+
+\hypersetup{colorlinks=true, linkcolor=blue!65!black,
+            citecolor=blue!65!black, urlcolor=blue!65!black}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\newcommand{\Otilde}{\widetilde{O}}
+\newcommand{\Omegatilde}{\widetilde{\Omega}}
+\newcommand{\Thetatilde}{\widetilde{\Theta}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\nucnorm}[1]{\left\lVert #1 \right\rVert_*}
+\newcommand{\FrecAS}{F_{\mathrm{rec}}^{\mathrm{AS}}}
+\newcommand{\ecomp}{\varepsilon_{\mathrm{comp}}}
+\newcommand{\ecorr}{\varepsilon_{\mathrm{corr,max}}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\Rgeom}{R_{\mathrm{geom}}}
+\newcommand{\Rreadout}{R_{\mathrm{readout}}}
+
+\input{generated/numbers}
+
+\title{Near-Floor Geometry Is Generic: Leverage Dispersion\\in Trained Overcomplete Codes}
+
+% Revealed only under the `accepted` or `preprint` options.
+\author{\name Hector Borobia \email hecboar@doctor.upv.es \\
+  \AND
+  \name Elies Segu\'i-Mas \email esegui@upvnet.upv.es \\
+  \AND
+  \name Guillermina Tormo-Carb\'o \email gtormo@upvnet.upv.es \\
+  \addr Universitat Polit\`ecnica de Val\`encia, Spain}
+
+\def\month{08}
+\def\year{2026}
+\def\openreview{\url{https://openreview.net/forum?id=XXXXXXXXXX}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\input{sections/tmlr_intro}
+\input{sections/notation}
+\input{sections/floor}
+\input{sections/frontier}
+\input{sections/tmlr_dictionaries}
+\input{sections/res_campaigns}
+\input{sections/tmlr_stageb}
+\input{sections/tmlr_probes}
+\input{sections/related}
+\input{sections/limitations}
+\input{sections/discussion}
+
+\input{sections/backmatter_arxiv}
+
+\input{sections/arxiv_erratum}
+
+\bibliographystyle{tmlr}
+\bibliography{refs}
+
+\appendix
+\input{sections/diagnostic}
+\input{sections/threshold}
+\input{sections/hierarchy}
+\input{sections/application}
+\input{sections/setup}
+\input{sections/app_earlier}
+\input{sections/res_e123}
+\input{sections/res_e4}
+\input{sections/res_e5}
+\input{sections/res_e6}
+\input{sections/res_cost}
+\input{sections/app_withdrawn}
+\input{sections/app_reproducibility}
+\input{sections/openproblem}
+\input{sections/appendix_old}
+
+\end{document}

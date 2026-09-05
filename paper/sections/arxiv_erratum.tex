@@ -1,0 +1,53 @@
+\section*{Changes from version 1, including three corrected statements}
+\addcontentsline{toc}{section}{Changes from version 1}
+
+Version~1 of this preprint appeared under the title \emph{Linear-Readout Floors and Threshold
+Recovery for Computation in Superposition}. This version supersedes it. Most of what follows is new
+work rather than correction, but three formal statements in v1 are wrong as written and two of its
+empirical readings did not survive later measurement, so we list those first and separately. A reader
+who cited v1 should read this section.
+
+\paragraph{Three statements that were too strong, and are corrected here.} An external adversarial
+audit found, and we verified independently against the implementation, that:
+
+\begin{itemize}[leftmargin=*,itemsep=3pt]
+
+\item Theorem~\ref{thm:arrow} and Corollary~\ref{cor:failthresh} were stated for all $h_i<1$, while
+their shared proof establishes them only for $h_i\le 1/2$. Explicit unit-norm counterexamples at
+$d=2$, $F=3$ give $\kappa=\infty$ against a finite bound. Both now carry the $h_i\le 1/2$
+hypothesis, $\kappa_i$ is defined as $+\infty$ when the linear programme is infeasible, and the
+counterexamples are regression tests in the released code
+(\code{tests/test\_arrow\_counterexamples.py}).
+
+\item A proposition concluded that a feature with $\kappa_i=1$ remains separable at $s=1$.
+Theorem~\ref{thm:frontier} requires $\kappa_i>s$, so the correct conclusion is that such a feature is
+separable at no positive sparsity. Corrected.
+
+\item Theorem~\ref{thm:codefloor} claimed that the row-wise optimum coincides with the algebraic
+pseudoinverse. It is the \emph{gain-calibrated} pseudoinverse $D_h^{-1}\Phi^{+}$. The clause is
+removed.
+
+\end{itemize}
+
+No measurement in v1 or here depends on the invalid region. The corollary is only ever applied at
+$\min_i h_i$, and the largest $\min_i h_i$ over all \KdThreeModels{} models of the main grid is
+\KdThreeMaxLevMin, inside $h_i\le 1/2$. The tests that reported no violations sampled only that
+region, which is a gap in the tests rather than a false test, and is why the error survived to
+publication.
+
+\paragraph{Two readings withdrawn.} A defect in how a shared decision threshold was selected --- the
+search never scored the default it was meant to improve on --- invalidated two empirical claims made
+in v1: that the two pre-registered estimands disagree, and that an affine probe of the preactivation
+beats the network by a full sparsity level. Refitted correctly, the estimands agree at every width
+and the pre-ReLU advantage is at most a quarter of a level on trained codes, reversing at the largest
+width. Appendix~\ref{app:withdrawn} records these and six further withdrawals with the cause of each.
+
+\paragraph{What is new.} The theory is unchanged apart from the corrections above. The empirical
+content is substantially new: the leverage identity of Proposition~\ref{prop:leverage} is put to
+predictive use rather than stated in passing; \SaeDicts{} released decoder matrices are measured
+against shape-matched controls, with a trained-versus-randomly-initialised pair locating the cause;
+the controlled campaigns are extended to four widths, two feature loads and two training sparsities;
+a frozen-code arm separates what training the code contributes from what training the readout
+contributes; and the ceiling on the decoder comparison is measured rather than argued. Every measured
+number is generated from the released results by \code{scripts/make\_numbers.py} and checked against
+this manuscript by \code{scripts/check\_manuscript\_numbers.py}.
