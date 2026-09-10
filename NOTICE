@@ -1,0 +1,13 @@
+Third-party components
+======================
+
+This repository is MIT licensed (see LICENSE), with the following exception.
+
+paper/tmlr.sty
+paper/tmlr.bst
+
+    The TMLR style files, redistributed unmodified from
+    https://github.com/JmlrOrg/tmlr-style-file under the Apache License,
+    Version 2.0. A copy of that licence is in paper/LICENSE.tmlr-style.
+    Copyright is retained by their authors; they are not covered by the MIT
+    licence.
