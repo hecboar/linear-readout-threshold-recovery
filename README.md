@@ -5,12 +5,12 @@ Reference implementation, experimental campaigns and manuscript sources for:
 > **Near-Floor Geometry Is Generic: Leverage Dispersion in Trained Overcomplete Codes**
 > H. Borobia, E. Seguí-Mas, G. Tormo-Carbó.
 
-**On the preprint.** [arXiv:2605.01192](https://arxiv.org/abs/2605.01192) is an earlier version of
-this work, under its earlier title. It is superseded by the manuscript in `paper/`, and a revised
-arXiv version is in preparation. Two of its theorem statements are too broad as written and two of
-its readings did not survive later measurement; `docs/known_defects.md` records every defect found
-during this work and `paper/sections/app_withdrawn.tex` records what each one cost. Cite the
-repository, or wait for the revision, rather than the current preprint.
+**On the preprint.** [arXiv:2605.01192](https://arxiv.org/abs/2605.01192) is the preprint of this
+work. Cite **v2**, which is the manuscript in `paper/`. Version 1 carried an earlier title, three
+formal statements that were too strong as written, and two readings that did not survive later
+measurement; v2 corrects all five and says so in its own "Changes from version 1" section.
+`docs/known_defects.md` records every defect found during this work and
+`paper/sections/app_withdrawn.tex` records what each one cost.
 
 **Getting just the code.** The repository commits the trained weights and raw results deliberately,
 so a clone is large. To skip the binaries until you touch them:

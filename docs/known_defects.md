@@ -376,3 +376,41 @@ slightly (0.0362 to 0.0261, 0.0529 to 0.0520).
 inside the probe-ceiling analysis itself. The pattern is now specific enough to state as a rule: any
 comparison against a "best" of a family must name the family, and the name must be checked against
 the one the thing being audited uses.
+
+---
+
+## KD10 — The anonymised submission archive was declared clean by a scan that could not see two of the leaks
+
+**Status: FIXED** 2026-09-10 in the archive builder (`anon_archive.py`, kept with the submission
+package rather than in the repository, since it writes outside it).
+
+**Found:** 2026-09-10, while checking the package against TMLR's published author guidelines rather
+than against the builder's own report. The builder printed `identity leaks remaining: 0`; a second
+scan written from the guidelines, over the built zip instead of the staging tree, found three.
+
+**Where.** Two independent causes, both in the builder rather than in the mask list:
+
+1. Text files were detected by extension (`TEXT_SUFFIX`). `LICENSE` has none, so it was copied as a
+   binary, never masked, and skipped by the leak scan for the same reason. Its copyright line named
+   all three authors.
+2. The scan's pattern list was derived from the mask list, so it could only find what the mask list
+   already knew about. It had no `arxiv` pattern, and `README.md` linked the preprint by DOI-style
+   identifier and URL — the one thing TMLR's anonymity rule names explicitly: a submission must not
+   link to a version bearing the authors' names.
+
+A third finding was not a leak but did not belong in a reviewer's hands: `docs/decision_log.md`
+narrates venue selection, the adversarial review rounds and the preprint
+timeline. It reproduces no number in the paper and is now excluded, along with the two external
+audit and adversarial-review documents, rather than redacted line by line.
+
+**What it invalidated.** Nothing measured. But the package as built would have been a
+non-anonymous submission, which the author guidelines say is "rejected without review".
+
+**What changed after the fix.** Text detection is by decodability, not extension. The scan's
+patterns are written from the guidelines and are a superset of the mask list, so the mask list can
+no longer certify itself. The archive is 105 files and 335 KB, and two independent scans over the
+built zip report zero.
+
+**Precedent.** The same shape as KD8: a check whose scope was defined by the thing it was checking.
+The rule KD9 states for comparisons applies to verification too — a scan must be written from the
+requirement, not from the implementation it is auditing.
