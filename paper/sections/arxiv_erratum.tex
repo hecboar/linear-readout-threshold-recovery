@@ -1,13 +1,36 @@
-\section*{Changes from version 1, including three corrected statements}
-\addcontentsline{toc}{section}{Changes from version 1}
+\section*{Changes from earlier versions, including four corrected statements}
+\addcontentsline{toc}{section}{Changes from earlier versions}
 
-Version~1 of this preprint appeared under the title \emph{Linear-Readout Floors and Threshold
-Recovery for Computation in Superposition}. This version supersedes it. Most of what follows is new
-work rather than correction, but three formal statements in v1 are wrong as written and two of its
-empirical readings did not survive later measurement, so we list those first and separately. A reader
-who cited v1 should read this section.
+A reader who cited version~1 or version~2 of this preprint should read this section. Four statements
+across those two versions are wrong as written; they are listed first, most recent first, and
+separately from the new work.
 
-\paragraph{Three statements that were too strong, and are corrected here.} An external adversarial
+\paragraph{Version 3: one claim asserted the converse of a sufficient condition.} Versions 1 and 2
+reported that every released dictionary trips the failure threshold of
+Corollary~\ref{cor:failthresh} earlier than its shape-matched i.i.d.\ control, and glossed that in
+the abstract as: \emph{where a random code of the same shape is still safe, a released dictionary
+already has a feature no affine rule recovers}. The measurement is correct --- all
+\SaeFailEarlier{} of \SaeDicts{} comparisons, verified twice against the stored leverages --- and
+the second clause follows from it. The first does not. The corollary is \emph{sufficient} for
+non-separability, and Proposition~\ref{prop:oneway} of the same manuscript shows its converse
+fails, so a threshold that has not been reached says nothing about recoverability. Writing $K$ for
+an actual first non-separable sparsity and $S$ for a threshold, the measurements give
+$K_{\text{dict}}\le S_{\text{dict}}$, $K_{\text{ref}}\le S_{\text{ref}}$ and
+$S_{\text{dict}}<S_{\text{ref}}$, which leaves the order of $K_{\text{dict}}$ and $K_{\text{ref}}$
+open. The claim stood in the abstract, in the contributions and in the discussion of both earlier
+versions; all three are rewritten here as a comparison of certificates, and the reading is retired
+as item~9 of Appendix~\ref{app:withdrawn}.
+
+Three facts that bear on how much the comparison carries are now reported rather than omitted: the
+controls are \SaeFailRefs{} draws shared across \SaeDicts{} dictionaries rather than \SaeDicts{}
+independent ones; the range of \SaeFailGapMin{} to \SaeFailGapMax{} levels is given with its median
+of \SaeFailGapMedian{} and with the control thresholds, so its two ends are not read against each
+other; and at the operating sparsities the same criterion rules out every feature of
+\SaeFailCtlAllRuledOut{} of the \SaeFailRefs{} controls. The direction survives at the $q=0.001$,
+$0.01$ and $0.05$ leverage quantiles as well as at the minimum, so the sign does not rest on one
+order statistic; the magnitude does, falling to a median of \SaeFailQFiveGapMedian{} at $q=0.05$.
+
+\paragraph{Version 2: three statements that were too strong, and are corrected here.} An external adversarial
 audit found, and we verified independently against the implementation, that:
 
 \begin{itemize}[leftmargin=*,itemsep=3pt]
@@ -40,7 +63,8 @@ search never scored the default it was meant to improve on --- invalidated two e
 in v1: that the two pre-registered estimands disagree, and that an affine probe of the preactivation
 beats the network by a full sparsity level. Refitted correctly, the estimands agree at every width
 and the pre-ReLU advantage is at most a quarter of a level on trained codes, reversing at the largest
-width. Appendix~\ref{app:withdrawn} records these and six further withdrawals with the cause of each.
+width. Appendix~\ref{app:withdrawn} records these and every other reading this work retired, with the
+cause of each.
 
 \paragraph{What is new.} The theory is unchanged apart from the corrections above. The empirical
 content is substantially new: the leverage identity of Proposition~\ref{prop:leverage} is put to
