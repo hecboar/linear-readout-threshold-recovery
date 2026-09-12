@@ -2,7 +2,8 @@
 \label{sec:discussion}
 % ============================================================================
 
-Four readings survive this work, and two that motivated it do not.
+Four readings survive this work, and two that motivated it do not. Between them sits the question of
+what the difference costs, which we answer as far as the measurements reach and no further.
 
 \textbf{The floor is a target, not an obstacle --- and reaching it means less than it looks.}
 Gradient descent under the unit-diagonal constraint converges to a unit-norm tight frame
@@ -50,6 +51,22 @@ former. What the joint arm gains is that it need not choose: it holds
 $\Rreadout=\EeightTrainedHundredRreadout{}$ while beating the same baseline by
 \EeightTrainedHundredTaskGain{}. Training the code aligns the two objectives; freezing it leaves them
 in a conflict no amount of readout training resolves.
+
+\textbf{What the excess costs, in operational units.} The standing objection to a geometric
+measurement is that it may be a geometric curiosity, and the honest answer here is neither ``none''
+nor ``established''. In operational units the diagnostic does say something: all \SaeFailEarlier{} of
+\SaeDicts{} dictionaries reach guaranteed affine failure \SaeFailGapMin{} to \SaeFailGapMax{} sparsity
+levels earlier than an i.i.d.\ code of their own shape and operating sparsity. At a sparsity where a
+random code is still safe, a released dictionary already has a feature no affine rule can recover.
+That is a statement a practitioner can act on, and it is a worst-case guarantee rather than an
+average.
+
+What it is not is an external endpoint. Both the ratio and the failure threshold are functionals of
+the same leverage distribution, so their agreement is a consistency check and not independent
+corroboration; and neither is measured against reconstruction quality, attribution accuracy, steering
+behaviour, or any other quantity an interpretability pipeline actually optimises. Whether a
+\SaeFailGapMax{}-level earlier failure boundary changes what such a pipeline recovers in practice is
+the question we would most want a reader to take next, and the one this paper does not answer.
 
 \textbf{What does not survive, first: the decoder framing, in either direction.} This work began with
 the claim that an $L^4$ network's thresholded output keeps working past where linear readouts of its
@@ -102,21 +119,6 @@ noise robustness. None requires
 reverse-engineering a mechanism, and the third is exact rather than sampled --- which matters, because
 this project's history is a series of empirical readings that reversed when an estimand or a baseline
 was tightened, while $\kappa_i$ never moved.
-
-The consequence question deserves stating precisely, because the honest answer is neither ``none'' nor
-``established''. In operational units the diagnostic does say something: all \SaeFailEarlier{} of
-\SaeDicts{} dictionaries reach guaranteed affine failure \SaeFailGapMin{} to \SaeFailGapMax{} sparsity
-levels earlier than an i.i.d.\ code of their own shape and operating sparsity. At a sparsity where a
-random code is still safe, a released dictionary already has a feature no affine rule can recover.
-That is a statement a practitioner can act on, and it is a worst-case guarantee rather than an
-average.
-
-What it is not is an external endpoint. Both the ratio and the failure threshold are functionals of
-the same leverage distribution, so their agreement is a consistency check and not independent
-corroboration; and neither is measured against reconstruction quality, attribution accuracy, steering
-behaviour, or any other quantity an interpretability pipeline actually optimises. Whether a
-\SaeFailGapMax{}-level earlier failure boundary changes what such a pipeline recovers in practice is
-the question we would most want a reader to take next, and the one this paper does not answer.
 
 For capacity theory, the interface distinction explains why the H\"{a}nni and Adler--Shavit results
 coexist rather than compete (Appendix~\ref{sec:application}). It also cautions against reading
