@@ -1,13 +1,14 @@
 \section{Readings we withdrew, and what caused each}
 \label{app:withdrawn}
 
-This appendix exists because the alternative is worse. Over the course of this work eight readings of
+This appendix exists because the alternative is worse. Over the course of this work nine readings of
 our own measurements turned out not to survive a check, and in every case the reading we had chosen
-was the more interesting of the available ones. The last two were found by an external adversarial
-review of the submitted manuscript, after the other six had been written up here, and a second round
-of that review --- of the fixes for the first two --- found a ninth defect, in the audit tooling
-itself. That sequence is the most useful thing this appendix can tell a reader about how much to
-trust the rest. Listing them costs us the appearance of a clean
+was the more interesting of the available ones. Three came from external adversarial review: two of
+the submitted manuscript, after the other six had been written up here; a second round --- of the
+fixes for those two --- found a defect in the audit tooling itself; and a third, narrowly scoped to a
+single argument we had just moved to a more prominent position, found that the act of promoting it
+had introduced item~9 below. That sequence is the most useful thing this appendix can tell a reader
+about how much to trust the rest. Listing them costs us the appearance of a clean
 result and buys the reader the only thing that makes the surviving claims worth anything: a record
 of how hard they were pushed. The register in \code{docs/known\_defects.md} carries the code-level
 detail; what follows is the manuscript-level consequence of each.
@@ -155,12 +156,38 @@ absent where neither decoder recovers anything, and strongly negative where the 
 record it because a corrected measurement that happens to help is exactly the kind a reader should be
 told about.
 
-\paragraph{What the pattern says.} Five of the nine defects behind them are the same trap in five different code paths:
+\paragraph{9. ``Where a random code is still safe, a dictionary already fails'' (withdrawn; cause:
+asserting the converse of a sufficient condition).} The failure certificate of
+Corollary~\ref{cor:failthresh} fires earlier for every dictionary than for its matched reference,
+and we read that as the operational consequence of the geometry: at a sparsity where the random code
+is still safe, the dictionary already has a feature no affine rule recovers. The second clause is
+supported; the first is not, and the paper proves it is not. The corollary is sufficient for
+non-separability and Proposition~\ref{prop:oneway} shows the converse fails, so a certificate that
+has not yet fired says nothing about recoverability. Writing $K$ for an actual first
+non-separable sparsity and $S$ for a certificate threshold, the measurements give
+$K_{\text{dict}}\le S_{\text{dict}}$, $K_{\text{ref}}\le S_{\text{ref}}$ and
+$S_{\text{dict}}<S_{\text{ref}}$, which leaves the order of $K_{\text{dict}}$ and $K_{\text{ref}}$
+open. The reading appeared in the abstract, in contribution~4 and in the discussion.
+
+Two things made it worse than a loose sentence. It had been promoted to a prominent position in the
+discussion, as the answer to the question of what the measured excess costs, days before an external
+review of that promotion caught it --- so the error was introduced by the act of emphasising the
+claim, not inherited. And it contradicted a proposition three sections earlier in the same
+manuscript. What survives is the comparison of certificates, which is unanimous, holds at the
+$q=0.001$, $0.01$ and $0.05$ quantiles as well as at the minimum, and is now stated as what it is.
+That the same criterion also rules out every feature of \SaeFailCtlAllRuledOut{} of the
+\SaeFailRefs{} references at their operating sparsity is reported in the same place, because it is
+the fact that makes ``still safe'' untenable.
+
+\paragraph{What the pattern says.} Five of the ten defects behind them are the same trap in five different code paths:
 an operating point or an objective chosen by maximising something, with no check that it is the thing
 it claims to be. Two are a reading chosen from among several that the data permitted, selected after
 the fact for being the stronger claim. One --- item 7 --- is a comparison made without checking that
 the two things compared had the same shape, which is the same failure at the level of experimental
-design rather than of code. We mention the count because a reader deciding how much weight to put on
+design rather than of code. One --- item~9 --- is neither: it is a logical error, asserting the
+converse of a sufficient condition in a manuscript that proves that converse false three sections
+earlier. We mention the count because a reader deciding how much weight to put on
 this paper's surviving claims should know both the rate at which we found our own errors and the
-direction they pointed. Only the first pattern is one that more tests would have caught; the last was
-caught by recording the variable that distinguished the designs, which is now done.
+direction they pointed. Only the first pattern is one that more tests would have caught; item~7 was
+caught by recording the variable that distinguished the designs, which is now done; and item~9 is
+the one no amount of recomputation would have caught, since every number under it was correct.

@@ -414,3 +414,46 @@ built zip report zero.
 **Precedent.** The same shape as KD8: a check whose scope was defined by the thing it was checking.
 The rule KD9 states for comparisons applies to verification too — a scan must be written from the
 requirement, not from the implementation it is auditing.
+
+---
+
+## KD11 — The failure-threshold comparison asserted the converse of a sufficient condition
+
+**Status: FIXED** 2026-09-12 in `paper/sections/{abstract,tmlr_intro,tmlr_dictionaries,discussion}.tex`,
+with the reading retired as item 9 of `paper/sections/app_withdrawn.tex`.
+
+**Found:** 2026-09-12 by a third round of external adversarial review, scoped to a single argument.
+
+**Where.** Corollary `cor:failthresh` gives a *sufficient* condition for a feature to be affinely
+non-separable at sparsity `s`. The manuscript reported that every dictionary trips it earlier than
+its shape-matched reference -- which is true and verified -- and then wrote, in the abstract, in
+contribution 4 and in the discussion: "where a random code of the same shape is still safe, a
+released dictionary already has a feature no affine rule recovers".
+
+The second clause follows. The first does not. A certificate that has not fired says nothing about
+recoverability, and Proposition `prop:oneway`, three sections earlier in the same manuscript, proves
+that converse false. Writing `K` for an actual first non-separable sparsity and `S` for a certificate
+threshold, the measurements give `K_dict <= S_dict`, `K_ref <= S_ref` and `S_dict < S_ref`, which
+leaves the order of `K_dict` and `K_ref` open.
+
+**What it invalidated.** No measurement. Every number under the claim was recomputed independently
+from `results/sae/derived/sae_axes.json` and all 57 stored thresholds reproduce from the corollary.
+What was wrong was the inference drawn from them, in the three most prominent places in the paper.
+
+**How it got there.** It was introduced by *promoting* the argument, not by making it. The claim sat
+in the closing paragraphs of the discussion for weeks; moving it to a lead position to answer "what
+does the excess cost" is what turned a loose sentence into a headline, and the review that caught it
+was commissioned because of that move.
+
+**What changed after the fix.** The comparison is stated as a comparison of certificates. Three
+weaknesses the same review identified are now reported rather than omitted: the references are 7
+draws shared across 40 dictionaries, not 40 independent controls; the gap range 4-40 is paired with
+its median of 12 and with the reference thresholds, so the two ends of the range are not read against
+each other; and the criterion rules out every feature of 6 of the 7 references at their operating
+sparsity, which is the fact that makes "still safe" untenable. The direction is shown to survive at
+the 0.001, 0.01 and 0.05 leverage quantiles as well as at the minimum -- 40 of 40 in each -- so the
+sign does not rest on one order statistic, though the magnitude does.
+
+**Precedent.** Unlike KD1, KD2, KD6, KD8 and KD9, no amount of recomputation would have caught this:
+every number was right. It is the first defect here that is purely an inference, and the first
+introduced by emphasis rather than by measurement.

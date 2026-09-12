@@ -9,9 +9,10 @@ leverage $h_i$ is equalised across features: distance from the floor \emph{is} l
 
 On \SaeDicts{} released decoder matrices --- \SaeSaeCount{} sparse-autoencoder decoders plus
 \SaeMlpCount{} MLP down-projections of a hybrid model --- all sit \emph{above} their matched control
-(\SaeDictRgeomMin--\SaeDictRgeomMax), and all reach guaranteed affine failure \SaeFailGapMin{} to
-\SaeFailGapMax{} sparsity levels earlier: where a random code of the same shape is still safe, a
-released dictionary already has a feature no affine rule recovers. Autoencoders trained by the same
+(\SaeDictRgeomMin--\SaeDictRgeomMax), and all trip a sufficient condition for worst-case affine
+failure \SaeFailGapMin{} to \SaeFailGapMax{} sparsity levels earlier than the shape-matched code
+(median \SaeFailGapMedian{}, over \SaeFailRefs{} reference draws). That compares certificates, not
+measured failure onsets. Autoencoders trained by the same
 recipe on a \emph{randomly initialised} copy of the same model return to the floor
 (\SaeRandInitRgeomMin--\SaeRandInitRgeomMax) in all \SaePairedLayers{} paired layers, so the excess
 reflects what the model learned, not the act of fitting an autoencoder. Under controlled conditions

@@ -52,21 +52,46 @@ $\Rreadout=\EeightTrainedHundredRreadout{}$ while beating the same baseline by
 \EeightTrainedHundredTaskGain{}. Training the code aligns the two objectives; freezing it leaves them
 in a conflict no amount of readout training resolves.
 
-\textbf{What the excess costs, in operational units.} The standing objection to a geometric
-measurement is that it may be a geometric curiosity, and the honest answer here is neither ``none''
-nor ``established''. In operational units the diagnostic does say something: all \SaeFailEarlier{} of
-\SaeDicts{} dictionaries reach guaranteed affine failure \SaeFailGapMin{} to \SaeFailGapMax{} sparsity
-levels earlier than an i.i.d.\ code of their own shape and operating sparsity. At a sparsity where a
-random code is still safe, a released dictionary already has a feature no affine rule can recover.
-That is a statement a practitioner can act on, and it is a worst-case guarantee rather than an
-average.
+\textbf{A one-sided failure certificate, in sparsity units.} The standing objection to a geometric
+measurement is that it may be a geometric curiosity. What the diagnostic offers against that is a
+second statistic in units a practitioner reads --- but it is a certificate rather than a measurement
+of failure, and that distinction decides what may be said with it.
+Corollary~\ref{cor:failthresh} is sufficient for worst-case affine non-separability, and
+Proposition~\ref{prop:oneway} shows the converse is unavailable.
 
-What it is not is an external endpoint. Both the ratio and the failure threshold are functionals of
-the same leverage distribution, so their agreement is a consistency check and not independent
-corroboration; and neither is measured against reconstruction quality, attribution accuracy, steering
-behaviour, or any other quantity an interpretability pipeline actually optimises. Whether a
-\SaeFailGapMax{}-level earlier failure boundary changes what such a pipeline recovers in practice is
-the question we would most want a reader to take next, and the one this paper does not answer.
+Applied to the minimum leverage of each dictionary and of its reference, the certificate fires
+earlier for \SaeFailEarlier{} of \SaeDicts{} dictionaries than for the i.i.d.\ code of their own
+shape and operating sparsity, by \SaeFailGapMin{} to \SaeFailGapMax{} sparsity levels with a median
+of \SaeFailGapMedian{}. Dictionary thresholds run from \SaeFailTrainedMin{} to \SaeFailTrainedMax{}
+and reference thresholds from \SaeFailCtlMin{} to \SaeFailCtlMax{}; the extremal pairs are
+\SaeFailPairNarrowestDict{} against \SaeFailPairNarrowestCtl{} and \SaeFailPairWidestDict{} against
+\SaeFailPairWidestCtl{}, so the two ends of that range are not to be read against each other. There
+are \SaeFailRefs{} reference matrices, one draw shared by every dictionary in a matched
+$(d,F,s)$ stratum, which makes these \SaeDicts{} comparisons against \SaeFailRefs{} reference values
+rather than \SaeDicts{} independent replications; variability over further draws is not measured.
+
+The direction does not rest on the single smallest leverage. Applying the same criterion to the
+$q=0.001$, $0.01$ and $0.05$ leverage quantiles of \emph{both} members of each pair leaves
+\SaeFailQaOneEarlier{}, \SaeFailQOneEarlier{} and \SaeFailQFiveEarlier{} of the \SaeDicts{}
+comparisons positive, with gaps of \SaeFailQaOneGapMin{}--\SaeFailQaOneGapMax{},
+\SaeFailQOneGapMin{}--\SaeFailQOneGapMax{} and \SaeFailQFiveGapMin{}--\SaeFailQFiveGapMax{} levels
+and medians of \SaeFailQaOneGapMedian{}, \SaeFailQOneGapMedian{} and \SaeFailQFiveGapMedian{}. The
+sign is a property of the lower tail rather than of one column. The magnitude is not: it shrinks as
+the quantile rises, so \SaeFailGapMin{}--\SaeFailGapMax{} is the range for the minimum and not an
+effect size that survives the move.
+
+What none of this establishes is an ordering of the \emph{actual} failure onsets. The certificate
+bounds the true frontier from above on both sides, and an earlier upper bound leaves the order of
+the two frontiers open; nor does it certify that the reference is recoverable anywhere below its own
+threshold. At the recorded operating sparsities the criterion rules out at least one feature of
+every dictionary --- and every feature of \SaeFailCtlAllRuledOut{} of the \SaeFailRefs{} references,
+with none ruled out in the remaining \SaeFailCtlNoneRuledOut{}. These are exclusions over the
+admissible state family computed from the decoder alone, not error rates under deployed activations,
+and they cannot say whether the columns concerned are ever active. The ratio and the certificate are
+different functionals of the same leverage distribution, so their agreement is a complementary
+reading and not independent corroboration. Whether the geometry has a measurable cost in
+reconstruction, attribution or steering is untested, and is the question we would most want a reader
+to take next.
 
 \textbf{What does not survive, first: the decoder framing, in either direction.} This work began with
 the claim that an $L^4$ network's thresholded output keeps working past where linear readouts of its
@@ -105,7 +130,7 @@ narrower and confined to the untrained arm, where the preactivation is more affi
 \PrimRandFiftyPreDiff{} to \PrimRandFourHundredPreDiff{} levels: the ReLU-plus-threshold pipeline
 throws away a large and growing amount on a code that was never trained, and next to none on one
 trained under $L^4$. Appendix~\ref{app:withdrawn} records both withdrawals with their causes, along
-with four others.
+with every other reading this work retired.
 
 \textbf{An instrument, and what it does not settle.} This gives the debate
 in~\cite{bhagat2026cc,ferreiradasilva2026l4} something to measure. ``Does this network compute in

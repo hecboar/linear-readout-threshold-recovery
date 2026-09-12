@@ -96,16 +96,23 @@ allocates its directions unevenly with respect to the space it lives in, and a h
 with small $h_i$ dominate the harmonic sum that sets the ratio.
 
 \paragraph{The second statistic agrees, in sparsity units.} The diagnostic returns a failure
-threshold as well as a ratio: the smallest sparsity at which Corollary~\ref{cor:failthresh}
-guarantees that some feature cannot be recovered by any affine rule. Its absolute value is a property
-of the shape --- at the operating sparsities these dictionaries are used at, the sufficient condition
-rules out essentially every feature of the controls too --- so it carries information only as a
-matched difference. Matched, it is unanimous: all \SaeFailEarlier{} of \SaeDicts{} dictionaries reach
-guaranteed failure \emph{earlier} than the i.i.d.\ code of their own shape and operating sparsity, by
-\SaeFailGapMin{} to \SaeFailGapMax{} sparsity levels, with the trained thresholds running from
-\SaeFailTrainedMin{} to \SaeFailTrainedMax{}. This is a different functional of the leverage
-distribution from $\Rgeom$ --- a worst-case statement about one feature rather than an average over
-all of them --- and it points the same way, which is the main reason we report it.
+certificate as well as a ratio: the smallest sparsity at which Corollary~\ref{cor:failthresh}
+guarantees that some feature cannot be recovered by any affine rule. The condition is sufficient and
+not necessary, so the threshold bounds the true frontier from above and is not an estimate of it.
+Its absolute value depends on the feature count and on the leverage profile together --- the three
+Qwen3-8B dictionaries share a shape and do not share a threshold --- so it carries information only
+as a matched difference. Matched, it is unanimous: \SaeFailEarlier{} of
+\SaeDicts{} dictionaries trip the certificate \emph{earlier} than the i.i.d.\ code of their own shape
+and operating sparsity, by \SaeFailGapMin{} to \SaeFailGapMax{} sparsity levels with a median of
+\SaeFailGapMedian{}, the trained thresholds running from \SaeFailTrainedMin{} to
+\SaeFailTrainedMax{} against reference thresholds of \SaeFailCtlMin{} to \SaeFailCtlMax{}. The
+references are \SaeFailRefs{} draws, one per matched shape, so the unanimity is over \SaeDicts{}
+comparisons and not \SaeDicts{} independent ones. At the operating sparsities these dictionaries are
+used at, the condition rules out every feature of \SaeFailCtlAllRuledOut{} of the \SaeFailRefs{}
+references and none of the remaining \SaeFailCtlNoneRuledOut{}. This is a different functional of the
+leverage distribution from $\Rgeom$ --- a worst-case statement about one feature rather than an
+average over all of them --- and it points the same way, which is the main reason we report it.
+Section~\ref{sec:discussion} states what the comparison does and does not license.
 
 \paragraph{Depth matters more than width, but not in one clean ordering.} The excess is far from
 uniform across a model, and within a suite it varies by more than any width effect we measure below.

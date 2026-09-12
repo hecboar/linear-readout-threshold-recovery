@@ -90,14 +90,16 @@ comparison, and it is not present in the literature we build on.
 controls' \SaeCtlCvMin{} to \SaeCtlCvMax{}. Whatever these dictionaries optimise, it is not the
 evenness of their own leverage.
 
-\item \textbf{The same holds in sparsity units, which is the form a practitioner can use.} The
-diagnostic also returns the sparsity at which some feature is guaranteed to be unrecoverable by any
-affine rule. All \SaeFailEarlier{} dictionaries reach it \SaeFailGapMin{} to \SaeFailGapMax{} levels
-earlier than the i.i.d.\ code of their own shape and operating sparsity: where a random code is still
-safe, a released dictionary already has a feature no affine rule recovers. This is a worst-case
-statement about one feature rather than an average over all of them, so its agreement with the ratio
-is not automatic --- though both are functionals of the same leverage distribution, and neither is an
-external endpoint (Section~\ref{sec:discussion}).
+\item \textbf{Leverage yields a one-sided failure certificate, in sparsity units.} The diagnostic
+also returns the smallest sparsity at which a sufficient condition guarantees that some feature is
+unrecoverable by any affine rule. That certificate fires for \SaeFailEarlier{} of \SaeDicts{}
+dictionaries \SaeFailGapMin{} to \SaeFailGapMax{} levels earlier than for the i.i.d.\ code of their
+own shape and operating sparsity, median \SaeFailGapMedian{}, over \SaeFailRefs{} reference draws.
+Because the condition is sufficient and not necessary, an earlier certificate does not establish an
+earlier actual failure onset, and it does not certify that the reference is recoverable below its
+own threshold. It is a worst-case statement about one feature rather than an average over all of
+them, so its agreement with the ratio is not automatic --- though both are functionals of the same
+leverage distribution, and neither is an external endpoint (Section~\ref{sec:discussion}).
 
 \item \textbf{A matched randomly-initialised control locates the cause.} Autoencoders trained by an
 identical recipe on a randomly initialised copy of the same model return to the floor
@@ -120,7 +122,7 @@ alongside it.
 
 \item \textbf{An artefact that can be checked.} The weights of all 400 trained networks are
 released, along with the SHA-256 of every third-party dictionary analysed, a decision log recording
-what was registered before each campaign, and a register of nine defects found during this work
+what was registered before each campaign, and a register of ten defects found during this work
 together with what each invalidated. Section~\ref{sec:limitations} states which readings we
 withdrew and why.
 

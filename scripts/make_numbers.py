@@ -826,6 +826,50 @@ def build() -> Macros:
     m.integer("SaeFailTrainedMin", min(r["first_failure_s"] for r in trained))
     m.integer("SaeFailTrainedMax", max(r["first_failure_s"] for r in trained))
 
+    # Round three of external review found the range alone to be an inadequate summary, and the
+    # reasons are all in these numbers. The gaps are not 40 independent comparisons: there are
+    # seven reference draws, one per shape, so the two largest strata carry 26 of the 40. The
+    # median says what the range hides. The paired bases say that a gap of 40 on a threshold of 27
+    # and a gap of 4 on a threshold of 32 are different statements. And the thresholds of the
+    # references are needed because the reader cannot otherwise tell that they are also low.
+    m.integer("SaeFailGapMedian", int(np.median(fail_gaps)))
+    m.integer("SaeFailRefs", len(ctl_by_shape))
+    m.integer("SaeFailCtlMin", min(r["first_failure_s"] for r in ctl))
+    m.integer("SaeFailCtlMax", max(r["first_failure_s"] for r in ctl))
+    widest = max(trained, key=lambda r: ctl_by_shape[(r["d"], r["F"], r["s_operating"])
+                                                     ]["first_failure_s"] - r["first_failure_s"])
+    narrowest = min(trained, key=lambda r: ctl_by_shape[(r["d"], r["F"], r["s_operating"])
+                                                        ]["first_failure_s"] - r["first_failure_s"])
+    for tag, r in (("Widest", widest), ("Narrowest", narrowest)):
+        m.integer(f"SaeFailPair{tag}Dict", r["first_failure_s"])
+        m.integer(f"SaeFailPair{tag}Ctl",
+                  ctl_by_shape[(r["d"], r["F"], r["s_operating"])]["first_failure_s"])
+
+    # Robustness of the direction away from the single minimum. The same statistic is applied to
+    # both members of each pair, which is the only comparison that means anything: a dictionary
+    # quantile against a control minimum would be measuring the choice of statistic.
+    def first_failure_from(h: float, F: int, s_max: int = 32768):
+        for s in range(2, s_max + 1):
+            if h <= min(0.5, (s - 1) ** 2 / ((F - 1) + (s - 1) ** 2)):
+                return s
+        return None
+
+    for key, tag in (("h_q001", "QaOne"), ("h_q01", "QOne"), ("h_q05", "QFive")):
+        qg = [first_failure_from(ctl_by_shape[(r["d"], r["F"], r["s_operating"])][key], r["F"])
+              - first_failure_from(r[key], r["F"]) for r in trained]
+        m.integer(f"SaeFail{tag}Earlier", sum(1 for g in qg if g > 0))
+        m.integer(f"SaeFail{tag}GapMin", min(qg))
+        m.integer(f"SaeFail{tag}GapMax", max(qg))
+        m.num(f"SaeFail{tag}GapMedian", float(np.median(qg)), 1)
+
+    # At their operating sparsity the criterion rules out every feature of six of the seven
+    # references and none of the seventh. The earlier text said "essentially every feature of the
+    # controls", which is false for the 4096x65536 draw.
+    m.integer("SaeFailCtlAllRuledOut",
+              sum(1 for r in ctl if r["fraction_ruled_out_at_s_op"] == 1.0))
+    m.integer("SaeFailCtlNoneRuledOut",
+              sum(1 for r in ctl if r["fraction_ruled_out_at_s_op"] == 0.0))
+
     # What those objects are: 16 of them are a hybrid model's MLP down-projections, not
     # autoencoders. The abstract called all of them sparse autoencoders.
     m.integer("SaeSaeCount",
